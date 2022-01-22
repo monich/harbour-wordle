@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="86px"
+   height="86px"
+   viewBox="0 0 86 86"
+   style="enable-background:new 0 0 86 86;"
+   xml:space="preserve"
+   sodipodi:docname="harbour-wordle.svg"
+   inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+  <rect
+      style="opacity:0;fill:#FFFFFF;"
+      width="86"
+      height="86"/>
+  <g>
+    <linearGradient
+        id="SVGID_1_"
+        gradientUnits="userSpaceOnUse"
+        x1="0.3"
+        y1="85.4"
+        x2="85.4"
+        y2="0.3">
+      <stop
+          offset="0"
+          style="stop-color:#6aaa64;stop-opacity:1"/>
+      <stop
+          offset="0.9946"
+          style="stop-color:#579551;stop-opacity:1"/>
+    </linearGradient>
+    <path
+        style="fill:url(#SVGID_1_);"
+        d="M85.586,84.277c0,0.786-0.637,1.423-1.423,1.423H1.609c-0.786,0-1.423-0.637-1.423-1.423 V1.723c0-0.786,0.637-1.423,1.423-1.423h82.553c0.786,0,1.423,0.637,1.423,1.423V84.277z"/>
+    <path
+        style="fill:#000000;fill-opacity:0.16862745;stroke:none"
+        d="M 63.548,64.932939 H 52.15478 C 49.665181,53 45.770257,39.958244 44.016759,28.604878 41.302109,42.435067 38.173968,54.823229 35.813635,64.933 L 24.420406,64.932939 12.604,19.067057 h 9.733073 c 2.736443,12.256464 5.567771,24.491352 8.138019,36.783852 2.658361,-13.354904 5.896937,-26.665 8.268229,-36.783852 h 10.742187 c 3.022052,11.989 6.34773,26.405392 8.105469,36.783852 2.760651,-12.245769 5.412666,-24.515404 8.072916,-36.783852 h 9.733074 z"
+        inkscape:connector-curvature="0"
+        sodipodi:nodetypes="cccccccccccccc"/>
+    <path
+        style="fill:#ffffff;fill-opacity:1;stroke:none"
+        d="M 62.547526,65.932945 H 51.154297 C 48.664698,54 44.769774,40.958188 43.016276,29.604822 40.301626,43.435011 37.173485,55.823173 34.813152,65.932945 H 23.42 L 11.603517,20.067062 h 9.733073 c 2.736443,12.256464 5.567771,24.491352 8.13802,36.783852 2.658361,-13.354904 5.896937,-26.665 8.268229,-36.783852 h 10.742187 c 3.022052,11.989 6.34773,26.405392 8.105469,36.783852 2.760651,-12.245769 5.412666,-24.515404 8.072916,-36.783852 h 9.733073 z"
+        inkscape:connector-curvature="0"
+        sodipodi:nodetypes="cccccccccccccc"/>
+  </g>
+</svg>

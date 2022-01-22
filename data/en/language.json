@@ -1,0 +1,6 @@
+{
+    "name": "English",
+    "enconding": "ASCII",
+    "alphabet": "abcdefghijklmnopqrstuvwxyz",
+    "keypad": [ "qwertyuiop", "asdfghjkl", "\nzxcvbnm\b" ]
+}

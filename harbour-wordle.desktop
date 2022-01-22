@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Wordle
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-wordle
+Exec=harbour-wordle
+
+[X-HarbourBackup]
+BackupPathList = .local/share/harbour-wordle/
+BackupConfigList = /apps/harbour-wordle/
