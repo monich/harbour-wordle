@@ -1,4 +1,5 @@
 import QtQuick 2.0
+import QtSensors 5.0
 import Sailfish.Silica 1.0
 import harbour.wordle 1.0
 
@@ -7,12 +8,14 @@ import "harbour"
 Item {
     id: thisItem
 
-    property bool enableLetterFlipAnimation
+    property bool active
     property bool landscape
     property alias title: header.title
     property var wordle
 
     signal flip()
+
+    readonly property bool gameWon: wordle.gameState === WordleGame.GameWon
 
     WordleHeader {
         id: header
@@ -51,11 +54,11 @@ Item {
                 Math.floor((parent.height - spacing * (Wordle.MaxAttempts - 1))/Wordle.MaxAttempts))
             model: wordle
             anchors.centerIn: parent
-            enableLetterFlipAnimation: thisItem.enableLetterFlipAnimation
+            enableLetterFlipAnimation: thisItem.active
         }
 
         MouseArea {
-            enabled: thisItem.enabled && wordle.gameState === WordleGame.GameWon
+            enabled: thisItem.enabled && gameWon
             anchors.fill: board
             onClicked: board.celebrate()
         }
@@ -80,7 +83,7 @@ Item {
                 // Enter
                 if (wordle.canSubmitInput) {
                     if (wordle.submitInput()) {
-                        if (wordle.gameState === WordleGame.GameWon) {
+                        if (gameWon) {
                             board.celebrate()
                         }
                     } else {
@@ -90,6 +93,24 @@ Item {
             } else {
                 // A normal letter
                 wordle.inputLetter(letter)
+            }
+        }
+    }
+
+    Loader {
+        active: gameWon
+        sourceComponent: Component {
+            Accelerometer {
+                active: thisItem.active
+
+                readonly property real shakeThreshold: 500
+                readonly property real accelerationSquared: reading ? (reading.x * reading.x + reading.y * reading.y + reading.z * reading.z) : 0
+
+                onAccelerationSquaredChanged: {
+                    if (accelerationSquared > shakeThreshold) {
+                        board.celebrate()
+                    }
+                }
             }
         }
     }
