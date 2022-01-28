@@ -100,7 +100,6 @@ public:
 
     Wordle::LetterState letterState(QChar aLetter, int aPos);
     void updateStateMap(QString aWord);
-    bool isValidLetter(QChar aLetter);
     int letterCount();
 
 private Q_SLOTS:
@@ -284,11 +283,6 @@ Wordle::LetterState WordleGame::Private::letterState(QChar aLetter, int aPos)
     return Wordle::LetterStateUnknown;
 }
 
-bool WordleGame::Private::isValidLetter(QChar aLetter)
-{
-    return iLanguage.getAlphabet().contains(aLetter);
-}
-
 int WordleGame::Private::letterCount()
 {
     return iAttempts.count() * Wordle::WordLength + iInput.length();
@@ -456,24 +450,22 @@ bool WordleGame::inputLetter(QString aLetter)
     if (aLetter.length() == 1 && canInputLetter()) {
         const QChar letter(aLetter.at(0).toLower());
         HDEBUG(letter);
-        if (iPrivate->isValidLetter(letter)) {
-            const bool couldDeleteLastLetter = canDeleteLastLetter();
-            const QModelIndex modelIndex(index(iPrivate->letterCount()));
-            iPrivate->iInput.append(letter);
-            Q_EMIT dataChanged(modelIndex, modelIndex);
-            if (!canInputLetter()) {
-                Q_EMIT canInputLetterChanged();
-            }
-            if (!couldDeleteLastLetter) {
-                HASSERT(canDeleteLastLetter());
-                Q_EMIT canDeleteLastLetterChanged();
-            }
-            if (canSubmitInput()) {
-                Q_EMIT canSubmitInputChanged();
-            }
-            iPrivate->saveState();
-            return true;
+        const bool couldDeleteLastLetter = canDeleteLastLetter();
+        const QModelIndex modelIndex(index(iPrivate->letterCount()));
+        iPrivate->iInput.append(letter);
+        Q_EMIT dataChanged(modelIndex, modelIndex);
+        if (!canInputLetter()) {
+            Q_EMIT canInputLetterChanged();
         }
+        if (!couldDeleteLastLetter) {
+            HASSERT(canDeleteLastLetter());
+            Q_EMIT canDeleteLastLetterChanged();
+        }
+        if (canSubmitInput()) {
+            Q_EMIT canSubmitInputChanged();
+        }
+        iPrivate->saveState();
+        return true;
     }
     return false;
 }

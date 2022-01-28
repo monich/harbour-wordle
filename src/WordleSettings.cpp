@@ -41,6 +41,8 @@
 
 #include "HarbourDebug.h"
 
+#include <QLocale>
+
 #include <MGConfItem>
 
 #define DCONF_KEY(x)                "/apps/" APP_NAME "/" x
@@ -67,6 +69,7 @@ public:
 
 public:
     const QList<WordleLanguage> iLanguages;
+    QString iDefaultLanguage;
     MGConfItem* iLanguage;
     MGConfItem* iKeepDisplayOn;
 };
@@ -75,6 +78,7 @@ const QString WordleSettings::Private::DEFAULT_LANGUAGE_CODE("en");
 
 WordleSettings::Private::Private(WordleSettings* aParent) :
     iLanguages(WordleLanguage::availableLangiages()),
+    iDefaultLanguage(DEFAULT_LANGUAGE_CODE),
     iLanguage(new MGConfItem(KEY_LANGUAGE, aParent)),
     iKeepDisplayOn(new MGConfItem(KEY_KEEP_DISPLAY_ON, aParent))
 {
@@ -82,6 +86,19 @@ WordleSettings::Private::Private(WordleSettings* aParent) :
         aParent, SIGNAL(languageChanged()));
     QObject::connect(iKeepDisplayOn, SIGNAL(valueChanged()),
         aParent, SIGNAL(keepDisplayOnChanged()));
+
+    const QString language((QLocale().bcp47Name())); // e.g. "en-GB"
+    HDEBUG("System language" << language);
+    const int sep = language.indexOf('-');
+    const QString name((sep > 0) ? language.left(sep) : language);
+    const int n = iLanguages.count();
+    for (int i = 0; i < n; i++) {
+        if (!iLanguages.at(i).getCode().compare(name, Qt::CaseInsensitive)) {
+            HDEBUG("Using" << name << "as the default language");
+            iDefaultLanguage = name;
+            break;
+        }
+    }
 }
 
 const QString WordleSettings::Private::validateLanguage(const QString aLanguage)
@@ -93,13 +110,13 @@ const QString WordleSettings::Private::validateLanguage(const QString aLanguage)
             return languageCode;
         }
     }
-    HDEBUG("Falling back to" << DEFAULT_LANGUAGE_CODE);
-    return DEFAULT_LANGUAGE_CODE;
+    HDEBUG("Falling back to" << iDefaultLanguage);
+    return iDefaultLanguage;
 }
 
 const QString WordleSettings::Private::language()
 {
-    return validateLanguage(iLanguage->value(DEFAULT_LANGUAGE_CODE).toString());
+    return validateLanguage(iLanguage->value(iDefaultLanguage).toString());
 }
 
 void WordleSettings::Private::setLanguage(const QString aValue)

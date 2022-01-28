@@ -63,8 +63,8 @@ Page {
 
                 anchors.fill: parent
                 landscape: thisPage.isLandscape
-                enableLetterFlipAnimation: enabled
                 enabled: thisPage._completed && rotation.angle < 90
+                active: enabled && Qt.application.active
                 onFlip: flipable.flipped = true
             }
 
