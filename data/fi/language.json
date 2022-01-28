@@ -1,0 +1,5 @@
+{
+    "name": "Suomi",
+    "enconding": "windows-1252",
+    "keypad": [ "qwertyuiop", "asdfghjkläö", "\nzxcvbnm\b" ]
+}
