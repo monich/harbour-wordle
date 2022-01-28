@@ -1,0 +1,20 @@
+Typical workflow for adding a new dictionary, e.g. for xy language:
+
+1. Prepare file e.g. words.txt containing decent words to be guessed.
+   Suggested format is UTF-8, one 5-letter word per line. The words
+   don't have to be sorted, extra spaces or emply lines are fine.
+2. Prepare another file e.g. xwords.txt in the same format, containing
+   not-so-decent words that will be allowed as guess words (but will
+   never be the answer).
+3. Choose a single-byte encoding for your language, e.g. windows-1232
+4. make -C tools
+5. mkdir data/xy
+6. cd data/xy
+7. Create language.json for your language based on one of the examples
+8. ../../tools/wordle-tool <path to words.txt> windows-1252
+9. ../../tools/wordle-tool -x <path to xwords.txt> windows-1252
+
+The last two steps generate words and xwords files. Now you can copy
+the contents of data/xy directory to /usr/share/harbour-wordle/data/xy
+on the device. Restart the app, your language should appear in the list
+of dictionaries in the Settings view.
