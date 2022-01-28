@@ -71,7 +71,6 @@ public:
     static const QString XWORDS_FILE;
 
     static const QString INFO_KEY_NAME;
-    static const QString INFO_KEY_ALPHABET;
     static const QString INFO_KEY_ENCODING;
     static const QString INFO_KEY_KEYPAD;
 
@@ -93,7 +92,6 @@ public:
     QAtomicInt iRef;
     const QString iLanguageCode;
     QString iName;
-    QString iAlphabet;
     QStringList iKeypad;
     QFileInfo iWordsFileInfo;
     QFileInfo iExtWordsFileInfo;
@@ -114,7 +112,6 @@ const QString WordleLanguage::Private::WORDS_FILE("words");
 const QString WordleLanguage::Private::XWORDS_FILE("xwords");
 
 const QString WordleLanguage::Private::INFO_KEY_NAME("name");
-const QString WordleLanguage::Private::INFO_KEY_ALPHABET("alphabet");
 const QString WordleLanguage::Private::INFO_KEY_ENCODING("enconding");
 const QString WordleLanguage::Private::INFO_KEY_KEYPAD("keypad");
 
@@ -139,7 +136,6 @@ WordleLanguage::Private::Private(const QString& aLanguageCode) :
     QVariantMap info;
     if (HarbourJson::load(infoFile.absoluteFilePath(), info)) {
         iName = info.value(INFO_KEY_NAME).toString();
-        iAlphabet = info.value(INFO_KEY_ALPHABET).toString().toLower();
         iKeypad = info.value(INFO_KEY_KEYPAD).toStringList();
         QByteArray enc(info.value(INFO_KEY_ENCODING).toString().toLatin1());
         if (enc.isEmpty()) {
@@ -181,7 +177,7 @@ WordleLanguage::Private::~Private()
 
 bool WordleLanguage::Private::isValid()
 {
-    return iTextCodec && !iKeypad.isEmpty() && !iAlphabet.isEmpty() && iWordsCount > 0;
+    return iTextCodec && !iKeypad.isEmpty() && iWordsCount > 0;
 }
 
 const char* WordleLanguage::Private::wordsData()
@@ -328,11 +324,6 @@ const QString WordleLanguage::getCode() const
 const QString WordleLanguage::getName() const
 {
     return iPrivate ? iPrivate->iName : QString();
-}
-
-const QString WordleLanguage::getAlphabet() const
-{
-    return iPrivate ? iPrivate->iAlphabet : QString();
 }
 
 const QStringList WordleLanguage::getKeypad() const

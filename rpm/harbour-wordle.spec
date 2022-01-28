@@ -9,6 +9,7 @@ Source0:        %{name}-%{version}.tar.gz
 
 Requires:       sailfishsilica-qt5
 Requires:       qt5-qtsvg-plugin-imageformat-svg
+Requires:       qt5-qtdeclarative-import-sensors
 BuildRequires:  pkgconfig(sailfishapp)
 BuildRequires:  pkgconfig(mlite5)
 BuildRequires:  pkgconfig(Qt5Core)
