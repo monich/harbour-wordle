@@ -219,7 +219,7 @@ QString WordleLanguage::Private::randomWord()
         const char* wordBytes = words + (i * wordSize);
         const QString word(iTextCodec->toUnicode(QByteArray(wordBytes, wordSize)));
         HDEBUG(word);
-        return word;
+        return word.toLower();
     }
     return QString();
 }
