@@ -1,0 +1,6 @@
+{
+    "name": "Deutsch",
+    "enconding": "UTF-8",
+    "alphabet": "abcdefghijklmnopqrstuvxyzäöüöß",
+    "keypad": [ "йцукенгшщзхъ", "фывапролджэ", "\nячсмитьбю\b" ]
+}
