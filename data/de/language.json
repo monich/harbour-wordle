@@ -2,5 +2,5 @@
     "name": "Deutsch",
     "enconding": "UTF-8",
     "alphabet": "abcdefghijklmnopqrstuvxyzäàáèéêöüß",
-    "keypad": [ "äàáèéêöüß","qwertzuiopü", "asdfghjklöä", "\nzxcvbnm\b" ]
+    "keypad": [ "äàáèéêöüß","qwertzuiop", "asdfghjkl", "\nzxcvbnm\b" ]
 }
