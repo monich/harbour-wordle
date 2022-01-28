@@ -54,7 +54,6 @@ public:
     bool isValid() const;
     const QString getCode() const;
     const QString getName() const;
-    const QString getAlphabet() const;
     const QStringList getKeypad() const;
 
     WordleLanguage& operator = (const WordleLanguage& aLanguage);
