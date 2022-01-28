@@ -1,6 +1,5 @@
 {
     "name": "Deutsch",
-    "enconding": "UTF-8",
-    "alphabet": "abcdefghijklmnopqrstuvxyzäàáèéêöüß",
+    "enconding": "windows-1232",
     "keypad": [ "äàáèéêöüß","qwertzuiop", "asdfghjkl", "\nzxcvbnm\b" ]
 }
