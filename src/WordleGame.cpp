@@ -98,9 +98,9 @@ public:
     void readState();
     void writeState();
 
-    Wordle::LetterState letterState(QChar aLetter, int aPos);
-    void updateStateMap(QString aWord);
-    int letterCount();
+    Wordle::LetterState letterState(const QString aWord, int aPos) const;
+    void updateStateMap(const QString aWord);
+    int letterCount() const;
 
 private Q_SLOTS:
     void flushChanges();
@@ -273,29 +273,80 @@ QStringList WordleGame::Private::getKeypad()
     return iLanguage.getKeypad();
 }
 
-Wordle::LetterState WordleGame::Private::letterState(QChar aLetter, int aPos)
+Wordle::LetterState WordleGame::Private::letterState(const QString aWord, int aPos) const
 {
-    if (aPos >= 0 && aPos < iAnswer.length()) {
-        return (iAnswer.at(aPos) == aLetter) ? Wordle::LetterStatePresentHere :
-            iAnswer.contains(aLetter) ? Wordle::LetterStatePresent :
-            Wordle::LetterStateNotPresent;
+    if (aPos >= 0 && aPos < Wordle::WordLength) {
+        const QChar* answer = iAnswer.constData();
+        const QChar* word = aWord.constData();
+        const QChar letter(word[aPos]);
+
+        //
+        // Number of letters colored as PresentHere and Present in
+        // the guess word must not exceed the number of such letters
+        // in the answer.
+        //
+        // Letters that are at the right positions are always marked
+        // as such, and the misplaced ones are optionally marked from
+        // left to right, until the total count is reached.
+        //
+        // For example, if the answer is WHOLE then only the first E
+        // in WHEEL would be marked as present (but misplaced) and only
+        // the second O in WOOLY would be marked as correct (sitting
+        // at the right place), while the first O won't be marked as
+        // present because that would exceed the total number of O's
+        // in WHOLE.
+        //
+        if (answer[aPos] == letter) {
+            return Wordle::LetterStatePresentHere;
+        } else if (!iAnswer.contains(letter)) {
+            return Wordle::LetterStateNotPresent;
+        } else {
+            int misPlaceIndex = 0; // This counts one at aPos
+            int i, misPlaceCount = 0;
+
+            for (i = 0; i < aPos; i++) {
+                if (word[i] != answer[i]) {
+                    if (word[i] == letter) {
+                        misPlaceIndex++;
+                    } else if (answer[i] == letter) {
+                        misPlaceCount++;
+                    }
+                }
+            }
+
+            // At this point we have misPlaceIndex for the letter at aPos
+            if (misPlaceCount > misPlaceIndex) {
+                return Wordle::LetterStatePresent;
+            } else {
+                // Skip aPos, it's already taken care of
+                for (i++; i < Wordle::WordLength; i++) {
+                    if (word[i] != letter && answer[i] == letter) {
+                        misPlaceCount++;
+                        if (misPlaceCount > misPlaceIndex) {
+                            return Wordle::LetterStatePresent;
+                        }
+                    }
+                }
+                return Wordle::LetterStateNotPresent;
+            }
+        }
     }
     return Wordle::LetterStateUnknown;
 }
 
-int WordleGame::Private::letterCount()
+int WordleGame::Private::letterCount() const
 {
     return iAttempts.count() * Wordle::WordLength + iInput.length();
 }
 
-void WordleGame::Private::updateStateMap(QString aWord)
+void WordleGame::Private::updateStateMap(const QString aWord)
 {
     const int n = aWord.length();
     HASSERT(n == Wordle::WordLength);
     for (int i = 0; i < n; i++) {
         const QChar letter(aWord.at(i));
         Wordle::LetterState oldState = iStateMap.value(letter);
-        Wordle::LetterState newState = letterState(letter, i);
+        Wordle::LetterState newState = letterState(aWord, i);
         if (newState > oldState) {
             iStateMap.insert(letter, newState);
         }
@@ -388,10 +439,10 @@ QVariant WordleGame::data(const QModelIndex& aIndex, int aRole) const
         const int attempted = n * Wordle::WordLength;
         if (i < attempted) {
             const int pos = i % Wordle::WordLength;
-            QChar letter(iPrivate->iAttempts.at(i/Wordle::WordLength).at(pos));
+            const QString word(iPrivate->iAttempts.at(i/Wordle::WordLength));
             switch ((Private::Role)aRole) {
-            case Private::LetterRole: return QString(letter);
-            case Private::StateRole: return iPrivate->letterState(letter, pos);
+            case Private::LetterRole: return word.mid(pos, 1);
+            case Private::StateRole: return iPrivate->letterState(word, pos);
             }
         } else if ((i - attempted) < iPrivate->iInput.length()) {
             switch ((Private::Role)aRole) {
