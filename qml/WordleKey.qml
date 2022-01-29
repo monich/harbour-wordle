@@ -55,9 +55,36 @@ Rectangle {
     MouseArea {
         id: mouseArea
 
-        readonly property bool down: pressed && containsMouse
-
         anchors.fill: parent
+
+        readonly property bool down: pressed && containsMouse
+        readonly property bool repeat: letter === "\b" && down
+
         onClicked: thisItem.pressed()
+
+        onRepeatChanged: {
+            if (repeat) {
+                repeatDelayTimer.restart()
+            } else {
+                repeatDelayTimer.stop()
+                repeatTimer.stop()
+            }
+        }
+
+        Timer {
+            id: repeatDelayTimer
+
+            interval: 250
+            repeat: false
+            onTriggered: repeatTimer.restart()
+        }
+
+        Timer {
+            id: repeatTimer
+
+            interval: 100
+            repeat: true
+            onTriggered: thisItem.pressed()
+        }
     }
 }
