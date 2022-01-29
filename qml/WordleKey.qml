@@ -21,6 +21,9 @@ Rectangle {
 
     layer.enabled: mouseArea.pressed
     layer.effect: HarbourPressEffect { source: thisItem }
+    scale: mouseArea.down ? 1.2 : 1
+
+    Behavior on scale { NumberAnimation { duration: 50 } }
 
     Label {
         visible: !functionalKey
@@ -51,6 +54,8 @@ Rectangle {
 
     MouseArea {
         id: mouseArea
+
+        readonly property bool down: pressed && containsMouse
 
         anchors.fill: parent
         onClicked: thisItem.pressed()
