@@ -181,6 +181,10 @@ void WordleGame::Private::readState()
             saveNow = true;
         }
         iInput = state.value(STATE_KEY_INPUT).toString().toLower();
+        if (iInput.length() > Wordle::WordLength) {
+            iInput.resize(Wordle::WordLength);
+            saveNow = true;
+        }
         const QStringList attempts(state.value(STATE_KEY_ATTEMPTS).toStringList());
         const int n = attempts.count();
         for (int i = 0; i < n; i++) {
@@ -188,6 +192,8 @@ void WordleGame::Private::readState()
             if (word.length() == Wordle::WordLength) {
                 updateStateMap(word);
                 iAttempts.append(word);
+            } else {
+                saveNow = true;
             }
         }
         if (saveNow) {
