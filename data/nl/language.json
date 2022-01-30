@@ -1,0 +1,5 @@
+{
+    "name": "Nederlands",
+    "enconding": "ASCII",
+    "keypad": [ "qwertyuiop", "asdfghjkl\b", "zxcvbnm\r" ]
+}
