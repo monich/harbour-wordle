@@ -277,35 +277,37 @@ save_words(
 
     if (size) {
         GError* error = NULL;
-        char* file_data = NULL;
-        gsize file_size = 0;
+        char* fdata = NULL;
+        gsize fsize = 0;
 
-        if (g_file_get_contents(file, &file_data, &file_size, NULL)) {
+        if (g_file_get_contents(file, &fdata, &fsize, NULL)) {
             /* Check the length */
-            if (file_size % WORD_SIZE) {
+            if (fsize % WORD_SIZE) {
                 errmsg("Invalid number of letters %lu in %s\n", (gulong)
-                    file_size, file);
-                g_free(file_data);
+                    fsize, file);
+                g_free(fdata);
                 return RET_ERR;
             } else {
-                qsort(file_data, file_size / WORD_SIZE, WORD_SIZE, compare);
                 if (add) {
                     /* Add new data, sort, remove dups */
-                    file_data = g_realloc(file_data, file_size + size);
-                    memcpy(file_data + file_size, bytes, size);
-                    file_size = remove_dups(file_data, (file_size + size) /
-                        WORD_SIZE) * WORD_SIZE;
+                    fdata = g_realloc(fdata, fsize + size);
+                    memcpy(fdata + fsize, bytes, size);
+                    fsize = remove_dups(fdata, (fsize + size) / WORD_SIZE) *
+                        WORD_SIZE;
+                } else {
+                    /* Just sort */
+                    qsort(fdata, fsize / WORD_SIZE, WORD_SIZE, compare);
                 }
                 /* Has anything changed? */
-                if (file_size == size && !memcmp(bytes, file_data, size)) {
+                if (fsize == size && !memcmp(bytes, fdata, size)) {
                     verbose("File %s is unchanged\n", file);
-                    g_free(file_data);
+                    g_free(fdata);
                     return RET_OK;
                 }
             }
         }
 
-        g_free(file_data);
+        g_free(fdata);
         if (g_file_set_contents(file, bytes, size, &error)) {
             output("Wrote %s\n", file);
             return RET_OK;
@@ -367,24 +369,39 @@ run(
     gboolean xwords)
 {
     int ret = RET_ERR;
-    GBytes* in = load_list(file, input_enc, output_enc);
 
-    if (in) {
-        const gsize size = g_bytes_get_size(in);
+    if (file) {
+        GBytes* in = load_list(file, input_enc, output_enc);
 
-        if (!size) {
-            output("Nothing to %s\n", add ? "add" : "save");
-            ret = RET_OK;
-        } else if (xwords) {
-            GBytes* words = load_words(WORDS_FILE);
+        if (in) {
+            const gsize size = g_bytes_get_size(in);
 
-            in = remove_dups2(in, words);
-            ret = save_words(XWORDS_FILE, in, add);
-            g_bytes_unref(words);
-        } else {
-            ret = save_words(WORDS_FILE, in, add);
+            if (!size) {
+                output("Nothing to %s\n", add ? "add" : "save");
+                ret = RET_OK;
+            } else if (xwords) {
+                GBytes* words = load_words(WORDS_FILE);
+
+                in = remove_dups2(in, words);
+                ret = save_words(XWORDS_FILE, in, add);
+                g_bytes_unref(words);
+            } else {
+                ret = save_words(WORDS_FILE, in, add);
+            }
+            g_bytes_unref(in);
         }
-        g_bytes_unref(in);
+    } else {
+        GBytes* words = load_words(WORDS_FILE);
+
+        if (xwords) {
+            GBytes* xwords = remove_dups2(load_words(XWORDS_FILE), words);
+
+            ret = save_words(XWORDS_FILE, xwords, FALSE);
+            g_bytes_unref(xwords);
+        } else {
+            ret = save_words(WORDS_FILE, words, FALSE);
+        }
+        g_bytes_unref(words);
     }
     return ret;
 }
@@ -412,16 +429,23 @@ main(
         { NULL }
     };
 
-    options = g_option_context_new("LIST ENC");
+    options = g_option_context_new("[LIST] ENC");
     g_option_context_add_main_entries(options, entries, NULL);
     g_option_context_set_summary(options,
         "The input file LIST contain space-separated words.\n"
         "Writes 'words' file containing sorted words in the chosen\n"
-        "single-byte encoding ENC with spaces and duplicates removed.");
+        "single-byte encoding ENC with spaces and duplicates removed.\n\n"
+        "Without the input file, it checks the output file for consistency.");
 
     if (g_option_context_parse(options, &argc, &argv, &error)) {
         if (argc == 3) {
             ret = run(argv[1], input_enc, argv[2], add, xwords);
+        } else if (argc == 2) {
+            if (add) {
+                errmsg("-a (--add) requires the input file\n");
+            } else {
+                ret = run(NULL, input_enc, argv[1], add, xwords);
+            }
         } else {
             char* help = g_option_context_get_help(options, TRUE, NULL);
 
