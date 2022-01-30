@@ -39,8 +39,9 @@ Column {
                     height: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
 
                     sourceComponent: !functionalKey ? letterKeyComponent :
+                        letter === '\b' ? backspaceKeyComponent :
                         letter === '\n' ? enterKeyComponent :
-                        letter === '\b' ? backspaceKeyComponent : null
+                        letter === '\r' ? rightEnterKeyComponent : null
 
                     Binding {
                         target: key.item
@@ -125,6 +126,15 @@ Column {
 
         WordleFunctionalKey {
             iconSource: "images/key-enter.svg"
+            enabled: wordle.canSubmitInput
+        }
+    }
+
+    Component {
+        id: rightEnterKeyComponent
+
+        WordleFunctionalKey {
+            iconSource: "images/key-enter-right.svg"
             enabled: wordle.canSubmitInput
         }
     }

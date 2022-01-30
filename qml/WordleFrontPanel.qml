@@ -79,7 +79,7 @@ Item {
             if (letter === "\b") {
                 // Backspace
                 wordle.deleteLastLetter()
-            } else if (letter === "\n") {
+            } else if (letter === "\n" || letter === "\r") {
                 // Enter
                 if (wordle.canSubmitInput) {
                     if (wordle.submitInput()) {
