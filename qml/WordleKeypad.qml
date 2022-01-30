@@ -19,10 +19,10 @@ Column {
         delegate: Row {
             id: row
 
-            // Functional key width is 2 * baseKeyWidth + spacing
+            // Functional key width is 2 * baseKeyWidth
             readonly property string buttons: modelData
             readonly property int functionalKeys: Wordle.functionalKeyCount(buttons)
-            readonly property int baseKeyWidth: (thisItem.width + spacing) / (buttons.length + functionalKeys) - spacing
+            readonly property int baseKeyWidth: (thisItem.width - (buttons.length - 1) * spacing) / (buttons.length + functionalKeys)
 
             spacing: Theme.paddingMedium
 
@@ -35,7 +35,7 @@ Column {
                     readonly property string letter: row.buttons.charAt(index)
                     readonly property bool functionalKey: Wordle.isFunctionalKey(letter)
 
-                    width: row.baseKeyWidth + (functionalKey ? (row.baseKeyWidth + row.spacing) : 0)
+                    width: row.baseKeyWidth * (functionalKey ? 2 : 1)
                     height: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
 
                     sourceComponent: !functionalKey ? letterKeyComponent :
