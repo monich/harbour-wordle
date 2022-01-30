@@ -74,7 +74,7 @@ Item {
         x: Theme.horizontalPageMargin
         width: parent.width - 2 * x
         landscape: thisItem.landscape
-        model: wordle
+        wordle: thisItem.wordle
         onKeyPressed: {
             if (letter === "\b") {
                 // Backspace

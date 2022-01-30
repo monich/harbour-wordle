@@ -6,23 +6,16 @@ Column {
     id: thisItem
 
     property bool landscape
-    property var model
+    property var wordle
 
     signal keyPressed(var letter)
 
     spacing: Theme.paddingMedium
 
-    Loader {
-        id: buzz
-
-        active: rows.count > 0
-        source: "Buzz.qml"
-    }
-
     Repeater {
         id: rows
 
-        model: thisItem.model.keypad
+        model: thisItem.wordle.keypad
         delegate: Row {
             id: row
 
@@ -36,34 +29,138 @@ Column {
             Repeater {
                 model: row.buttons.length
 
-                WordleKey {
+                Loader {
                     id: key
 
-                    functionalKey: Wordle.isFunctionalKey(letter)
+                    readonly property string letter: row.buttons.charAt(index)
+                    readonly property bool functionalKey: Wordle.isFunctionalKey(letter)
+
                     width: row.baseKeyWidth + (functionalKey ? (row.baseKeyWidth + row.spacing) : 0)
                     height: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
-                    letter: row.buttons.charAt(index)
-                    letterState: thisItem.model.knownLetterState(letter)
-                    enabled: letter === '\b' ? thisItem.model.canDeleteLastLetter :
-                        letter === '\n' ?  thisItem.model.canSubmitInput :
-                        thisItem.model.canInputLetter
-                    onPressed: {
-                        buzz.item.play()
-                        thisItem.keyPressed(letter)
+
+                    sourceComponent: !functionalKey ? letterKeyComponent :
+                        letter === '\n' ? enterKeyComponent :
+                        letter === '\b' ? backspaceKeyComponent : null
+
+                    Binding {
+                        target: key.item
+                        when: !key.functionalKey
+                        property: "letter"
+                        value: key.letter
                     }
-                    function updateLetterState() {
-                        letterState = thisItem.model.knownLetterState(letter)
+
+                    Binding {
+                        target: key.item
+                        property: "wordle"
+                        value: thisItem.wordle
                     }
+
                     Connections {
-                        target: thisItem.model
-                        onGameStateChanged: key.updateLetterState()
-                        onInputSubmitted: {
-                            if (word.indexOf(key.letter) >= 0) {
-                                key.updateLetterState()
-                            }
+                        target: key.item
+                        onPressed: {
+                            buzz.item.play()
+                            thisItem.keyPressed(key.letter)
                         }
                     }
                 }
+            }
+        }
+    }
+
+    Loader {
+        id: buzz
+
+        active: rows.count > 0
+        source: "Buzz.qml"
+    }
+
+    Component {
+        id: letterKeyComponent
+
+        WordleKey {
+            id: letterKey
+
+            property var letterState: wordle.knownLetterState(letter)
+            property alias letter: label.text
+
+            enabled: wordle.canInputLetter
+            color: (letterState === Wordle.LetterStateNotPresent) ? Wordle.notPresentBackgroundColor :
+                (letterState === Wordle.LetterStatePresent) ?  Wordle.presentBackgroundColor :
+                (letterState === Wordle.LetterStatePresentHere) ?  Wordle.presentHereBackgroundColor :
+                Wordle.defaultKeyBackgroundColor
+
+            Label {
+                id: label
+
+                anchors.fill: parent
+                text: letter
+                color: letterState === Wordle.LetterStateUnknown ? Wordle.keyTextColor : Wordle.textColor
+                font {
+                    capitalization: Font.AllUppercase
+                    bold: true
+                }
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+            }
+
+            function updateLetterState() {
+                letterState = wordle.knownLetterState(letter)
+            }
+
+            Connections {
+                target: letterKey.wordle
+                ignoreUnknownSignals: true
+                onGameStateChanged: updateLetterState()
+                onInputSubmitted: {
+                    if (word.indexOf(letter) >= 0) {
+                        updateLetterState()
+                    }
+                }
+            }
+        }
+    }
+
+    Component {
+        id: enterKeyComponent
+
+        WordleFunctionalKey {
+            iconSource: "images/key-enter.svg"
+            enabled: wordle.canSubmitInput
+        }
+    }
+
+    Component {
+        id: backspaceKeyComponent
+
+        WordleFunctionalKey {
+            id: backspaceKey
+
+            iconSource: "images/key-backspace.svg"
+            enabled: wordle.canDeleteLastLetter
+
+            onDownChanged: {
+                if (down) {
+                    repeatDelayTimer.restart()
+                } else {
+                    repeatDelayTimer.stop()
+                    repeatTimer.stop()
+                }
+            }
+
+            Timer {
+                id: repeatDelayTimer
+
+                interval: 250
+                repeat: false
+                onTriggered: repeatTimer.restart()
+            }
+
+            Timer {
+                id: repeatTimer
+
+                interval: 100
+                repeat: true
+                onTriggered: backspaceKey.pressed()
             }
         }
     }
