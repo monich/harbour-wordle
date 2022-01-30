@@ -231,10 +231,11 @@ int Wordle::functionalKeyCount(QString aKeys)
             count++;
         }
     }
+    HDEBUG(aKeys << "=>" << count);
     return count;
 }
 
 bool Wordle::isFunctionalKey(QString aKey)
 {
-    return !aKey.isEmpty() && aKey.at(0) < QChar(' ');
+    return !aKey.isEmpty() && (aKey.at(0).category() == QChar::Other_Control);
 }
