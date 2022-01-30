@@ -348,13 +348,18 @@ int WordleGame::Private::letterCount() const
 void WordleGame::Private::updateStateMap(const QString aWord)
 {
     const int n = aWord.length();
+
     HASSERT(n == Wordle::WordLength);
     for (int i = 0; i < n; i++) {
         const QChar letter(aWord.at(i));
-        Wordle::LetterState oldState = iStateMap.value(letter);
-        Wordle::LetterState newState = letterState(aWord, i);
-        if (newState > oldState) {
-            iStateMap.insert(letter, newState);
+        const Wordle::LetterState oldState = iStateMap.value(letter);
+
+        if (oldState < Wordle::LetterStatePresentHere) {
+            const Wordle::LetterState newState = letterState(aWord, i);
+
+            if (newState > oldState) {
+                iStateMap.insert(letter, newState);
+            }
         }
     }
 }
@@ -506,7 +511,7 @@ bool WordleGame::inputLetter(QString aLetter)
 {
     if (aLetter.length() == 1 && canInputLetter()) {
         const QChar letter(aLetter.at(0).toLower());
-        HDEBUG(letter);
+        HDEBUG(QString(letter));
         const bool couldDeleteLastLetter = canDeleteLastLetter();
         const QModelIndex modelIndex(index(iPrivate->letterCount()));
         iPrivate->iInput.append(letter);
