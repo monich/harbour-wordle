@@ -125,7 +125,8 @@ static
 gulong
 remove_dups(
     char* words,
-    gulong n)
+    gulong n,
+    const char* enc)
 {
     const gulong n1 = n;
     gulong i;
@@ -138,7 +139,13 @@ remove_dups(
         char* next_word = word + WORD_SIZE;
 
         if (!compare(word, next_word)) {
-            verbose("Duplicate word #%lu\n", i + 1);
+            if (be_verbose) {
+                char* utf8 = g_convert(word, WORD_SIZE, UTF8_ENC, enc,
+                    NULL, NULL, NULL);
+
+                verbose("Duplicate word #%lu %s\n", i + 1, utf8);
+                g_free(utf8);
+            }
             memmove(word, next_word, WORD_SIZE * (n - i - 1));
             n--;
         } else {
@@ -221,7 +228,8 @@ load_list(
                         words_len);
                     g_free(words);
                 } else {
-                    const gulong n = remove_dups(words, words_len / WORD_SIZE);
+                    const gulong n = remove_dups(words, words_len / WORD_SIZE,
+                        out_enc);
 
                     output("%lu words\n", n);
                     out = g_bytes_new_take(words, n * WORD_SIZE);
@@ -242,7 +250,8 @@ load_list(
 static
 GBytes*
 load_words(
-    const char* file)
+    const char* file,
+    const char* enc)
 {
     GBytes* out = NULL;
     char* words = NULL;
@@ -254,7 +263,7 @@ load_words(
             errmsg("Invalid number of letters %lu\n", (gulong) len);
             g_free(words);
         } else {
-            gulong n = remove_dups(words, len / WORD_SIZE);
+            gulong n = remove_dups(words, len / WORD_SIZE, enc);
 
             verbose("Loaded %lu %s\n", n, file);
             out = g_bytes_new_take(words, n * WORD_SIZE);
@@ -270,6 +279,7 @@ int
 save_words(
     const char* file,
     GBytes* words,
+    const char* enc,
     gboolean add)
 {
     gsize size;
@@ -292,8 +302,8 @@ save_words(
                     /* Add new data, sort, remove dups */
                     fdata = g_realloc(fdata, fsize + size);
                     memcpy(fdata + fsize, bytes, size);
-                    fsize = remove_dups(fdata, (fsize + size) / WORD_SIZE) *
-                        WORD_SIZE;
+                    fsize = remove_dups(fdata, (fsize + size) / WORD_SIZE,
+                        enc) * WORD_SIZE;
                 } else {
                     /* Just sort */
                     qsort(fdata, fsize / WORD_SIZE, WORD_SIZE, compare);
@@ -326,7 +336,8 @@ static
 GBytes*
 remove_dups2(
     GBytes* xwords,
-    GBytes* words)
+    GBytes* words,
+    const char* enc)
 {
     /* Makes sure that words don't appear in xwords */
     gsize words_size, xwords_size;
@@ -341,7 +352,13 @@ remove_dups2(
         char* xword = xbuf + i * WORD_SIZE;
 
         if (bsearch(xword, words_bytes, nwords, WORD_SIZE, compare)) {
-            verbose("Duplicate word #%lu\n", i + 1);
+            if (be_verbose) {
+                char* utf8 = g_convert(xword, WORD_SIZE, UTF8_ENC, enc,
+                    NULL, NULL, NULL);
+
+                verbose("Duplicate word #%lu\n", i + 1);
+                g_free(utf8);
+            }
             memmove(xword, xword + WORD_SIZE, WORD_SIZE * (n - i - 1));
             n--;
         } else {
@@ -363,15 +380,15 @@ static
 int
 run(
     const char* file,
-    const char* input_enc,
-    const char* output_enc,
+    const char* in_enc,
+    const char* out_enc,
     gboolean add,
     gboolean xwords)
 {
     int ret = RET_ERR;
 
     if (file) {
-        GBytes* in = load_list(file, input_enc, output_enc);
+        GBytes* in = load_list(file, in_enc, out_enc);
 
         if (in) {
             const gsize size = g_bytes_get_size(in);
@@ -380,26 +397,27 @@ run(
                 output("Nothing to %s\n", add ? "add" : "save");
                 ret = RET_OK;
             } else if (xwords) {
-                GBytes* words = load_words(WORDS_FILE);
+                GBytes* words = load_words(WORDS_FILE, out_enc);
 
-                in = remove_dups2(in, words);
-                ret = save_words(XWORDS_FILE, in, add);
+                in = remove_dups2(in, words, out_enc);
+                ret = save_words(XWORDS_FILE, in, out_enc, add);
                 g_bytes_unref(words);
             } else {
-                ret = save_words(WORDS_FILE, in, add);
+                ret = save_words(WORDS_FILE, in, out_enc, add);
             }
             g_bytes_unref(in);
         }
     } else {
-        GBytes* words = load_words(WORDS_FILE);
+        GBytes* words = load_words(WORDS_FILE, out_enc);
 
         if (xwords) {
-            GBytes* xwords = remove_dups2(load_words(XWORDS_FILE), words);
+            GBytes* xwords = remove_dups2(load_words(XWORDS_FILE, out_enc),
+                words, out_enc);
 
-            ret = save_words(XWORDS_FILE, xwords, FALSE);
+            ret = save_words(XWORDS_FILE, xwords, out_enc, FALSE);
             g_bytes_unref(xwords);
         } else {
-            ret = save_words(WORDS_FILE, words, FALSE);
+            ret = save_words(WORDS_FILE, words, out_enc, FALSE);
         }
         g_bytes_unref(words);
     }
