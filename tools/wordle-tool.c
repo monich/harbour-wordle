@@ -51,6 +51,12 @@
 #define DEFAULT_INPUT_ENC UTF8_ENC
 #define WORD_SIZE 5
 
+typedef enum action {
+    REPLACE,
+    ADD,
+    REMOVE
+} ACTION;
+
 static gboolean be_verbose = FALSE;
 
 static
@@ -113,6 +119,21 @@ verbose(
 }
 
 static
+const char*
+action_name(
+    ACTION action)
+{
+
+    switch (action){
+    case ADD: return "add";
+    case REMOVE: return "remove";
+    case REPLACE:
+        break;
+    }
+    return "save";
+}
+
+static
 int
 compare(
     const void* a,
@@ -154,10 +175,54 @@ remove_dups(
     }
 
     if (n1 > n) {
-        output("Removed %lu word(s)\n", n1 - n);
+        output("Removed %lu duplicate word(s)\n", n1 - n);
     }
 
     return n;
+}
+
+static
+GBytes*
+remove_words(
+    GBytes* dest,
+    GBytes* src,
+    const char* enc)
+{
+    /* Makes sure that src don't appear in dest */
+    gsize src_size, dest_size;
+    const char* src_bytes = g_bytes_get_data(src, &src_size);
+    const char* dest_bytes = g_bytes_get_data(dest, &dest_size);
+    char* dest_buf = g_malloc(dest_size);
+    const gsize nsrc = src_size/WORD_SIZE;
+    gsize i, n = dest_size/WORD_SIZE;
+
+    memcpy(dest_buf, dest_bytes, dest_size);
+    for (i = 0; i < n;) {
+        char* word = dest_buf + i * WORD_SIZE;
+
+        if (bsearch(word, src_bytes, nsrc, WORD_SIZE, compare)) {
+            if (be_verbose) {
+                char* utf8 = g_convert(word, WORD_SIZE, UTF8_ENC, enc,
+                    NULL, NULL, NULL);
+
+                verbose("Removed word #%lu %s\n", i + 1, utf8);
+                g_free(utf8);
+            }
+            memmove(word, word + WORD_SIZE, WORD_SIZE * (n - i - 1));
+            n--;
+        } else {
+            i++;
+        }
+    }
+
+    if (n < dest_size/ WORD_SIZE) {
+        output("Removed %lu word(s)\n", (gulong)(dest_size/WORD_SIZE - n));
+        g_bytes_unref(dest);
+        return g_bytes_new_take(dest_buf, n * WORD_SIZE);
+    } else {
+        g_free(dest_buf);
+        return dest;
+    }
 }
 
 static
@@ -280,15 +345,17 @@ save_words(
     const char* file,
     GBytes* words,
     const char* enc,
-    gboolean add)
+    ACTION action)
 {
     gsize size;
     const void* bytes = g_bytes_get_data(words, &size);
 
     if (size) {
         GError* error = NULL;
+        char* fdata2 = NULL;
         char* fdata = NULL;
         gsize fsize = 0;
+        int ret;
 
         if (g_file_get_contents(file, &fdata, &fsize, NULL)) {
             /* Check the length */
@@ -298,81 +365,55 @@ save_words(
                 g_free(fdata);
                 return RET_ERR;
             } else {
-                if (add) {
+                gsize fsize2 = 0;
+
+                switch (action) {
+                case ADD:
                     /* Add new data, sort, remove dups */
-                    fdata = g_realloc(fdata, fsize + size);
-                    memcpy(fdata + fsize, bytes, size);
-                    fsize = remove_dups(fdata, (fsize + size) / WORD_SIZE,
+                    fdata2 = g_malloc(fsize + size);
+                    memcpy(fdata2, fdata, fsize);
+                    memcpy(fdata2 + fsize, bytes, size);
+                    fsize2 = remove_dups(fdata, (fsize + size) / WORD_SIZE,
                         enc) * WORD_SIZE;
-                } else {
+                    break;
+                case REMOVE:
+                    fdata2 = g_bytes_unref_to_data(remove_words
+                        (g_bytes_new(fdata, fsize), words, enc), &fsize2);
+                    break;
+                case REPLACE:
                     /* Just sort */
-                    qsort(fdata, fsize / WORD_SIZE, WORD_SIZE, compare);
+                    fdata2 = g_malloc(size);
+                    memcpy(fdata2, bytes, fsize2 = size);
+                    qsort(fdata2, size / WORD_SIZE, WORD_SIZE, compare);
+                    break;
                 }
                 /* Has anything changed? */
-                if (fsize == size && !memcmp(bytes, fdata, size)) {
+                if (fsize == fsize2 && !memcmp(fdata, fdata2, fsize)) {
                     verbose("File %s is unchanged\n", file);
                     g_free(fdata);
+                    g_free(fdata2);
                     return RET_OK;
+                } else {
+                    g_free(fdata);
+                    bytes = fdata2;
+                    size = fsize2;
                 }
             }
         }
 
-        g_free(fdata);
         if (g_file_set_contents(file, bytes, size, &error)) {
             output("Wrote %s\n", file);
-            return RET_OK;
+            ret = RET_OK;
         } else {
             errmsg("%s\n", error->message);
             g_error_free(error);
-            return RET_ERR;
+            ret = RET_ERR;
         }
+        g_free(fdata2);
+        return ret;
     } else {
-        output("Nothing to %s to %s\n", add ? "add" : "save", file);
+        output("%s: nothing to %s\n", file, action_name(action));
         return RET_OK;
-    }
-}
-
-static
-GBytes*
-remove_dups2(
-    GBytes* xwords,
-    GBytes* words,
-    const char* enc)
-{
-    /* Makes sure that words don't appear in xwords */
-    gsize words_size, xwords_size;
-    const char* words_bytes = g_bytes_get_data(words, &words_size);
-    const char* xwords_bytes = g_bytes_get_data(xwords, &xwords_size);
-    char* xbuf = g_malloc(xwords_size);
-    const gsize nwords = words_size/WORD_SIZE;
-    gsize i, n = xwords_size/WORD_SIZE;
-
-    memcpy(xbuf, xwords_bytes, xwords_size);
-    for (i = 0; i < n;) {
-        char* xword = xbuf + i * WORD_SIZE;
-
-        if (bsearch(xword, words_bytes, nwords, WORD_SIZE, compare)) {
-            if (be_verbose) {
-                char* utf8 = g_convert(xword, WORD_SIZE, UTF8_ENC, enc,
-                    NULL, NULL, NULL);
-
-                verbose("Duplicate word #%lu\n", i + 1);
-                g_free(utf8);
-            }
-            memmove(xword, xword + WORD_SIZE, WORD_SIZE * (n - i - 1));
-            n--;
-        } else {
-            i++;
-        }
-    }
-
-    if (n < xwords_size/ WORD_SIZE) {
-        output("Removed %lu xword(s)\n", (gulong)(xwords_size/WORD_SIZE - n));
-        g_bytes_unref(xwords);
-        return g_bytes_new_take(xbuf, n * WORD_SIZE);
-    } else {
-        g_free(xbuf);
-        return xwords;
     }
 }
 
@@ -382,7 +423,7 @@ run(
     const char* file,
     const char* in_enc,
     const char* out_enc,
-    gboolean add,
+    ACTION action,
     gboolean xwords)
 {
     int ret = RET_ERR;
@@ -394,16 +435,16 @@ run(
             const gsize size = g_bytes_get_size(in);
 
             if (!size) {
-                output("Nothing to %s\n", add ? "add" : "save");
+                output("Nothing to %s\n", action_name(action));
                 ret = RET_OK;
             } else if (xwords) {
                 GBytes* words = load_words(WORDS_FILE, out_enc);
 
-                in = remove_dups2(in, words, out_enc);
-                ret = save_words(XWORDS_FILE, in, out_enc, add);
+                in = remove_words(in, words, out_enc);
+                ret = save_words(XWORDS_FILE, in, out_enc, action);
                 g_bytes_unref(words);
             } else {
-                ret = save_words(WORDS_FILE, in, out_enc, add);
+                ret = save_words(WORDS_FILE, in, out_enc, action);
             }
             g_bytes_unref(in);
         }
@@ -411,13 +452,13 @@ run(
         GBytes* words = load_words(WORDS_FILE, out_enc);
 
         if (xwords) {
-            GBytes* xwords = remove_dups2(load_words(XWORDS_FILE, out_enc),
+            GBytes* xwords = remove_words(load_words(XWORDS_FILE, out_enc),
                 words, out_enc);
 
-            ret = save_words(XWORDS_FILE, xwords, out_enc, FALSE);
+            ret = save_words(XWORDS_FILE, xwords, out_enc, REPLACE);
             g_bytes_unref(xwords);
         } else {
-            ret = save_words(WORDS_FILE, words, out_enc, FALSE);
+            ret = save_words(WORDS_FILE, words, out_enc, REPLACE);
         }
         g_bytes_unref(words);
     }
@@ -432,6 +473,7 @@ main(
     int ret = RET_CMDLINE;
     gboolean xwords = FALSE;
     gboolean add = FALSE;
+    gboolean remove = FALSE;
     char* input_enc = NULL;
     GError* error = NULL;
     GOptionContext* options;
@@ -439,7 +481,9 @@ main(
         { "verbose", 'v', 0, G_OPTION_ARG_NONE, &be_verbose,
           "Enable verbose output", NULL },
         { "add", 'a', 0, G_OPTION_ARG_NONE, &add,
-          "Add words to the dictionary (rather than replace)", NULL },
+          "Add words to the dictionary (default is to replace)", NULL },
+        { "remove", 'r', 0, G_OPTION_ARG_NONE, &remove,
+          "Remove words from the dictionary", NULL },
         { "xwords", 'x', 0, G_OPTION_ARG_NONE, &xwords,
           "Write 'xwords' file rather than 'words'", NULL },
         { "input", 'i', 0, G_OPTION_ARG_STRING, &input_enc,
@@ -456,19 +500,31 @@ main(
         "Without the input file, it checks the output file for consistency.");
 
     if (g_option_context_parse(options, &argc, &argv, &error)) {
-        if (argc == 3) {
-            ret = run(argv[1], input_enc, argv[2], add, xwords);
-        } else if (argc == 2) {
-            if (add) {
-                errmsg("-a (--add) requires the input file\n");
-            } else {
-                ret = run(NULL, input_enc, argv[1], add, xwords);
-            }
+        if (add && remove) {
+            errmsg("-a (--add) and -r (--replace) are exclusive\n");
         } else {
-            char* help = g_option_context_get_help(options, TRUE, NULL);
+            ACTION action = add ? ADD : remove ? REMOVE : REPLACE;
 
-            errmsg("%s", help);
-            g_free(help);
+            if (argc == 3) {
+                ret = run(argv[1], input_enc, argv[2], action, xwords);
+            } else if (argc == 2) {
+                switch (action) {
+                case ADD:
+                    errmsg("-a (--add) requires the input file\n");
+                    break;
+                case REMOVE:
+                    errmsg("-r (--remove) requires the input file\n");
+                    break;
+                case REPLACE:
+                    ret = run(NULL, input_enc, argv[1], action, xwords);
+                    break;
+                }
+            } else {
+                char* help = g_option_context_get_help(options, TRUE, NULL);
+
+                errmsg("%s", help);
+                g_free(help);
+            }
         }
     } else {
         errmsg("%s\n", error->message);
