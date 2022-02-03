@@ -1,0 +1,5 @@
+{
+    "name": "Magyar",
+    "enconding": "windows-1250",
+    "keypad": [ "qwertzuiop", "asdfghjklé", "íyxcvbnmá", "\nöüóőúű\b" ]
+}
