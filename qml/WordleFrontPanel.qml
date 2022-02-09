@@ -17,51 +17,100 @@ Item {
 
     readonly property bool gameWon: wordle.gameState === WordleGame.GameWon
 
-    WordleHeader {
-        id: header
+    SilicaFlickable {
+        id: flickable
 
-        y: Theme.paddingLarge
-        anchors.horizontalCenter: parent.horizontalCenter
-        answer: showAnswer ? wordle.answer : ""
-        showAnswer: wordle.gameState === WordleGame.GameLost
-        enabled: !wordle.loading
-    }
-
-    HarbourIconTextButton {
+        interactive: menu.opacity > 0
+        width: parent.width
+        clip: true
         anchors {
-            right: parent.right
-            rightMargin: Theme.paddingMedium
-            verticalCenter: header.verticalCenter
-        }
-        iconSource: "images/settings.svg"
-        onClicked: thisItem.flip()
-    }
-
-    Item {
-        x: Theme.horizontalPageMargin
-        width: parent.width - 2 * x
-        anchors {
-            top: header.bottom
-            topMargin: Theme.paddingLarge
+            top: parent.top
             bottom: keypad.top
-            bottomMargin: Theme.paddingLarge
         }
 
-        WordleBoard {
-            id: board
+        PullDownMenu {
+            id: menu
 
-            cellSize: Math.min(Math.floor((parent.width - spacing * (Wordle.WordLength - 1))/Wordle.WordLength),
-                Math.floor((parent.height - spacing * (Wordle.MaxAttempts - 1))/Wordle.MaxAttempts))
-            model: wordle
-            anchors.centerIn: parent
-            enableLetterFlipAnimation: thisItem.active
+            readonly property bool menuShouldBeVisible: (wordle.gameState === WordleGame.GameInProgress || !thisItem.active) ? 0 : 1
+
+            Component.onCompleted: updateMenuVisibility()
+            onMenuShouldBeVisibleChanged: updateMenuVisibility()
+            onActiveChanged: updateMenuVisibility()
+
+            // Hide and show the menu when it's not active
+            function updateMenuVisibility() {
+                if (!active) {
+                    visible = menuShouldBeVisible
+                    newGameMenuItem.enabled = menuShouldBeVisible
+                }
+            }
+
+            MenuItem {
+                id: newGameMenuItem
+
+                //: Pulley menu item
+                //% "New game"
+                text: qsTrId("wordle-menu-new_game")
+                onClicked: {
+                    wordle.newGame()
+                    enabled = false
+                }
+            }
         }
 
-        MouseArea {
-            enabled: thisItem.enabled && gameWon
-            anchors.fill: board
-            onClicked: board.celebrate()
+        WordleHeader {
+            id: header
+
+            y: Theme.paddingLarge
+            anchors.horizontalCenter: parent.horizontalCenter
+            answer: showAnswer ? wordle.answer : ""
+            showAnswer: wordle.gameState === WordleGame.GameLost
+            enabled: !wordle.loading
         }
+
+        HarbourIconTextButton {
+            anchors {
+                right: parent.right
+                rightMargin: Theme.paddingMedium
+                verticalCenter: header.verticalCenter
+            }
+            iconSource: "images/settings.svg"
+            onClicked: thisItem.flip()
+        }
+
+        Item {
+            x: Theme.horizontalPageMargin
+            width: parent.width - 2 * x
+            anchors {
+                top: header.bottom
+                topMargin: Theme.paddingLarge
+                bottom: parent.bottom
+                bottomMargin: Theme.paddingLarge
+            }
+
+            WordleBoard {
+                id: board
+
+                cellSize: Math.min(Math.floor((parent.width - spacing * (Wordle.WordLength - 1))/Wordle.WordLength),
+                    Math.floor((parent.height - spacing * (Wordle.MaxAttempts - 1))/Wordle.MaxAttempts))
+                model: wordle
+                anchors.centerIn: parent
+                enableLetterFlipAnimation: thisItem.active
+            }
+
+            MouseArea {
+                enabled: thisItem.enabled && gameWon
+                anchors.fill: board
+                onClicked: board.celebrate()
+            }
+        }
+    }
+
+    OpacityRampEffect {
+        sourceItem: flickable
+        slope: flickable.height/Theme.paddingLarge
+        offset: (flickable.height - Theme.paddingLarge)/flickable.height
+        direction: OpacityRamp.TopToBottom
     }
 
     WordleKeypad {
