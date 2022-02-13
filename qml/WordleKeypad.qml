@@ -85,6 +85,7 @@ Column {
             property alias letter: label.text
 
             enabled: wordle.canInputLetter
+            border.width: (letterState === Wordle.LetterStateUnknown) ? 1 : 0
             color: (letterState === Wordle.LetterStateNotPresent) ? Wordle.notPresentBackgroundColor :
                 (letterState === Wordle.LetterStatePresent) ?  Wordle.presentBackgroundColor :
                 (letterState === Wordle.LetterStatePresentHere) ?  Wordle.presentHereBackgroundColor :
