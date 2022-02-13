@@ -96,11 +96,11 @@ public:
 };
 
 const Wordle::Private::ColorScheme Wordle::Private::ColorScheme::LIGHT_ON_DARK(
-        QColor("#d7dadc"),          // textColor
-        QColor("#d7dadc"),          // keyTextColor
+        QColor(Qt::white),          // textColor
+        QColor(Qt::white),          // keyTextColor
         QColor(211, 214, 218, 112), // emptySlotBorderColor
         QColor(Qt::transparent),    // emptySlotBackgroundColor
-        QColor(156, 157, 158, 128), // defaultKeyBackgroundColor
+        QColor("#787c7e"),          // defaultKeyBackgroundColor
         QColor("#3a3a3c"),          // notPresentBackgroundColor
         QColor("#b59f3b"),          // presentBackgroundColor
         QColor("#538d4e"));         // presentHereBackgroundColor
@@ -108,9 +108,9 @@ const Wordle::Private::ColorScheme Wordle::Private::ColorScheme::LIGHT_ON_DARK(
 const Wordle::Private::ColorScheme Wordle::Private::ColorScheme::DARK_ON_LIGHT(
         QColor(Qt::white),          // textColor
         QColor("#1a1a1b"),          // keyTextColor
-        QColor(58, 58, 60, 128),    // emptySlotBorderColor
+        QColor(58, 58, 60, 112),    // emptySlotBorderColor
         QColor(Qt::transparent),    // emptySlotBackgroundColor
-        QColor(211, 214, 218, 128), // defaultKeyBackgroundColor
+        QColor("#d3d6da"),          // defaultKeyBackgroundColor
         QColor("#787c7e"),          // notPresentBackgroundColor
         QColor("#c9b458"),          // presentBackgroundColor
         QColor("#6aaa64"));         // presentHereBackgroundColor
