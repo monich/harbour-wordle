@@ -11,20 +11,20 @@
     height="64"
     viewBox="0 0 64 64"
     style="enable-background:new 0 0 64 64;"
-    xml:space="preserve"
-    sodipodi:docname="key-enter.svg"
-    inkscape:version="0.92.5 (2060ec1f9f, 2020-04-08)">
+    sodipodi:docname="key-enter.svg">
   <rect
       style="opacity:0;fill:#ffffff"
       width="64"
       height="64"/>
-  <path
-      style="fill:#ffffff"
-      d="m 42.91095,44.895166 c 0,2.475 1.4325,3.0675 3.183,1.317 l 10.0275,-10.0305 c 1.7505,-1.7505 1.749,-4.614 0,-6.3645 l -10.0335,-10.0305 c -1.7505,-1.7505 -3.1815,-1.1565 -3.1815,1.3185 z"
-      inkscape:connector-curvature="0"/>
-  <path
-      style="fill:#ffffff;opacity:0.6"
-      d="m 9.9679062,21.337891 c 2.0391138,-0.003 2.0004668,2.000223 2.0004668,2.000223 v 3.831808 c 0,2.077 2.29,3.830078 5,3.830078 h 29.748533 v 4 H 14.968373 c -3.86,0 -6.9997428,-2.615078 -6.9999998,-5.830078 l -4.67e-4,-5.831808 c 0,0 0.0089,-1.997273 2,-2.000223 z"
-      inkscape:connector-curvature="0"
-      sodipodi:nodetypes="scssccsscs"/>
+  <g>
+    <path
+        sodipodi:nodetypes="cccc"
+        inkscape:connector-curvature="0"
+        d="M 10,23.186441 V 26 c -0.089903,5.616403 3.795759,6.998976 7,7 0,0 28.886699,-0.103449 29,0"
+        style="opacity:1;fill:none;stroke:#ffffff;stroke-width:5;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.5"/>
+    <path
+        inkscape:connector-curvature="0"
+        d="m 42.91095,44.895166 c 0,2.475 1.4325,3.0675 3.183,1.317 l 10.0275,-10.0305 c 1.7505,-1.7505 1.749,-4.614 0,-6.3645 l -10.0335,-10.0305 c -1.7505,-1.7505 -3.1815,-1.1565 -3.1815,1.3185 z"
+        style="fill:#ffffff"/>
+  </g>
 </svg>
