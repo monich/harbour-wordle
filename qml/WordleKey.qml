@@ -18,6 +18,10 @@ Rectangle {
 
     radius: Theme.paddingSmall
     color: Wordle.defaultKeyBackgroundColor
+    border {
+        width: 1
+        color: Wordle.emptySlotBorderColor
+    }
 
     layer.enabled: mouseArea.pressed
     layer.effect: HarbourPressEffect { source: thisItem }

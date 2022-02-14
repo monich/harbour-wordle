@@ -19,7 +19,7 @@ Rectangle {
         Wordle.emptySlotBackgroundColor
 
     border {
-        width: (_letterState == Wordle.LetterStateUnknown) ? Math.max(Math.floor(Theme.paddingSmall/2),1) : 0
+        width: (_letterState == Wordle.LetterStateUnknown) ? Math.max(Math.floor(thisItem.width/30),1) : 0
         color: Wordle.emptySlotBorderColor
     }
 

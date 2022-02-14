@@ -37,9 +37,12 @@
 
 #include <glib.h>
 
+#include <unistd.h>
 #include <stdio.h>
+#include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <errno.h>
 
 #define RET_OK 0
 #define RET_ERR 1
@@ -475,6 +478,7 @@ main(
     gboolean add = FALSE;
     gboolean remove = FALSE;
     char* input_enc = NULL;
+    char* dir = NULL;
     GError* error = NULL;
     GOptionContext* options;
     GOptionEntry entries[] = {
@@ -488,6 +492,8 @@ main(
           "Write 'xwords' file rather than 'words'", NULL },
         { "input", 'i', 0, G_OPTION_ARG_STRING, &input_enc,
           "Input encoding [" DEFAULT_INPUT_ENC "]", "ENC" },
+        { "directory", 'C', 0, G_OPTION_ARG_STRING, &dir,
+          "Change the directory to DIR", "DIR" },
         { NULL }
     };
 
@@ -502,6 +508,9 @@ main(
     if (g_option_context_parse(options, &argc, &argv, &error)) {
         if (add && remove) {
             errmsg("-a (--add) and -r (--replace) are exclusive\n");
+        } else if (dir && chdir(dir)) {
+            errmsg("%s: %s\n", dir, strerror(errno));
+            ret = RET_ERR;
         } else {
             ACTION action = add ? ADD : remove ? REMOVE : REPLACE;
 
@@ -531,6 +540,7 @@ main(
         g_error_free(error);
     }
 
+    g_free(dir);
     g_free(input_enc);
     g_option_context_free(options);
     return ret;
