@@ -1,0 +1,5 @@
+{
+    "name": "Français",
+    "enconding": "windows-1252",
+    "keypad": [ "azertyuiop","qsdfghjklm", "\nwxcvbn\b" ]
+}
