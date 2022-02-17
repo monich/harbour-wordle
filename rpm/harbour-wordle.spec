@@ -25,6 +25,16 @@ BuildRequires:  qt5-qttools-linguist
 %description
 Guess the WORDLE in 6 tries
 
+%if "%{?vendor}" == "chum"
+Categories:
+ - Game
+Icon: https://raw.githubusercontent.com/monich/harbour-wordle/master/icons/harbour-wordle.svg
+Screenshots:
+- https://home.monich.net/chum/harbour-wordle/screenshots/screenshot-001.png
+- https://home.monich.net/chum/harbour-wordle/screenshots/screenshot-002.png
+- https://home.monich.net/chum/harbour-wordle/screenshots/screenshot-003.png
+%endif
+
 %prep
 %setup -q -n %{name}-%{version}
 
