@@ -20,7 +20,7 @@ sed -E -e 's/\s+/\n/g'  > words.de.list.aspell.txt
 awk -v f=1 '$f ~ /^[[:alnum:]]{5}$/ { print $f }' words.de.list.aspell.txt > words.de.aspell.5.txt
 
 
-## Using dict which allows you to sort out not found
+## Using dict(2) which allows you to sort out not found
 
 ```
 rejects() {
