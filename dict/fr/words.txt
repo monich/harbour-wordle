@@ -763,7 +763,6 @@ boita
 boite
 boive
 bokit
-bolas
 boldo
 bolee
 bolet
@@ -837,7 +836,6 @@ bovin
 bowal
 boxai
 boxas
-boxat
 boxee
 boxer
 boxes
