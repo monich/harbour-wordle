@@ -598,12 +598,17 @@ void WordleGame::newGame()
     const bool couldSubmitInput = canSubmitInput();
     const bool couldInputLetter = canInputLetter();
     const bool couldDeleteLastLetter = canDeleteLastLetter();
+    const int count = iPrivate->letterCount();
 
-    beginResetModel();
-    iPrivate->iAttempts.clear();
-    iPrivate->iInput.resize(0);
-    iPrivate->iStateMap.clear();
-    endResetModel();
+    if (count > 0) {
+        iPrivate->iAttempts.clear();
+        iPrivate->iInput.resize(0);
+        iPrivate->iStateMap.clear();
+        const QVector<int> stateRole(1, Private::StateRole);
+        const QVector<int> letterRole(1, Private::LetterRole);
+        Q_EMIT dataChanged(index(0), index(count - 1), stateRole);
+        Q_EMIT dataChanged(index(0), index(count - 1), letterRole);
+    }
 
     if (prevFullRows) {
         HASSERT(!getFullRows());
