@@ -14,7 +14,7 @@
 aspell -d de dump master | aspell -l de expand > words.de.aspell.txt
 
 ### place all variants on a line of there own
-sed -E -e 's/\s+/\n/g'  > words.de.list.aspell.txt
+sed -E -e 's/\s+/\n/g' words.de.aspell.txt > words.de.list.aspell.txt
 
 ###  select only those which are 5 chars long
 awk -v f=1 '$f ~ /^[[:alnum:]]{5}$/ { print $f }' words.de.list.aspell.txt > words.de.aspell.5.txt
