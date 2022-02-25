@@ -10,6 +10,7 @@ Rectangle {
     property bool enableLetterFlipAnimation
     readonly property bool flipping: !!_flipAnimation && _flipAnimation.running
 
+    property string _letter
     property int _letterState: Wordle.LetterStateUnknown
     property var _flipAnimation
 
@@ -24,6 +25,12 @@ Rectangle {
     }
 
     onLetterStateChanged: changeState()
+
+    onLetterChanged: {
+        if (!flipping) {
+            _letter = letter
+        }
+    }
 
     function changeState() {
         if (enableLetterFlipAnimation) {
@@ -40,14 +47,15 @@ Rectangle {
 
     function applyChanges() {
         _letterState = letterState
+        _letter = letter
     }
 
     Loader {
-        active: letter.length === 1
+        active: _letter.length === 1
         anchors.fill: parent
         sourceComponent: Component {
             Label {
-                text: letter
+                text: _letter
                 // No background in unknown state => use theme primary color
                 color: (_letterState == Wordle.LetterStateUnknown) ? Theme.primaryColor : Wordle.textColor
                 font {
