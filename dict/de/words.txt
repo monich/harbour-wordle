@@ -326,7 +326,6 @@ boxer
 bozen
 brach
 brand
-brass
 braue
 braun
 braut
@@ -348,7 +347,6 @@ brust
 buben
 bucht
 bügel
-buggy
 buhen
 buhle
 buhne
@@ -373,7 +371,6 @@ buten
 bütte
 cache
 calyx
-celli
 cello
 chaos
 chile
@@ -388,13 +385,10 @@ cidre
 claim
 clown
 cobol
-codec
 combo
 conga
 corps
 coupé
-crack
-crash
 creme
 crêpe
 curie
@@ -448,19 +442,15 @@ demos
 demut
 depot
 derby
-detto
 devon
 devot
-diana
 dicht
 dicke
 diele
 dieme
 diese
 dildo
-dille
 dimer
-diner
 dingi
 dingo
 dings
@@ -510,7 +500,6 @@ drops
 druck
 druse
 drüse
-dubai
 dübel
 ducht
 duden
@@ -519,7 +508,6 @@ duett
 dufte
 düfte
 dukat
-dumas
 dummy
 dumpf
 dunst
@@ -540,7 +528,6 @@ echse
 ecken
 eckig
 edukt
-edwin
 effet
 eggen
 ehern
@@ -900,7 +887,6 @@ hagen
 hager
 häher
 hähne
-haida
 haiku
 haiti
 haken
@@ -1007,7 +993,6 @@ hunde
 hunne
 hupen
 hürde
-huren
 hurra
 husar
 hüten
@@ -1606,16 +1591,13 @@ netto
 neuer
 neume
 neunt
-neuss
 nicht
 nidel
 niere
 niete
-niger
 ninja
 nippe
 nisse
-nizza
 nobel
 nocke
 nodus
@@ -1655,7 +1637,6 @@ olive
 olymp
 omega
 onkel
-opera
 opern
 opfer
 opiat
@@ -1672,7 +1653,6 @@ orion
 orkan
 ornat
 orten
-osaka
 oscar
 osten
 otter
@@ -1681,7 +1661,6 @@ pacht
 pager
 paket
 palas
-palau
 palla
 palme
 pampa

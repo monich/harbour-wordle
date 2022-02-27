@@ -1,5 +1,9 @@
 ## Notes about working with dictionaries.
 
+* abolish all plurals?
+* abolish names altogether? 
+
+
 ## Questionable entries
 
  * Autun (Geological Era)
