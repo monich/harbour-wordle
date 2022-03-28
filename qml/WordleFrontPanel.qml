@@ -20,7 +20,7 @@ Item {
     SilicaFlickable {
         id: flickable
 
-        interactive: menu.opacity > 0
+        interactive: menu.visible
         width: parent.width
         clip: true
         anchors {
