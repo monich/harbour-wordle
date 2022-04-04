@@ -103,7 +103,7 @@ WordleSettings::Private::Private(WordleSettings* aParent) :
 
 const QString WordleSettings::Private::validateLanguage(const QString aLanguage)
 {
-    const QString languageCode(aLanguage.toLower());
+    const QString languageCode(aLanguage);
     const int n = iLanguages.count();
     for (int i = 0; i < n; i++) {
         if (iLanguages.at(i).getCode() == languageCode) {
