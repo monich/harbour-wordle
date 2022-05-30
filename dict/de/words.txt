@@ -2244,7 +2244,6 @@ taiga
 takel
 talar
 taler
-täler
 talje
 talmi
 talon
@@ -2268,8 +2267,6 @@ taube
 tauen
 taufe
 tauig
-taxen
-taxis
 taxon
 teddy
 teich
@@ -2287,7 +2284,6 @@ theke
 thema
 these
 theta
-thing
 thiol
 thron
 tiara
@@ -2312,7 +2308,6 @@ toile
 token
 tokio
 tommy
-tondi
 tondo
 tönen
 tonga
@@ -2324,7 +2319,6 @@ topas
 töpfe
 toque
 törin
-torsi
 torso
 torte
 tosen
@@ -2338,14 +2332,12 @@ trafo
 trage
 trägt
 trakt
-tramp
 träne
 trank
 trapp
 traps
 trara
 traum
-traun
 treck
 treff
 treib
@@ -2578,7 +2570,6 @@ wovor
 wrack
 wuchs
 wucht
-wuhan
 wulst
 wunde
 würde
@@ -2590,7 +2581,6 @@ wüste
 wüten
 xenia
 xenon
-xhosa
 yacht
 yukon
 zacke
