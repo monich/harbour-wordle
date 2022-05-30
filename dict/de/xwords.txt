@@ -34,7 +34,6 @@ adrig
 afden
 äffen
 affix
-agave
 agger
 ägina
 agnat
@@ -163,7 +162,6 @@ assai
 assel
 asset
 assur
-aster
 astro
 äsung
 atair
@@ -197,7 +195,6 @@ bader
 badia
 bafel
 bafin
-bafög
 baggy
 bagno
 bahra
@@ -221,8 +218,6 @@ banus
 barak
 barbu
 bärig
-barke
-barst
 barth
 basra
 bassa
@@ -246,7 +241,6 @@ begau
 begum
 beisl
 bekaa
-bekam
 belga
 belin
 beltz
@@ -267,7 +261,6 @@ betun
 beuel
 beuge
 beuys
-bewog
 bghst
 biala
 bidon
