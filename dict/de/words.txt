@@ -5,7 +5,6 @@ abart
 abbau
 abend
 abgas
-abhol
 abmaß
 abort
 abruf
@@ -1344,7 +1343,6 @@ liane
 licht
 liebe
 liege
-ligen
 likör
 lilie
 lille
