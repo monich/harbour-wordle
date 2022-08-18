@@ -140,7 +140,7 @@ defineTest(addTrFile) {
     export(INSTALLS)
 }
 
-LANGUAGES = fi hu pl ru sv pt_BR
+LANGUAGES = fi hu pl pt ru sv
 addTrFile($${NAME})
 for(l, LANGUAGES) {
     addTrFile($${NAME}-$$l)
