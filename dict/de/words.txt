@@ -745,7 +745,6 @@ fügen
 fuhre
 fulda
 fülle
-fundi
 fünen
 funke
 furie
@@ -1553,7 +1552,6 @@ mütze
 myrre
 myrte
 myzel
-naarn
 nabel
 nacht
 nackt
