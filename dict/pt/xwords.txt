@@ -211,7 +211,6 @@ actel
 actol
 acuar
 açubá
-açude
 acuém
 acumé
 açumi
@@ -739,7 +738,6 @@ atuso
 auaçu
 auaiú
 auati
-áudio
 aueté
 aueti
 aueto
@@ -4456,7 +4454,6 @@ oanda
 obane
 obeba
 óbelo
-obeso
 oboaz
 óbolo
 obori
@@ -4467,7 +4464,6 @@ obvir
 ocaia
 ocano
 ocapi
-ocaso
 ocelo
 ocida
 ocoto

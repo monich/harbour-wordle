@@ -19,7 +19,7 @@ XWORDS = $(OUT_DIR)/xwords
 all: words xwords
 
 clean:
-	@rm *~
+	@rm -f *~
 
 words: $(WORDLE_TOOL)
 	@$(WORDLE_TOOL) -C $(OUT_DIR) $(V) $(WORDS_TXT) $(ENC)
