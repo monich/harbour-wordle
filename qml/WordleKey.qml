@@ -27,7 +27,7 @@ Rectangle {
     layer.effect: HarbourPressEffect { source: thisItem }
     scale: down ? 1.2 : 1
 
-    Behavior on scale { NumberAnimation { duration: 50 } }
+    Behavior on scale { NumberAnimation { duration: 20 } }
 
     MouseArea {
         id: mouseArea
