@@ -26,7 +26,7 @@
     <message id="wordle-settings-show_play_time">
         <source>Show timer</source>
         <extracomment>Text switch label</extracomment>
-        <translation type="unfinished">Visa timer</translation>
+        <translation>Visa tidur</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>
