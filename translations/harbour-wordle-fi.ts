@@ -28,5 +28,10 @@
         <extracomment>Text switch label</extracomment>
         <translation type="unfinished">Näytä ajastin</translation>
     </message>
+    <message id="wordle-settings-version">
+        <source>Version %1</source>
+        <extracomment>Small description label (app version)</extracomment>
+        <translation>Versio %1</translation>
+    </message>
 </context>
 </TS>

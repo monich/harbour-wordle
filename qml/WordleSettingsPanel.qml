@@ -138,6 +138,19 @@ Item {
                     onClicked: WordleSettings.showPlayTime = !WordleSettings.showPlayTime
                 }
             }
+
+            Label {
+                anchors {
+                    horizontalCenter: parent.horizontalCenter
+                    bottom: parent.bottom
+                    bottomMargin: Theme.paddingMedium
+                }
+                font.pixelSize: Theme.fontSizeExtraSmall
+                color: panelBorder.border.color
+                //: Small description label (app version)
+                //% "Version %1"
+                text: qsTrId("wordle-settings-version").arg("1.0.8")
+            }
         }
     }
 }

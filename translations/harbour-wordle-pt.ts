@@ -28,5 +28,10 @@
         <extracomment>Text switch label</extracomment>
         <translation type="unfinished">Mostrar temporizador</translation>
     </message>
+    <message id="wordle-settings-version">
+        <source>Version %1</source>
+        <extracomment>Small description label (app version)</extracomment>
+        <translation type="unfinished">Versão %1</translation>
+    </message>
 </context>
 </TS>
