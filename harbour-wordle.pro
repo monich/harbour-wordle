@@ -45,12 +45,14 @@ HEADERS += \
     $${HARBOUR_LIB_INCLUDE}/HarbourDebug.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourDisplayBlanking.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourJson.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourSystemState.h \
     $${HARBOUR_LIB_SRC}/HarbourMce.h
 
 SOURCES += \
     $${HARBOUR_LIB_SRC}/HarbourDisplayBlanking.cpp \
     $${HARBOUR_LIB_SRC}/HarbourJson.cpp \
-    $${HARBOUR_LIB_SRC}/HarbourMce.cpp
+    $${HARBOUR_LIB_SRC}/HarbourMce.cpp \
+    $${HARBOUR_LIB_SRC}/HarbourSystemState.cpp
 
 
 HARBOUR_QML_COMPONENTS = \

@@ -37,5 +37,8 @@ ApplicationWindow {
     WordleGame {
         id: game
         language: WordleSettings.language
+        playing: gameState === WordleGame.GameInProgress &&
+            !HarbourSystemState.locked &&
+            !HarbourSystemState.displayOff
     }
 }

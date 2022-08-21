@@ -39,16 +39,24 @@
 #define WORDLE_GAME_H
 
 #include <QAbstractListModel>
+#include <QDateTime>
+#include <QString>
+#include <QStringList>
 
-class WordleGame : public QAbstractListModel
+class WordleGame :
+    public QAbstractListModel
 {
     Q_OBJECT
-    Q_PROPERTY(QString language READ getLanguage WRITE setLanguage NOTIFY languageChanged)
-    Q_PROPERTY(QString answer READ getAnswer NOTIFY answerChanged)
-    Q_PROPERTY(QStringList keypad READ getKeypad NOTIFY keypadChanged)
-    Q_PROPERTY(bool loading READ isLoading NOTIFY loadingChanged)
-    Q_PROPERTY(int gameState READ getGameState NOTIFY gameStateChanged)
-    Q_PROPERTY(int fullRows READ getFullRows NOTIFY fullRowsChanged)
+    Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
+    Q_PROPERTY(QStringList keypad READ keypad NOTIFY languageChanged)
+    Q_PROPERTY(QDateTime startTime READ startTime NOTIFY finishTimeChanged)
+    Q_PROPERTY(QDateTime finishTime READ finishTime NOTIFY finishTimeChanged)
+    Q_PROPERTY(QString answer READ answer NOTIFY answerChanged)
+    Q_PROPERTY(bool playing READ playing WRITE setPlaying NOTIFY playingChanged)
+    Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
+    Q_PROPERTY(int secondsPlayed READ secondsPlayed NOTIFY secondsPlayedChanged)
+    Q_PROPERTY(int gameState READ gameState NOTIFY gameStateChanged)
+    Q_PROPERTY(int fullRows READ fullRows NOTIFY fullRowsChanged)
     Q_PROPERTY(bool canInputLetter READ canInputLetter NOTIFY canInputLetterChanged)
     Q_PROPERTY(bool canDeleteLastLetter READ canDeleteLastLetter NOTIFY canDeleteLastLetterChanged)
     Q_PROPERTY(bool canSubmitInput READ canSubmitInput NOTIFY canSubmitInputChanged)
@@ -64,20 +72,26 @@ public:
     explicit WordleGame(QObject* aParent = Q_NULLPTR);
     ~WordleGame();
 
-    QString getLanguage() const;
-    void setLanguage(QString aLanguageCode);
+    QString language() const;
+    void setLanguage(const QString);
 
-    bool isLoading() const;
-    QString getAnswer() const;
-    QStringList getKeypad() const;
-    GameState getGameState() const;
-    int getFullRows() const;
+    bool playing() const;
+    void setPlaying(bool);
+
+    bool loading() const;
+    QDateTime startTime() const;
+    QDateTime finishTime() const;
+    QString answer() const;
+    QStringList keypad() const;
+    GameState gameState() const;
+    int secondsPlayed() const;
+    int fullRows() const;
     bool canInputLetter() const;
     bool canDeleteLastLetter() const;
     bool canSubmitInput() const;
 
-    Q_INVOKABLE int knownLetterState(QString aLetter);
-    Q_INVOKABLE bool inputLetter(QString aLetter);
+    Q_INVOKABLE int knownLetterState(const QString);
+    Q_INVOKABLE bool inputLetter(const QString);
     Q_INVOKABLE void deleteLastLetter();
     Q_INVOKABLE bool submitInput();
     Q_INVOKABLE void newGame();
@@ -88,16 +102,19 @@ public:
     QVariant data(const QModelIndex& aIndex, int aRole) const Q_DECL_OVERRIDE;
 
 Q_SIGNALS:
-    void inputSubmitted(QString word);
+    void startTimeChanged();
+    void finishTimeChanged();
     void languageChanged();
     void answerChanged();
-    void keypadChanged();
+    void playingChanged();
     void loadingChanged();
+    void secondsPlayedChanged();
     void gameStateChanged();
     void fullRowsChanged();
     void canInputLetterChanged();
     void canDeleteLastLetterChanged();
     void canSubmitInputChanged();
+    void inputSubmitted(QString word);
 
 private:
     class Private;

@@ -43,12 +43,14 @@
 class QQmlEngine;
 class QJSEngine;
 
-class WordleSettings : public QObject
+class WordleSettings :
+    public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(WordleSettings)
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(bool keepDisplayOn READ keepDisplayOn WRITE setKeepDisplayOn NOTIFY keepDisplayOnChanged)
+    Q_PROPERTY(bool showPlayTime READ showPlayTime WRITE setShowPlayTime NOTIFY showPlayTimeChanged)
 
 public:
     explicit WordleSettings(QObject* aParent = Q_NULLPTR);
@@ -57,15 +59,19 @@ public:
     // Callback for qmlRegisterSingletonType<WordleSettings>
     static QObject* createSingleton(QQmlEngine*, QJSEngine*);
 
-    const QString language() const;
-    void setLanguage(const QString aValue);
+    QString language() const;
+    void setLanguage(const QString);
 
     bool keepDisplayOn() const;
-    void setKeepDisplayOn(bool aValue);
+    void setKeepDisplayOn(bool);
+
+    bool showPlayTime() const;
+    void setShowPlayTime(bool);
 
 Q_SIGNALS:
     void languageChanged();
     void keepDisplayOnChanged();
+    void showPlayTimeChanged();
 
 private:
     class Private;

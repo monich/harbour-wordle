@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1">
+<TS version="2.1" language="en">
 <context>
     <name></name>
     <message id="wordle-menu-new_game">
@@ -22,6 +22,11 @@
         <source>Keep display on while playing</source>
         <extracomment>Text switch label</extracomment>
         <translation>Keep display on while playing</translation>
+    </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation>Show timer</translation>
     </message>
 </context>
 </TS>

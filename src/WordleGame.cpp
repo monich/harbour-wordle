@@ -50,7 +50,7 @@
 // Strings and letters are lower case
 
 #define MODEL_ROLES_(first,role,last) \
-    role(Letter,letter) \
+    first(Letter,letter) \
     last(State,state)
 
 #define MODEL_ROLES(role) \
@@ -58,16 +58,56 @@
 
 #define MODEL_ROLE(X) X##Role
 
+// s(SignalName,signalName)
+#define MODEL_SIGNALS(s) \
+    s(Language,language) \
+    s(Playing,playing) \
+    s(SecondsPlayed,secondsPlayed) \
+    s(StartTime,startTime) \
+    s(FinishTime,finishTime) \
+    s(Answer,answer) \
+    s(GameState,gameState) \
+    s(FullRows,fullRows) \
+    s(CanInputLetter,canInputLetter) \
+    s(CanDeleteLastLetter,canDeleteLastLetter) \
+    s(CanSubmitInput,canSubmitInput)
+    // languageChanged is a special case (it's not queued)
+
+#if HARBOUR_DEBUG
+QDebug
+operator<<(
+    QDebug aDebug,
+    WordleGame::GameState aState)
+{
+    switch (aState) {
+    case WordleGame::GameInProgress: return (aDebug << "GameInProgress");
+    case WordleGame::GameLost: return (aDebug << "GameLost");
+    case WordleGame::GameWon: return (aDebug << "GameWon");
+    }
+    return (aDebug << (int)aState);
+}
+#endif // HARBOUR_DEBUG
+
 // ==========================================================================
 // WordleGame::Private
 // ==========================================================================
 
-class WordleGame::Private : public QObject
+class WordleGame::Private :
+    public QObject
 {
     Q_OBJECT
     Q_DISABLE_COPY(Private)
 
 public:
+    typedef void (WordleGame::*SignalEmitter)();
+    typedef uint SignalMask;
+    enum Signal {
+#define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
+        MODEL_SIGNALS(SIGNAL_ENUM_)
+#undef  SIGNAL_ENUM_
+        SignalCount
+    };
+
     enum Role {
 #define FIRST(X,x) FirstRole = Qt::UserRole, MODEL_ROLE(X) = FirstRole,
 #define ROLE(X,x) MODEL_ROLE(X),
@@ -78,62 +118,164 @@ public:
 #undef LAST
     };
 
+    class State {
+    public:
+        State(Private* aPrivate);
+        void queueSignals(Private* aPrivate) const;
+    public:
+        const GameState iGameState;
+        const QDateTime iStartTime;
+        const QDateTime iFinishTime;
+        const QString iAnswer;
+        const int iSecondsPlayed;
+        const int iFullRows;
+        const bool iCanSubmitInput;
+        const bool iCanInputLetter;
+        const bool iCanDeleteLastLetter;
+    };
+
     enum {
         NumSlots = Wordle::WordLength * Wordle::MaxAttempts
     };
 
+    static const QString DATE_TIME_FORMAT;
     static const QString STATE_FILE;
     static const QString STATE_KEY_ANSWER;
     static const QString STATE_KEY_INPUT;
     static const QString STATE_KEY_ATTEMPTS;
+    static const QString STATE_KEY_SECS_PLAYED;
+    static const QString STATE_KEY_TIME_START;  // UTC
+    static const QString STATE_KEY_TIME_FINISH; // UTC
 
     Private(WordleGame* aParent);
     ~Private();
 
     WordleGame* parentGame();
-    QString getLanguage();
-    bool setLanguage(QString aLangCode);
-    QStringList getKeypad();
+    void queueSignal(Signal);
+    bool signalQueued(Signal);
+    void emitQueuedSignals();
+    void setLanguage(const QString);
+    void setPlaying(bool);
+    void updatePlayTime();
+    GameState gameState();
+    bool canInputLetter();
+    bool canDeleteLastLetter();
+    bool canSubmitInput();
+    void newGame();
     void saveState();
     void readState();
     void writeState();
 
-    Wordle::LetterState letterState(const QString aWord, int aPos) const;
-    void updateStateMap(const QString aWord);
+    Wordle::LetterState letterState(const QString, int) const;
+    void updateStateMap(const QString);
     int letterCount() const;
+
+    static QString toString(const QDateTime);
+    static QDateTime dateTimeValue(const QVariantMap, const QString);
 
 private Q_SLOTS:
     void flushChanges();
+    void onPlayTimerExpired();
     void onSaveTimerExpired();
 
 public:
+    SignalMask iQueuedSignals;
+    Signal iFirstQueuedSignal;
     WordleLanguage iLanguage;
+    QDateTime iStartTime;
+    QDateTime iFinishTime;
     QString iAnswer;
     QString iInput;
     QStringList iAttempts;
     int iLoading;
+    bool iPlaying;
+    int iSecondsPlayed;
+    int iSecondsPlayedThisTime;
+    qint64 iPlayingStarted; // msec since epoch
     QMap<QChar,Wordle::LetterState> iStateMap;
+    QTimer* iPlayTimer;
     QTimer* iSaveTimer;
     QTimer* iHoldoffTimer;
     QString iStateFile;
     QDir iDataDir;
 };
 
+const QString WordleGame::Private::DATE_TIME_FORMAT("yyyy-MM-dd hh:mm:ss");
 const QString WordleGame::Private::STATE_FILE("state");
 const QString WordleGame::Private::STATE_KEY_ANSWER("answer");
 const QString WordleGame::Private::STATE_KEY_INPUT("input");
 const QString WordleGame::Private::STATE_KEY_ATTEMPTS("attempts");
+const QString WordleGame::Private::STATE_KEY_SECS_PLAYED("t");
+const QString WordleGame::Private::STATE_KEY_TIME_START("t1");
+const QString WordleGame::Private::STATE_KEY_TIME_FINISH("t2");
 
-WordleGame::Private::Private(WordleGame* aParent) :
+WordleGame::Private::State::State(Private* aPrivate) :
+    iGameState(aPrivate->gameState()),
+    iStartTime(aPrivate->iStartTime),
+    iFinishTime(aPrivate->iFinishTime),
+    iAnswer(aPrivate->iAnswer),
+    iSecondsPlayed(aPrivate->iSecondsPlayed + aPrivate->iSecondsPlayedThisTime),
+    iFullRows(aPrivate->iAttempts.count()),
+    iCanSubmitInput(aPrivate->canSubmitInput()),
+    iCanInputLetter(aPrivate->canInputLetter()),
+    iCanDeleteLastLetter(aPrivate->canDeleteLastLetter())
+{
+}
+
+void
+WordleGame::Private::State::queueSignals(
+    Private* aPrivate) const
+{
+    if (!aPrivate->signalQueued(SignalGameStateChanged) &&
+        iGameState != aPrivate->gameState()) {
+        HDEBUG("Game state" << iGameState << "=>" << aPrivate->gameState());
+        aPrivate->queueSignal(SignalGameStateChanged);
+    }
+    if (!aPrivate->signalQueued(SignalStartTimeChanged) &&
+        iStartTime != aPrivate->iStartTime) {
+        aPrivate->queueSignal(SignalStartTimeChanged);
+    }
+    if (!aPrivate->signalQueued(SignalFinishTimeChanged) &&
+        iFinishTime != aPrivate->iFinishTime) {
+        aPrivate->queueSignal(SignalFinishTimeChanged);
+    }
+    if (iSecondsPlayed != (aPrivate->iSecondsPlayed + aPrivate->iSecondsPlayedThisTime)) {
+        aPrivate->queueSignal(SignalSecondsPlayedChanged);
+    }
+    if (iFullRows != aPrivate->iAttempts.count()) {
+        aPrivate->queueSignal(SignalFullRowsChanged);
+    }
+    if (iCanSubmitInput != aPrivate->canSubmitInput()) {
+        aPrivate->queueSignal(SignalCanSubmitInputChanged);
+    }
+    if (iCanInputLetter != aPrivate->canInputLetter()) {
+        aPrivate->queueSignal(SignalCanInputLetterChanged);
+    }
+    if (iCanDeleteLastLetter != aPrivate->canDeleteLastLetter()) {
+        aPrivate->queueSignal(SignalCanDeleteLastLetterChanged);
+    }
+}
+
+WordleGame::Private::Private(
+    WordleGame* aParent) :
     QObject(aParent),
+    iQueuedSignals(0),
+    iFirstQueuedSignal(SignalCount),
     iLanguage(""), // Invalid language
     iLoading(0),
+    iPlaying(false),
+    iSecondsPlayed(0),
+    iSecondsPlayedThisTime(0),
+    iPlayingStarted(0),
+    iPlayTimer(new QTimer(this)),
     iSaveTimer(new QTimer(this)),
     iHoldoffTimer(new QTimer(this)),
     iDataDir(QStandardPaths::writableLocation
         (QStandardPaths::GenericDataLocation) +
             QLatin1String("/" APP_NAME "/"))
 {
+    iPlayTimer->setSingleShot(true);
+    connect(iPlayTimer, SIGNAL(timeout()), SLOT(onPlayTimerExpired()));
     // Current state is saved at least every 10 seconds
     iSaveTimer->setInterval(10000);
     iSaveTimer->setSingleShot(true);
@@ -146,15 +288,109 @@ WordleGame::Private::Private(WordleGame* aParent) :
 
 WordleGame::Private::~Private()
 {
-    flushChanges();
+    bool dirty = false;
+
+    updatePlayTime();
+    if (iPlayTimer->isActive()) {
+        iPlayTimer->stop();
+        dirty = true;
+    }
+    if (iSaveTimer->isActive()) {
+        iSaveTimer->stop();
+        dirty = true;
+    }
+    if (dirty) {
+        writeState();
+    }
 }
 
-inline WordleGame* WordleGame::Private::parentGame()
+inline
+WordleGame*
+WordleGame::Private::parentGame()
 {
     return qobject_cast<WordleGame*>(parent());
 }
 
-void WordleGame::Private::readState()
+void
+WordleGame::Private::queueSignal(
+    Signal aSignal)
+{
+    if (aSignal >= 0 && aSignal < SignalCount) {
+        const SignalMask signalBit = (SignalMask(1) << aSignal);
+
+        if (iQueuedSignals) {
+            iQueuedSignals |= signalBit;
+            if (iFirstQueuedSignal > aSignal) {
+                iFirstQueuedSignal = aSignal;
+            }
+        } else {
+            iQueuedSignals = signalBit;
+            iFirstQueuedSignal = aSignal;
+        }
+    }
+}
+
+bool
+WordleGame::Private::signalQueued(
+    Signal aSignal)
+{
+    return (iQueuedSignals & (SignalMask(1) << aSignal)) != 0;
+}
+
+void
+WordleGame::Private::emitQueuedSignals()
+{
+    static const SignalEmitter emitSignal [] = {
+#define SIGNAL_EMITTER_(Name,name) &WordleGame::name##Changed,
+        MODEL_SIGNALS(SIGNAL_EMITTER_)
+#undef  SIGNAL_EMITTER_
+    };
+    Q_STATIC_ASSERT(sizeof(emitSignal)/sizeof(emitSignal[0]) == SignalCount);
+    if (iQueuedSignals) {
+        WordleGame* model = parentGame();
+        // Reset first queued signal before emitting the signals.
+        // Signal handlers may emit more signals.
+        uint i = iFirstQueuedSignal;
+        iFirstQueuedSignal = SignalCount;
+        for (; i < SignalCount && iQueuedSignals; i++) {
+            const SignalMask signalBit = (SignalMask(1) << i);
+            if (iQueuedSignals & signalBit) {
+                iQueuedSignals &= ~signalBit;
+                Q_EMIT (model->*(emitSignal[i]))();
+            }
+        }
+    }
+}
+
+inline
+QString
+WordleGame::Private::toString(
+    const QDateTime aTime)
+{
+    return aTime.toUTC().toString(DATE_TIME_FORMAT);
+}
+
+inline
+QDateTime
+WordleGame::Private::dateTimeValue(
+    const QVariantMap aData,
+    const QString aKey)
+{
+    QDateTime dt;
+    const QString str(aData.value(aKey).toString());
+    if (!str.isEmpty()) {
+        dt = QDateTime::fromString(str, DATE_TIME_FORMAT);
+        if (dt.isValid()) {
+            // Time is stored in UTC
+            dt.setTimeSpec(Qt::OffsetFromUTC);
+            dt = dt.toTimeSpec(Qt::LocalTime);
+        }
+    }
+    return dt;
+}
+
+void
+WordleGame::Private::readState()
 {
     WordleGame* game = parentGame();
 
@@ -170,8 +406,10 @@ void WordleGame::Private::readState()
     game->beginResetModel();
 
     QVariantMap state;
+    const State prevState(this);
     if (HarbourJson::load(iStateFile, state)) {
-        bool saveNow = false;
+        bool saveNow = false, ok;
+        int i;
 
         iStateMap.clear();
         iAttempts.clear();
@@ -187,7 +425,7 @@ void WordleGame::Private::readState()
         }
         const QStringList attempts(state.value(STATE_KEY_ATTEMPTS).toStringList());
         const int n = attempts.count();
-        for (int i = 0; i < n; i++) {
+        for (i = 0; i < n; i++) {
             const QString word(attempts.at(i).toLower());
             if (word.length() == Wordle::WordLength) {
                 updateStateMap(word);
@@ -195,6 +433,33 @@ void WordleGame::Private::readState()
             } else {
                 saveNow = true;
             }
+        }
+
+        i = state.value(STATE_KEY_SECS_PLAYED).toInt(&ok);
+        iSecondsPlayed = ok ? qMax(i, 0) : 0;
+        iSecondsPlayedThisTime = 0;
+
+        iStartTime = dateTimeValue(state, STATE_KEY_TIME_START);
+        if (iStartTime.isValid()) {
+            HDEBUG("game started" <<
+                qPrintable(iStartTime.toString(DATE_TIME_FORMAT)));
+        } else {
+            iStartTime = QDateTime::currentDateTime();
+            saveNow = true;
+        }
+
+        iFinishTime = dateTimeValue(state, STATE_KEY_TIME_FINISH);
+        if (iFinishTime.isValid()) {
+            if (gameState() == GameInProgress) {
+                iFinishTime = QDateTime();
+                saveNow = true;
+            } else {
+                HDEBUG("game finished" <<
+                    qPrintable(iFinishTime.toString(DATE_TIME_FORMAT)));
+            }
+        } else if (gameState() != GameInProgress) {
+            iFinishTime = QDateTime::currentDateTime();
+            saveNow = true;
         }
         if (saveNow) {
             saveState();
@@ -205,7 +470,7 @@ void WordleGame::Private::readState()
         iInput.clear();
         saveState();
     }
-
+    prevState.queueSignals(this);
     game->endResetModel();
 
     if (!(--iLoading)) {
@@ -213,18 +478,25 @@ void WordleGame::Private::readState()
     }
 }
 
-void WordleGame::Private::writeState()
+void
+WordleGame::Private::writeState()
 {
     QVariantMap state;
     state.insert(STATE_KEY_ANSWER, iAnswer);
     state.insert(STATE_KEY_ATTEMPTS, iAttempts);
     state.insert(STATE_KEY_INPUT, iInput);
+    state.insert(STATE_KEY_SECS_PLAYED, iSecondsPlayed + iSecondsPlayedThisTime);
+    state.insert(STATE_KEY_TIME_START, toString(iStartTime));
+    if (iFinishTime.isValid()) {
+        state.insert(STATE_KEY_TIME_FINISH, toString(iFinishTime));
+    }
     if (HarbourJson::save(iStateFile, state)) {
         HDEBUG(qPrintable(iStateFile));
     }
 }
 
-void WordleGame::Private::saveState()
+void
+WordleGame::Private::saveState()
 {
     if (!iStateFile.isEmpty()) {
         if (!iHoldoffTimer->isActive()) {
@@ -243,7 +515,8 @@ void WordleGame::Private::saveState()
     }
 }
 
-void WordleGame::Private::flushChanges()
+void
+WordleGame::Private::flushChanges()
 {
     if (iSaveTimer->isActive()) {
         iSaveTimer->stop();
@@ -251,35 +524,144 @@ void WordleGame::Private::flushChanges()
     }
 }
 
-void WordleGame::Private::onSaveTimerExpired()
+void
+WordleGame::Private::onSaveTimerExpired()
 {
     iHoldoffTimer->start();
     writeState();
 }
 
-bool WordleGame::Private::setLanguage(QString aLangCode)
+void
+WordleGame::Private::onPlayTimerExpired()
+{
+    updatePlayTime();
+    emitQueuedSignals();
+}
+
+void
+WordleGame::Private::updatePlayTime()
+{
+    if (iPlayingStarted) {
+        const qint64 now = QDateTime::currentMSecsSinceEpoch();
+        const qint64 secs = (now - iPlayingStarted)/1000;
+
+        if (iSecondsPlayedThisTime < secs) {
+            iSecondsPlayedThisTime = secs;
+            if (!(iSecondsPlayedThisTime % 60)) {
+                // We can sometimes miss it but it's fine
+                saveState();
+            }
+            queueSignal(SignalSecondsPlayedChanged);
+        }
+        iPlayTimer->start(1000 - (now % 1000));
+    } else {
+        iPlayTimer->stop();
+    }
+}
+
+void
+WordleGame::Private::setLanguage(
+    QString aLangCode)
 {
     WordleLanguage language(aLangCode);
     if (language.isValid() && !iLanguage.equals(language)) {
-        iLanguage = language;
         HDEBUG(aLangCode);
+        queueSignal(SignalLanguageChanged);
+        iLanguage = language;
         readState();
-        return true;
     }
-    return false;
 }
 
-QString WordleGame::Private::getLanguage()
+void
+WordleGame::Private::setPlaying(
+    bool aPlaying)
 {
-    return iLanguage.getCode();
+    if (iPlaying != aPlaying) {
+        iPlaying = aPlaying;
+        HDEBUG(aPlaying);
+        queueSignal(SignalPlayingChanged);
+        if (iPlaying) {
+            iSecondsPlayedThisTime = 0;
+            iPlayingStarted = QDateTime::currentMSecsSinceEpoch();
+            iPlayTimer->start(1000 - (iPlayingStarted % 1000));
+        } else {
+            iSecondsPlayed += iSecondsPlayedThisTime;
+            iSecondsPlayedThisTime = 0;
+            iPlayingStarted = 0;
+            iPlayTimer->stop();
+            saveState();
+        }
+    }
 }
 
-QStringList WordleGame::Private::getKeypad()
+void
+WordleGame::Private::newGame()
 {
-    return iLanguage.getKeypad();
+    const Private::State prevState(this);
+    const int count = letterCount();
+
+    if (count > 0) {
+        WordleGame* model = parentGame();
+
+        iAttempts.clear();
+        iInput.resize(0);
+        iStateMap.clear();
+        // Change the state first
+        const QVector<int> stateRole(1, Private::StateRole);
+        const QVector<int> letterRole(1, Private::LetterRole);
+        const QModelIndex topLeft(model->index(0));
+        const QModelIndex bottomRight(model->index(count - 1));
+        Q_EMIT model->dataChanged(topLeft, bottomRight, stateRole);
+        Q_EMIT model->dataChanged(topLeft, bottomRight, letterRole);
+    }
+    iAnswer = iLanguage.randomWord();
+    iStartTime = QDateTime::currentDateTime();
+    iFinishTime = QDateTime();
+    iSecondsPlayed = iSecondsPlayedThisTime = 0;
+    if (iPlaying) {
+        iPlayingStarted = QDateTime::currentMSecsSinceEpoch();
+        iPlayTimer->start(1000 - (iPlayingStarted % 1000));
+    } else {
+        iPlayingStarted = 0;
+        iPlayTimer->stop();
+    }
+    prevState.queueSignals(this);
+    updatePlayTime();
 }
 
-Wordle::LetterState WordleGame::Private::letterState(const QString aWord, int aPos) const
+WordleGame::GameState
+WordleGame::Private::gameState()
+{
+    return iAttempts.contains(iAnswer) ? GameWon :
+        (iAttempts.count() == Wordle::MaxAttempts) ? GameLost :
+        GameInProgress;
+}
+
+bool
+WordleGame::Private::canDeleteLastLetter()
+{
+    return iInput.length() > 0;
+}
+
+bool
+WordleGame::Private::canInputLetter()
+{
+    return iAttempts.count() < Wordle::MaxAttempts &&
+        iInput.length() < Wordle::WordLength &&
+        !iAttempts.contains(iAnswer);
+}
+
+bool
+WordleGame::Private::canSubmitInput()
+{
+    return iAttempts.count() < Wordle::MaxAttempts &&
+        iInput.length() == Wordle::WordLength;
+}
+
+Wordle::LetterState
+WordleGame::Private::letterState(
+    const QString aWord,
+    int aPos) const
 {
     if (aPos >= 0 && aPos < Wordle::WordLength) {
         const QChar* answer = iAnswer.constData();
@@ -340,12 +722,15 @@ Wordle::LetterState WordleGame::Private::letterState(const QString aWord, int aP
     return Wordle::LetterStateUnknown;
 }
 
-int WordleGame::Private::letterCount() const
+int
+WordleGame::Private::letterCount() const
 {
     return iAttempts.count() * Wordle::WordLength + iInput.length();
 }
 
-void WordleGame::Private::updateStateMap(const QString aWord)
+void
+WordleGame::Private::updateStateMap(
+    const QString aWord)
 {
     const int n = aWord.length();
 
@@ -368,7 +753,8 @@ void WordleGame::Private::updateStateMap(const QString aWord)
 // WordleGame
 // ==========================================================================
 
-WordleGame::WordleGame(QObject* aParent) :
+WordleGame::WordleGame(
+    QObject* aParent) :
     QAbstractListModel(aParent),
     iPrivate(new Private(this))
 {
@@ -379,56 +765,66 @@ WordleGame::~WordleGame()
     delete iPrivate;
 }
 
-QString WordleGame::getLanguage() const
+QString
+WordleGame::language() const
 {
-    return iPrivate->getLanguage();
+    return iPrivate->iLanguage.getCode();
 }
 
-void WordleGame::setLanguage(QString aLanguageCode)
+QStringList
+WordleGame::keypad() const
 {
-    const GameState prevState = getGameState();
-    const int prevFullRows = getFullRows();
-    const bool couldSubmitInput = canSubmitInput();
-    const bool couldInputLetter = canInputLetter();
-    const bool couldDeleteLastLetter = canDeleteLastLetter();
-
-    if (iPrivate->setLanguage(aLanguageCode)) {
-        Q_EMIT languageChanged();
-        Q_EMIT keypadChanged();
-        if (prevFullRows != getFullRows()) {
-            Q_EMIT fullRowsChanged();
-        }
-        if (canSubmitInput() != couldSubmitInput) {
-            Q_EMIT canSubmitInputChanged();
-        }
-        if (canInputLetter() != couldInputLetter) {
-            Q_EMIT canInputLetterChanged();
-        }
-        if (canDeleteLastLetter() != couldDeleteLastLetter) {
-            Q_EMIT canDeleteLastLetterChanged();
-        }
-        if (getGameState() != prevState) {
-            Q_EMIT gameStateChanged();
-        }
-    }
+    return iPrivate->iLanguage.getKeypad();
 }
 
-bool WordleGame::isLoading() const
+void
+WordleGame::setLanguage(
+    const QString aLanguageCode)
+{
+    iPrivate->setLanguage(aLanguageCode);
+    iPrivate->emitQueuedSignals();
+}
+
+bool
+WordleGame::playing() const
+{
+    return iPrivate->iPlaying;
+}
+
+void
+WordleGame::setPlaying(
+    bool aPlaying)
+{
+    iPrivate->setPlaying(aPlaying);
+    iPrivate->emitQueuedSignals();
+}
+
+bool
+WordleGame::loading() const
 {
     return iPrivate->iLoading > 0;
 }
 
-QString WordleGame::getAnswer() const
+QDateTime
+WordleGame::startTime() const
+{
+    return iPrivate->iStartTime;
+}
+
+QDateTime
+WordleGame::finishTime() const
+{
+    return iPrivate->iFinishTime;
+}
+
+QString
+WordleGame::answer() const
 {
     return iPrivate->iAnswer;
 }
 
-QStringList WordleGame::getKeypad() const
-{
-    return iPrivate->getKeypad();
-}
-
-QHash<int,QByteArray> WordleGame::roleNames() const
+QHash<int,QByteArray>
+WordleGame::roleNames() const
 {
     QHash<int,QByteArray> roles;
 #define ROLE(X,x) roles.insert(Private::MODEL_ROLE(X), #x);
@@ -437,31 +833,37 @@ MODEL_ROLES(ROLE)
     return roles;
 }
 
-int WordleGame::rowCount(const QModelIndex& aParent) const
+int
+WordleGame::rowCount(
+    const QModelIndex& aParent) const
 {
     return Private::NumSlots;
 }
 
-QVariant WordleGame::data(const QModelIndex& aIndex, int aRole) const
+QVariant
+WordleGame::data(
+    const QModelIndex& aIndex,
+    int aRole) const
 {
     const int i = aIndex.row();
     if (i >= 0 && i < Private::NumSlots) {
+        Private::Role role = (Private::Role)aRole;
         const int n = iPrivate->iAttempts.count();
         const int attempted = n * Wordle::WordLength;
         if (i < attempted) {
             const int pos = i % Wordle::WordLength;
             const QString word(iPrivate->iAttempts.at(i/Wordle::WordLength));
-            switch ((Private::Role)aRole) {
+            switch (role) {
             case Private::LetterRole: return word.mid(pos, 1);
             case Private::StateRole: return iPrivate->letterState(word, pos);
             }
         } else if ((i - attempted) < iPrivate->iInput.length()) {
-            switch ((Private::Role)aRole) {
+            switch (role) {
             case Private::LetterRole: return QString(iPrivate->iInput.at(i - attempted));
             case Private::StateRole: return Wordle::LetterStateUnknown;
             }
         } else {
-            switch ((Private::Role)aRole) {
+            switch (role) {
             case Private::LetterRole: return QString();
             case Private::StateRole: return Wordle::LetterStateUnknown;
             }
@@ -470,168 +872,124 @@ QVariant WordleGame::data(const QModelIndex& aIndex, int aRole) const
     return QVariant();
 }
 
-WordleGame::GameState WordleGame::getGameState() const
+WordleGame::GameState
+WordleGame::gameState() const
 {
-    return iPrivate->iAttempts.contains(iPrivate->iAnswer) ? GameWon :
-        (iPrivate->iAttempts.count() == Wordle::MaxAttempts) ? GameLost :
-        GameInProgress;
+    return iPrivate->gameState();
 }
 
-int WordleGame::getFullRows() const
+int
+WordleGame::secondsPlayed() const
+{
+    return iPrivate->iSecondsPlayed + iPrivate->iSecondsPlayedThisTime;
+}
+
+int
+WordleGame::fullRows() const
 {
     return iPrivate->iAttempts.count();
 }
 
-bool WordleGame::canDeleteLastLetter() const
+bool
+WordleGame::canDeleteLastLetter() const
 {
-    return iPrivate->iInput.length() > 0;
+    return iPrivate->canDeleteLastLetter();
 }
 
-bool WordleGame::canInputLetter() const
+bool
+WordleGame::canInputLetter() const
 {
-    return iPrivate->iAttempts.count() < Wordle::MaxAttempts &&
-        iPrivate->iInput.length() < Wordle::WordLength &&
-        !iPrivate->iAttempts.contains(iPrivate->iAnswer);
+    return iPrivate->canInputLetter();
 }
 
-bool WordleGame::canSubmitInput() const
+bool
+WordleGame::canSubmitInput() const
 {
-    return iPrivate->iAttempts.count() < Wordle::MaxAttempts &&
-        iPrivate->iInput.length() == Wordle::WordLength;
+    return iPrivate->canSubmitInput();
 }
 
-int WordleGame::knownLetterState(QString aLetter)
+int
+WordleGame::knownLetterState(
+    const QString aLetter)
 {
     return (aLetter.length() == 1) ?
         iPrivate->iStateMap.value(aLetter.at(0)) :
         Wordle::LetterStateUnknown;
 }
 
-bool WordleGame::inputLetter(QString aLetter)
+bool
+WordleGame::inputLetter(
+    const QString aLetter)
 {
     if (aLetter.length() == 1 && canInputLetter()) {
         const QChar letter(aLetter.at(0).toLower());
-        HDEBUG(QString(letter));
-        const bool couldDeleteLastLetter = canDeleteLastLetter();
+        const Private::State prevState(iPrivate);
         const QModelIndex modelIndex(index(iPrivate->letterCount()));
+
+        HDEBUG(QString(letter));
         iPrivate->iInput.append(letter);
         Q_EMIT dataChanged(modelIndex, modelIndex);
-        if (!canInputLetter()) {
-            Q_EMIT canInputLetterChanged();
-        }
-        if (!couldDeleteLastLetter) {
-            HASSERT(canDeleteLastLetter());
-            Q_EMIT canDeleteLastLetterChanged();
-        }
-        if (canSubmitInput()) {
-            Q_EMIT canSubmitInputChanged();
-        }
+        prevState.queueSignals(iPrivate);
+        iPrivate->emitQueuedSignals();
         iPrivate->saveState();
         return true;
     }
     return false;
 }
 
-void WordleGame::deleteLastLetter()
+void
+WordleGame::deleteLastLetter()
 {
     const int len = iPrivate->iInput.length();
     if (len > 0) {
-        const bool couldSubmitInput = canSubmitInput();
-        const bool couldInputLetter = canInputLetter();
+        const Private::State prevState(iPrivate);
 
         iPrivate->iInput.resize(len - 1);
         const QModelIndex idx(index(iPrivate->letterCount()));
         const QVector<int> role(1, Private::LetterRole);
         Q_EMIT dataChanged(idx, idx, role);
 
-        if (couldSubmitInput) {
-            HASSERT(!canSubmitInput());
-            Q_EMIT canSubmitInputChanged();
-        }
-        if (canInputLetter() != couldInputLetter) {
-            Q_EMIT canInputLetterChanged();
-        }
-        if (!canDeleteLastLetter()) {
-            Q_EMIT canDeleteLastLetterChanged();
-        }
+        prevState.queueSignals(iPrivate);
+        iPrivate->emitQueuedSignals();
         iPrivate->saveState();
     }
 }
 
-bool WordleGame::submitInput()
+bool
+WordleGame::submitInput()
 {
-    if (canSubmitInput()) {
-        if (iPrivate->iLanguage.isAllowed(iPrivate->iInput)) {
-            const GameState prevState = getGameState();
-            const int count = iPrivate->letterCount();
-            const QString word(iPrivate->iInput);
+    if (iPrivate->canSubmitInput() &&
+        iPrivate->iLanguage.isAllowed(iPrivate->iInput)) {
+        const int count = iPrivate->letterCount();
+        const QString word(iPrivate->iInput);
+        const Private::State prevState(iPrivate);
 
-            iPrivate->iAttempts.append(word);
-            iPrivate->iInput.resize(0);
-            iPrivate->updateStateMap(word);
-            const QVector<int> role(1, Private::StateRole);
-            Q_EMIT dataChanged(index(count - Wordle::WordLength), index(count - 1), role);
-            Q_EMIT inputSubmitted(word);
-            Q_EMIT fullRowsChanged();
-            Q_EMIT canDeleteLastLetterChanged();
-            if (!canSubmitInput()) {
-                Q_EMIT canSubmitInputChanged();
+        iPrivate->iAttempts.append(word);
+        iPrivate->iInput.resize(0);
+        iPrivate->updateStateMap(word);
+
+        const QVector<int> role(1, Private::StateRole);
+        Q_EMIT dataChanged(index(count - Wordle::WordLength), index(count - 1), role);
+        Q_EMIT inputSubmitted(word);
+        if (iPrivate->gameState() != GameInProgress) {
+            HDEBUG("Game over");
+            if (!iPrivate->iFinishTime.isValid()) {
+                iPrivate->iFinishTime = QDateTime::currentDateTime();
             }
-            if (canInputLetter()) {
-                Q_EMIT canInputLetterChanged();
-            }
-            if (prevState != getGameState()) {
-                HDEBUG("Game state" << prevState << "=>" << getGameState());
-                Q_EMIT gameStateChanged();
-            }
-            iPrivate->saveState();
-            return true;
         }
+        prevState.queueSignals(iPrivate);
+        iPrivate->emitQueuedSignals();
+        iPrivate->saveState();
+        return true;
     }
     return false;
 }
 
-void WordleGame::newGame()
+void
+WordleGame::newGame()
 {
-    const GameState prevState = getGameState();
-    const int prevFullRows = getFullRows();
-    const bool couldSubmitInput = canSubmitInput();
-    const bool couldInputLetter = canInputLetter();
-    const bool couldDeleteLastLetter = canDeleteLastLetter();
-    const int count = iPrivate->letterCount();
-
-    if (count > 0) {
-        iPrivate->iAttempts.clear();
-        iPrivate->iInput.resize(0);
-        iPrivate->iStateMap.clear();
-        const QVector<int> stateRole(1, Private::StateRole);
-        const QVector<int> letterRole(1, Private::LetterRole);
-        Q_EMIT dataChanged(index(0), index(count - 1), stateRole);
-        Q_EMIT dataChanged(index(0), index(count - 1), letterRole);
-    }
-
-    if (prevFullRows) {
-        HASSERT(!getFullRows());
-        Q_EMIT fullRowsChanged();
-    }
-    if (couldSubmitInput) {
-        HASSERT(!canSubmitInput());
-        Q_EMIT canSubmitInputChanged();
-    }
-    if (!couldInputLetter) {
-        HASSERT(canInputLetter());
-        Q_EMIT canInputLetterChanged();
-    }
-    if (couldDeleteLastLetter) {
-        HASSERT(!canDeleteLastLetter());
-        Q_EMIT canDeleteLastLetterChanged();
-    }
-    if (getGameState() != prevState) {
-        Q_EMIT gameStateChanged();
-    }
-
-    iPrivate->iAnswer = iPrivate->iLanguage.randomWord();
-    Q_EMIT answerChanged();
+    iPrivate->newGame();
+    iPrivate->emitQueuedSignals();
     iPrivate->saveState();
 }
 

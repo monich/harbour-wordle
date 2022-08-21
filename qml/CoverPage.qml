@@ -2,6 +2,8 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.wordle 1.0
 
+import "Utils.js" as Utils
+
 CoverBackground {
     id: cover
 
@@ -16,7 +18,7 @@ CoverBackground {
         anchors {
             top: parent.top
             topMargin: Theme.paddingMedium
-            bottom: board.top
+            bottom: column.top
             bottomMargin: Theme.paddingMedium
         }
         horizontalAlignment: Text.AlignHCenter
@@ -29,17 +31,32 @@ CoverBackground {
         }
     }
 
-    WordleBoard {
-        id: board
+    Column {
+        id: column
 
         x: Theme.paddingLarge
         width: parent.width - 2 * x
+        spacing: Theme.paddingMedium
         anchors {
             bottom: parent.bottom
-            bottomMargin: Theme.paddingLarge
+            bottomMargin: WordleSettings.showPlayTime ? Theme.paddingMedium : Theme.paddingLarge
         }
-        cellSize: Math.floor((width - spacing * (Wordle.WordLength - 1))/Wordle.WordLength)
-        model: game
-        spacing: Theme.paddingSmall
+
+        WordleBoard {
+            id: board
+
+            width: parent.width
+            cellSize: Math.floor((width - spacing * (Wordle.WordLength - 1))/Wordle.WordLength)
+            model: game
+            spacing: Theme.paddingSmall
+        }
+
+        Label {
+            anchors.horizontalCenter: parent.horizontalCenter
+            font.pixelSize: Theme.fontSizeSmall
+            color: Theme.secondaryColor
+            text: visible ? Utils.formatPlayTime(wordle.secondsPlayed) : ""
+            visible: WordleSettings.showPlayTime
+        }
     }
 }

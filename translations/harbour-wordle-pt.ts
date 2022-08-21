@@ -23,5 +23,10 @@
         <extracomment>Text switch label</extracomment>
         <translation>Manter tela acesa ao jogar</translation>
     </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Mostrar temporizador</translation>
+    </message>
 </context>
 </TS>

@@ -23,5 +23,10 @@
         <extracomment>Text switch label</extracomment>
         <translation type="unfinished">Pidä näyttö päällä pelaamisen aikana</translation>
     </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Näytä ajastin</translation>
+    </message>
 </context>
 </TS>

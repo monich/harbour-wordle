@@ -43,6 +43,7 @@
 
 #include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
+#include "HarbourSystemState.h"
 
 #include <sailfishapp.h>
 
@@ -62,6 +63,7 @@ static void register_types(const char* uri, int v1, int v2)
 {
     REGISTER_SINGLETON(Wordle, uri, v1, v2);
     REGISTER_SINGLETON(WordleSettings, uri, v1, v2);
+    REGISTER_SINGLETON(HarbourSystemState, uri, v1, v2);
     REGISTER_TYPE(WordleGame, uri, v1, v2);
     REGISTER_TYPE(WordleLanguageModel, uri, v1, v2);
     REGISTER_TYPE(HarbourDisplayBlanking, uri, v1, v2);

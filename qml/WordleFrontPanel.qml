@@ -66,13 +66,14 @@ Item {
             answer: showAnswer ? wordle.answer : ""
             showAnswer: wordle.gameState === WordleGame.GameLost
             enabled: !wordle.loading
+            secondsPlayed: wordle.secondsPlayed
         }
 
         HarbourIconTextButton {
+            y: header.y +  header.titleCenterY - height/2
             anchors {
                 right: parent.right
                 rightMargin: Theme.paddingMedium
-                verticalCenter: header.verticalCenter
             }
             iconSource: "images/settings.svg"
             onClicked: thisItem.flip()
@@ -83,7 +84,7 @@ Item {
             width: parent.width - 2 * x
             anchors {
                 top: header.bottom
-                topMargin: Theme.paddingLarge
+                topMargin: Theme.paddingMedium
                 bottom: parent.bottom
                 bottomMargin: Theme.paddingLarge
             }

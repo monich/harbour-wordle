@@ -23,5 +23,10 @@
         <extracomment>Text switch label</extracomment>
         <translation>Nie wyłączaj wyświetlacza podczas gry</translation>
     </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Pokaż minutnik</translation>
+    </message>
 </context>
 </TS>

@@ -119,8 +119,6 @@ Item {
                 }
 
                 TextSwitch {
-                    id: keepDisplayOnSwitch
-
                     width: parent.width
                     automaticCheck: false
                     checked: WordleSettings.keepDisplayOn
@@ -128,6 +126,16 @@ Item {
                     //% "Keep display on while playing"
                     text: qsTrId("wordle-settings-keep_display_on")
                     onClicked: WordleSettings.keepDisplayOn = !WordleSettings.keepDisplayOn
+                }
+
+                TextSwitch {
+                    width: parent.width
+                    automaticCheck: false
+                    checked: WordleSettings.showPlayTime
+                    //: Text switch label
+                    //% "Show timer"
+                    text: qsTrId("wordle-settings-show_play_time")
+                    onClicked: WordleSettings.showPlayTime = !WordleSettings.showPlayTime
                 }
             }
         }

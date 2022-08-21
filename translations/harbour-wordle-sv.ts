@@ -23,5 +23,10 @@
         <extracomment>Text switch label</extracomment>
         <translation>Håll skärmen tänd under spel</translation>
     </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Visa timer</translation>
+    </message>
 </context>
 </TS>
