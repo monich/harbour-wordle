@@ -466,6 +466,7 @@ WordleGame::Private::readState()
         }
     } else {
         iAnswer = iLanguage.randomWord();
+        iStateMap.clear();
         iAttempts.clear();
         iInput.clear();
         saveState();
