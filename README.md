@@ -8,4 +8,17 @@ Each guess must be a valid 5 letter word. Hit the enter button to submit.
 
 After each guess, the color of the tiles will change to show how close your guess was to the word.
 
-The idea is borrowed from https://www.powerlanguage.co.uk/wordle/
+The idea was borrowed from https://www.powerlanguage.co.uk/wordle/
+
+The following dictionaries are included:
+
+* Deutsch
+* English
+* Suomi
+* Français
+* Magyar
+* Nederlands
+* Português
+* Русский
+* Svenska
+* Українська
