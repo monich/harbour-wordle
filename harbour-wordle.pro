@@ -42,6 +42,7 @@ INCLUDEPATH += \
     $${HARBOUR_LIB_INCLUDE}
 
 HEADERS += \
+    $${HARBOUR_LIB_INCLUDE}/HarbourBattery.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourDebug.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourDisplayBlanking.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourJson.h \
@@ -49,6 +50,7 @@ HEADERS += \
     $${HARBOUR_LIB_SRC}/HarbourMce.h
 
 SOURCES += \
+    $${HARBOUR_LIB_SRC}/HarbourBattery.cpp \
     $${HARBOUR_LIB_SRC}/HarbourDisplayBlanking.cpp \
     $${HARBOUR_LIB_SRC}/HarbourJson.cpp \
     $${HARBOUR_LIB_SRC}/HarbourMce.cpp \

@@ -18,15 +18,20 @@
         <extracomment>Combo box label</extracomment>
         <translation>Szótár</translation>
     </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Időzítő megjelenítése</translation>
+    </message>
     <message id="wordle-settings-keep_display_on">
         <source>Keep display on while playing</source>
         <extracomment>Text switch label</extracomment>
         <translation>Kijelző ébrentartása a játék ideje alatt</translation>
     </message>
-    <message id="wordle-settings-show_play_time">
-        <source>Show timer</source>
-        <extracomment>Text switch label</extracomment>
-        <translation type="unfinished">Időzítő megjelenítése</translation>
+    <message id="wordle-settings-keep_display_on-description">
+        <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation type="unfinished">Az akkumulátor teljes lemerülésének elkerülése érdekében a kijelző sötétítése továbbra is megengedett, ha az akkumulátor töltöttségi szintje %1% alá esik, és a telefon nem töltődik.</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>

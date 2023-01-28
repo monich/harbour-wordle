@@ -31,7 +31,10 @@ ApplicationWindow {
     }
 
     HarbourDisplayBlanking {
-        pauseRequested: Qt.application.active && WordleSettings.keepDisplayOn
+        pauseRequested: Qt.application.active && WordleSettings.keepDisplayOn &&
+            (HarbourBattery.batteryState === HarbourBattery.BatteryStateCharging ||
+             HarbourBattery.batteryLevel === 0 || // Zero if unknown (not reported by mce)
+             HarbourBattery.batteryLevel >= 20)
     }
 
     WordleGame {

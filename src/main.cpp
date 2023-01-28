@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2020-2022 Jolla Ltd.
- * Copyright (C) 2020-2022 Slava Monich <slava@monich.com>
+ * Copyright (C) 2020-2023 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -41,6 +41,7 @@
 #include "WordleLanguageModel.h"
 #include "WordleSettings.h"
 
+#include "HarbourBattery.h"
 #include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
 #include "HarbourSystemState.h"
@@ -63,6 +64,7 @@ static void register_types(const char* uri, int v1, int v2)
 {
     REGISTER_SINGLETON(Wordle, uri, v1, v2);
     REGISTER_SINGLETON(WordleSettings, uri, v1, v2);
+    REGISTER_SINGLETON(HarbourBattery, uri, v1, v2);
     REGISTER_SINGLETON(HarbourSystemState, uri, v1, v2);
     REGISTER_TYPE(WordleGame, uri, v1, v2);
     REGISTER_TYPE(WordleLanguageModel, uri, v1, v2);

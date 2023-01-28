@@ -18,15 +18,20 @@
         <extracomment>Combo box label</extracomment>
         <translation>Dicionário</translation>
     </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Mostrar temporizador</translation>
+    </message>
     <message id="wordle-settings-keep_display_on">
         <source>Keep display on while playing</source>
         <extracomment>Text switch label</extracomment>
         <translation>Manter tela acesa ao jogar</translation>
     </message>
-    <message id="wordle-settings-show_play_time">
-        <source>Show timer</source>
-        <extracomment>Text switch label</extracomment>
-        <translation type="unfinished">Mostrar temporizador</translation>
+    <message id="wordle-settings-keep_display_on-description">
+        <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation type="unfinished">Para evitar o descarregamento completo da bateria, o apagamento do visor ainda seria permitido se o nível da bateria cair abaixo de %1% e o telefone não estiver sendo carregado.</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>

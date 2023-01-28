@@ -18,15 +18,20 @@
         <extracomment>Combo box label</extracomment>
         <translation type="unfinished">Sanakirja</translation>
     </message>
+    <message id="wordle-settings-show_play_time">
+        <source>Show timer</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Näytä ajastin</translation>
+    </message>
     <message id="wordle-settings-keep_display_on">
         <source>Keep display on while playing</source>
         <extracomment>Text switch label</extracomment>
         <translation type="unfinished">Pidä näyttö päällä pelaamisen aikana</translation>
     </message>
-    <message id="wordle-settings-show_play_time">
-        <source>Show timer</source>
-        <extracomment>Text switch label</extracomment>
-        <translation type="unfinished">Näytä ajastin</translation>
+    <message id="wordle-settings-keep_display_on-description">
+        <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation type="unfinished">Jotta akku ei tyhjene kokonaan, näytön sammuttaminen on silti sallittu, jos akun varaus putoaa alle %1% ja puhelin ei lataudu.</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>

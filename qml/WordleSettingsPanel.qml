@@ -121,21 +121,24 @@ Item {
                 TextSwitch {
                     width: parent.width
                     automaticCheck: false
-                    checked: WordleSettings.keepDisplayOn
-                    //: Text switch label
-                    //% "Keep display on while playing"
-                    text: qsTrId("wordle-settings-keep_display_on")
-                    onClicked: WordleSettings.keepDisplayOn = !WordleSettings.keepDisplayOn
-                }
-
-                TextSwitch {
-                    width: parent.width
-                    automaticCheck: false
                     checked: WordleSettings.showPlayTime
                     //: Text switch label
                     //% "Show timer"
                     text: qsTrId("wordle-settings-show_play_time")
                     onClicked: WordleSettings.showPlayTime = !WordleSettings.showPlayTime
+                }
+
+                TextSwitch {
+                    width: parent.width
+                    automaticCheck: false
+                    checked: WordleSettings.keepDisplayOn
+                    //: Text switch label
+                    //% "Keep display on while playing"
+                    text: qsTrId("wordle-settings-keep_display_on")
+                    //: Text switch label description
+                    //% "To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger."
+                    description: HarbourBattery.batteryLevel > 0 ? qsTrId("wordle-settings-keep_display_on-description").arg(20) : ""
+                    onClicked: WordleSettings.keepDisplayOn = !WordleSettings.keepDisplayOn
                 }
             }
 
