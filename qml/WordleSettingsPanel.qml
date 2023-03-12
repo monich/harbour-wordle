@@ -152,7 +152,7 @@ Item {
                 color: panelBorder.border.color
                 //: Small description label (app version)
                 //% "Version %1"
-                text: qsTrId("wordle-settings-version").arg("1.0.12")
+                text: qsTrId("wordle-settings-version").arg("1.0.13")
             }
         }
     }
