@@ -1,6 +1,6 @@
 /*
+ * Copyright (C) 2022-2023 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
- * Copyright (C) 2022 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -466,6 +466,10 @@ WordleGame::Private::readState()
         }
     } else {
         iAnswer = iLanguage.randomWord();
+        iSecondsPlayed = 0;
+        iSecondsPlayedThisTime = 0;
+        iStartTime = QDateTime::currentDateTime();
+        iFinishTime = QDateTime();
         iStateMap.clear();
         iAttempts.clear();
         iInput.clear();
