@@ -13,7 +13,7 @@ Item {
     property alias title: header.title
     property var wordle
 
-    signal flip()
+    signal flip(var where)
 
     readonly property bool gameWon: wordle.gameState === WordleGame.GameWon
 
@@ -76,7 +76,7 @@ Item {
                 rightMargin: Theme.paddingMedium
             }
             iconSource: "images/settings.svg"
-            onClicked: thisItem.flip()
+            onClicked: thisItem.flip(1)
         }
 
         Item {
