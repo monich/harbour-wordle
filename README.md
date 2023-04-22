@@ -14,6 +14,7 @@ The following dictionaries are included:
 
 * Deutsch
 * English
+* Español
 * Suomi
 * Français
 * Magyar
