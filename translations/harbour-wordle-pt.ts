@@ -18,6 +18,26 @@
         <extracomment>Combo box label</extracomment>
         <translation>Dicionário</translation>
     </message>
+    <message id="wordle-settings-orientation-label">
+        <source>Orientation</source>
+        <extracomment>Combo box label</extracomment>
+        <translation>Orientação</translation>
+    </message>
+    <message id="wordle-settings-orientation-dynamic">
+        <source>Dynamic</source>
+        <extracomment>Combo box value for dynamic orientation</extracomment>
+        <translation>Dinâmica</translation>
+    </message>
+    <message id="wordle-settings-orientation-portrait">
+        <source>Portrait</source>
+        <extracomment>Combo box value for portrait orientation</extracomment>
+        <translation>Retrato</translation>
+    </message>
+    <message id="wordle-settings-orientation-landscape">
+        <source>Landscape</source>
+        <extracomment>Combo box value for landscape orientation</extracomment>
+        <translation>Paisagem</translation>
+    </message>
     <message id="wordle-settings-show_play_time">
         <source>Show timer</source>
         <extracomment>Text switch label</extracomment>

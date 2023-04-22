@@ -39,93 +39,167 @@ Item {
             onClicked: thisItem.flip()
         }
 
-        Column {
-            id: column
-
+        SilicaFlickable {
+            contentHeight: content.height
+            width: parent.width
+            clip: true
             anchors{
                 top: header.bottom
                 topMargin: Theme.paddingLarge
+                bottom: versionLabel.top
+                bottomMargin: Theme.paddingMedium
             }
-            width: parent.width
 
-            ComboBox {
-                id: languageComboBox
+            Grid {
+                id: content
 
-                //: Combo box label
-                //% "Dictionary"
-                label: qsTrId("wordle-settings-language-label")
-                menu: ContextMenu {
-                    id: languageMenu
+                readonly property real columnWidth: width/columns
 
-                    x: 0
-                    width: languageComboBox.width
+                width: parent.width
+                columns: landscape ? 2 : 1
+                flow: Grid.TopToBottom
 
-                    Repeater {
-                        model: WordleLanguageModel { }
-                        MenuItem {
-                            readonly property string languageCode: model.languageCode
-                            text: model.languageName
-                            onClicked: WordleSettings.language = languageCode
+                ComboBox {
+                    id: languageComboBox
+
+                    //: Combo box label
+                    //% "Dictionary"
+                    label: qsTrId("wordle-settings-language-label")
+                    width: parent.columnWidth
+                    menu: ContextMenu {
+                        id: languageMenu
+
+                        x: 0
+                        width: languageComboBox.width
+
+                        Repeater {
+                            model: WordleLanguageModel { }
+                            MenuItem {
+                                readonly property string languageCode: model.languageCode
+                                text: model.languageName
+                                onClicked: WordleSettings.language = languageCode
+                            }
                         }
+                    }
+
+                    property int ignoreCurrentItemChange
+
+                    Component.onCompleted: updateValue()
+
+                    onCurrentItemChanged: updateValue()
+
+                    function updateValue() {
+                        if (!ignoreCurrentItemChange) {
+                            var itemFound = null
+                            var items = languageMenu.children
+                            if (items) {
+                                for (var i = 0; i < items.length; i++) {
+                                    if (items[i].languageCode === WordleSettings.language) {
+                                        itemFound = items[i]
+                                        break;
+                                    }
+                                }
+                            }
+                            // Prevent recursion
+                            ignoreCurrentItemChange++
+                            currentItem = itemFound
+                            ignoreCurrentItemChange--
+                        }
+                    }
+
+                    Connections {
+                        target: WordleSettings
+                        onLanguageChanged: languageComboBox.updateValue()
                     }
                 }
 
-                property int ignoreCurrentItemChange
+                ComboBox {
+                    id: orientationComboBox
 
-                Component.onCompleted: updateValue()
+                    //: Combo box label
+                    //% "Orientation"
+                    label: qsTrId("wordle-settings-orientation-label")
+                    value: currentItem ? currentItem.text : ""
+                    width: parent.columnWidth
+                    menu: ContextMenu {
+                        id: orientationMenu
 
-                onCurrentItemChanged: updateValue()
+                        x: 0
+                        width: orientationComboBox.width
 
-                function updateValue() {
-                    if (!ignoreCurrentItemChange) {
-                        var itemFound = null
+                        MenuItem {
+                            readonly property int value: WordleSettings.OrientationAny
+                            //: Combo box value for dynamic orientation
+                            //% "Dynamic"
+                            text: qsTrId("wordle-settings-orientation-dynamic")
+                            onClicked: WordleSettings.orientation = value
+                        }
+                        MenuItem {
+                            readonly property int value: WordleSettings.OrientationPortrait
+                            //: Combo box value for portrait orientation
+                            //% "Portrait"
+                            text: qsTrId("wordle-settings-orientation-portrait")
+                            onClicked: WordleSettings.orientation = value
+                        }
+                        MenuItem {
+                            readonly property int value: WordleSettings.OrientationLandscape
+                            //: Combo box value for landscape orientation
+                            //% "Landscape"
+                            text: qsTrId("wordle-settings-orientation-landscape")
+                            onClicked: WordleSettings.orientation = value
+                        }
+                    }
+
+                    Component.onCompleted: updateValue()
+
+                    function updateValue() {
+                        var index = 0
                         var items = languageMenu.children
                         if (items) {
                             for (var i = 0; i < items.length; i++) {
-                                if (items[i].languageCode === WordleSettings.language) {
-                                    itemFound = items[i]
-                                    break;
+                                if (items[i].value === value) {
+                                    index = i
+                                    break
                                 }
                             }
                         }
-                        // Prevent recursion
-                        ignoreCurrentItemChange++
-                        currentItem = itemFound
-                        ignoreCurrentItemChange--
+                        orientationComboBox.currentIndex = index
+                    }
+
+                    Connections {
+                        target: WordleSettings
+                        onOrientationChanged: orientationComboBox.updateValue()
                     }
                 }
 
-                Connections {
-                    target: WordleSettings
-                    onLanguageChanged: languageComboBox.updateValue()
+                TextSwitch {
+                    width: parent.columnWidth
+                    automaticCheck: false
+                    checked: WordleSettings.showPlayTime
+                    //: Text switch label
+                    //% "Show timer"
+                    text: qsTrId("wordle-settings-show_play_time")
+                    onClicked: WordleSettings.showPlayTime = !WordleSettings.showPlayTime
                 }
-            }
 
-            TextSwitch {
-                width: parent.width
-                automaticCheck: false
-                checked: WordleSettings.showPlayTime
-                //: Text switch label
-                //% "Show timer"
-                text: qsTrId("wordle-settings-show_play_time")
-                onClicked: WordleSettings.showPlayTime = !WordleSettings.showPlayTime
-            }
-
-            TextSwitch {
-                width: parent.width
-                automaticCheck: false
-                checked: WordleSettings.keepDisplayOn
-                //: Text switch label
-                //% "Keep display on while playing"
-                text: qsTrId("wordle-settings-keep_display_on")
-                //: Text switch label description
-                //% "To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger."
-                description: HarbourBattery.batteryLevel > 0 ? qsTrId("wordle-settings-keep_display_on-description").arg(20) : ""
-                onClicked: WordleSettings.keepDisplayOn = !WordleSettings.keepDisplayOn
+                TextSwitch {
+                    width: parent.columnWidth
+                    automaticCheck: false
+                    checked: WordleSettings.keepDisplayOn
+                    //: Text switch label
+                    //% "Keep display on while playing"
+                    text: qsTrId("wordle-settings-keep_display_on")
+                    //: Text switch label description
+                    //% "To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger."
+                    description: HarbourBattery.batteryLevel > 0 ? qsTrId("wordle-settings-keep_display_on-description").arg(20) : ""
+                    onClicked: WordleSettings.keepDisplayOn = !WordleSettings.keepDisplayOn
+                }
             }
         }
 
         Label {
+            id: versionLabel
+
             anchors {
                 horizontalCenter: parent.horizontalCenter
                 bottom: parent.bottom

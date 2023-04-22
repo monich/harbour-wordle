@@ -7,7 +7,14 @@ ApplicationWindow {
 
     readonly property string title: "WORDLE"
 
-    allowedOrientations: Orientation.All
+    allowedOrientations: {
+        switch (WordleSettings.orientation) {
+        default:
+        case WordleSettings.OrientationAny: return Orientation.All
+        case WordleSettings.OrientationPortrait: return Orientation.Portrait
+        case WordleSettings.OrientationLandscape: return Orientation.Landscape
+        }
+    }
 
     initialPage: Component {
         MainPage {

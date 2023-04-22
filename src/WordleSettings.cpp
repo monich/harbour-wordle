@@ -1,6 +1,6 @@
 /*
+ * Copyright (C) 2022-2023 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
- * Copyright (C) 2022 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -11,8 +11,8 @@
  *   1. Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in
- *      the documentation and/or other materials provided with the
+ *      notice, this list of conditions and the following disclaimer
+ *      in the documentation and/or other materials provided with the
  *      distribution.
  *   3. Neither the names of the copyright holders nor the names of its
  *      contributors may be used to endorse or promote products derived
@@ -49,10 +49,12 @@
 #define KEY_LANGUAGE                DCONF_KEY("language")
 #define KEY_KEEP_DISPLAY_ON         DCONF_KEY("keepDisplayOn")
 #define KEY_SHOW_PLAY_TIME          DCONF_KEY("showPlayTime")
+#define KEY_ORIENTATION             DCONF_KEY("orientation")
 
 #define DEFAULT_LANGUAGE            Private::DEFAULT_LANGUAGE_CODE
 #define DEFAULT_KEEP_DISPLAY_ON     false
 #define DEFAULT_SHOW_PLAY_TIME      true
+#define DEFAULT_ORIENTATION         OrientationAny
 
 // ==========================================================================
 // WordleSettings::Private
@@ -65,6 +67,7 @@ public:
 
     Private(WordleSettings*);
 
+    static Orientation toOrientation(int);
     const QString validateLanguage(const QString);
     void setLanguage(const QString);
     QString language();
@@ -75,6 +78,7 @@ public:
     MGConfItem* iLanguage;
     MGConfItem* iKeepDisplayOn;
     MGConfItem* iShowPlayTime;
+    MGConfItem* iOrientation;
 };
 
 const QString WordleSettings::Private::DEFAULT_LANGUAGE_CODE("en");
@@ -85,7 +89,8 @@ WordleSettings::Private::Private(
     iDefaultLanguage(DEFAULT_LANGUAGE_CODE),
     iLanguage(new MGConfItem(KEY_LANGUAGE, aParent)),
     iKeepDisplayOn(new MGConfItem(KEY_KEEP_DISPLAY_ON, aParent)),
-    iShowPlayTime(new MGConfItem(KEY_SHOW_PLAY_TIME, aParent))
+    iShowPlayTime(new MGConfItem(KEY_SHOW_PLAY_TIME, aParent)),
+    iOrientation(new MGConfItem(KEY_ORIENTATION, aParent))
 {
     QObject::connect(iLanguage, SIGNAL(valueChanged()),
         aParent, SIGNAL(languageChanged()));
@@ -93,6 +98,8 @@ WordleSettings::Private::Private(
         aParent, SIGNAL(keepDisplayOnChanged()));
     QObject::connect(iShowPlayTime, SIGNAL(valueChanged()),
         aParent, SIGNAL(showPlayTimeChanged()));
+    QObject::connect(iOrientation, SIGNAL(valueChanged()),
+        aParent, SIGNAL(orientationChanged()));
 
     const QString language((QLocale().bcp47Name())); // e.g. "en-GB"
     HDEBUG("System language" << language);
@@ -106,6 +113,19 @@ WordleSettings::Private::Private(
             break;
         }
     }
+}
+
+WordleSettings::Orientation
+WordleSettings::Private::toOrientation(
+    int aValue)
+{
+    switch (aValue) {
+    case OrientationAny:
+    case OrientationPortrait:
+    case OrientationLandscape:
+        return (Orientation) aValue;
+    }
+    return DEFAULT_ORIENTATION;
 }
 
 const QString
@@ -201,4 +221,21 @@ WordleSettings::setShowPlayTime(
 {
     HDEBUG(aValue);
     iPrivate->iShowPlayTime->set(aValue);
+}
+
+WordleSettings::Orientation
+WordleSettings::orientation() const
+{
+    bool ok;
+    const int value = iPrivate->iOrientation->value(DEFAULT_ORIENTATION).toInt(&ok);
+
+    return ok ? Private::toOrientation(value) : DEFAULT_ORIENTATION;
+}
+
+void
+WordleSettings::setOrientation(
+    int aValue)
+{
+    HDEBUG(aValue);
+    iPrivate->iOrientation->set(Private::toOrientation(aValue));
 }
