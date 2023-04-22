@@ -15,7 +15,28 @@ Item {
 
     signal flip(var where)
 
-    readonly property bool gameWon: wordle.gameState === WordleGame.GameWon
+    readonly property bool _gameWon: wordle.gameState === WordleGame.GameWon
+
+    function _keyPressed(letter) {
+        if (letter === "\b") {
+            // Backspace
+            wordle.deleteLastLetter()
+        } else if (letter === "\n" || letter === "\r") {
+            // Enter
+            if (wordle.canSubmitInput) {
+                if (wordle.submitInput()) {
+                    if (_gameWon) {
+                        board.celebrate()
+                    }
+                } else {
+                    board.shakeRow(wordle.fullRows)
+                }
+            }
+        } else {
+            // A normal letter
+            wordle.inputLetter(letter)
+        }
+    }
 
     SilicaFlickable {
         id: flickable
@@ -100,7 +121,7 @@ Item {
             }
 
             MouseArea {
-                enabled: thisItem.enabled && gameWon
+                enabled: thisItem.enabled && _gameWon
                 anchors.fill: board
                 onClicked: board.celebrate()
             }
@@ -108,7 +129,7 @@ Item {
     }
 
     OpacityRampEffect {
-        sourceItem: flickable
+        sourceItem: thisItem.landscape ? null : flickable
         slope: flickable.height/Theme.paddingLarge
         offset: (flickable.height - Theme.paddingLarge)/flickable.height
         direction: OpacityRamp.TopToBottom
@@ -123,32 +144,66 @@ Item {
         }
         x: Theme.horizontalPageMargin
         width: parent.width - 2 * x
-        landscape: thisItem.landscape
+        visible: !thisItem.landscape
+        landscape: false
         wordle: thisItem.wordle
-        onKeyPressed: {
-            if (letter === "\b") {
-                // Backspace
-                wordle.deleteLastLetter()
-            } else if (letter === "\n" || letter === "\r") {
-                // Enter
-                if (wordle.canSubmitInput) {
-                    if (wordle.submitInput()) {
-                        if (gameWon) {
-                            board.celebrate()
-                        }
-                    } else {
-                        board.shakeRow(wordle.fullRows)
-                    }
-                }
-            } else {
-                // A normal letter
-                wordle.inputLetter(letter)
-            }
-        }
+        keypad: visible ? thisItem.wordle.keypad : []
+        onKeyPressed: thisItem._keyPressed(letter)
     }
 
+    WordleKeypad {
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: Theme.paddingLarge
+            left: parent.left
+            leftMargin: Theme.horizontalPageMargin
+        }
+        width: (parent.width - board.width)/2 - 2 * Theme.horizontalPageMargin
+        visible: thisItem.landscape
+        landscape: true
+        wordle: thisItem.wordle
+        keypad: visible ? thisItem.wordle.keypad1 : []
+        letterHeight: board.cellSize
+        onKeyPressed: thisItem._keyPressed(letter)
+    }
+
+    WordleKeypad {
+        anchors {
+            bottom: parent.bottom
+            bottomMargin: Theme.paddingLarge
+            right: parent.right
+            rightMargin: Theme.horizontalPageMargin
+        }
+        width: (parent.width - board.width)/2 - 2 * Theme.horizontalPageMargin
+        visible: thisItem.landscape
+        landscape: true
+        wordle: thisItem.wordle
+        keypad: visible ? thisItem.wordle.keypad2 : []
+        letterHeight: board.cellSize
+        onKeyPressed: thisItem._keyPressed(letter)
+    }
+
+    states: [
+        State {
+            name: "portrait"
+            when: !thisItem.landscape
+            AnchorChanges {
+                target: flickable
+                anchors.bottom: keypad.top
+            }
+        },
+        State {
+            name: "landscape"
+            when: thisItem.landscape
+            AnchorChanges {
+                target: flickable
+                anchors.bottom: thisItem.bottom
+            }
+        }
+    ]
+
     Loader {
-        active: gameWon
+        active: _gameWon
         sourceComponent: Component {
             Accelerometer {
                 active: thisItem.active

@@ -2,11 +2,15 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.wordle 1.0
 
+import "harbour"
+
 Column {
     id: thisItem
 
     property bool landscape
     property var wordle
+    property alias keypad: rows.model
+    property int letterHeight: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
 
     signal keyPressed(var letter)
 
@@ -15,7 +19,6 @@ Column {
     Repeater {
         id: rows
 
-        model: thisItem.wordle.keypad
         delegate: Row {
             id: row
 
@@ -36,7 +39,7 @@ Column {
                     readonly property bool functionalKey: Wordle.isFunctionalKey(letter)
 
                     width: row.baseKeyWidth * (functionalKey ? 2 : 1)
-                    height: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
+                    height: thisItem.letterHeight
 
                     sourceComponent: !functionalKey ? letterKeyComponent :
                         letter === '\b' ? backspaceKeyComponent :
@@ -48,12 +51,6 @@ Column {
                         when: !key.functionalKey
                         property: "letter"
                         value: key.letter
-                    }
-
-                    Binding {
-                        target: key.item
-                        property: "wordle"
-                        value: thisItem.wordle
                     }
 
                     Connections {
@@ -84,7 +81,9 @@ Column {
             property var letterState: wordle.knownLetterState(letter)
             property alias letter: label.text
 
+            wordle: thisItem.wordle
             enabled: wordle.canInputLetter
+            opacity: wordle.gameState === WordleGame.GameInProgress ? 1.0 : 0.6
             border.width: (letterState === Wordle.LetterStateUnknown) ? 1 : 0
             color: (letterState === Wordle.LetterStateNotPresent) ? Wordle.notPresentBackgroundColor :
                 (letterState === Wordle.LetterStatePresent) ?  Wordle.presentBackgroundColor :
@@ -109,6 +108,15 @@ Column {
                 letterState = wordle.knownLetterState(letter)
             }
 
+            Component.onCompleted: opacityBehavior.enabled = true
+
+            Behavior on opacity {
+                id: opacityBehavior
+
+                enabled: false
+                FadeAnimation { }
+            }
+
             Connections {
                 target: letterKey.wordle
                 ignoreUnknownSignals: true
@@ -128,6 +136,7 @@ Column {
         WordleFunctionalKey {
             iconSource: "images/key-enter.svg"
             enabled: wordle.canSubmitInput
+            wordle: thisItem.wordle
         }
     }
 
@@ -137,6 +146,7 @@ Column {
         WordleFunctionalKey {
             iconSource: "images/key-enter-right.svg"
             enabled: wordle.canSubmitInput
+            wordle: thisItem.wordle
         }
     }
 
@@ -148,6 +158,7 @@ Column {
 
             iconSource: "images/key-backspace.svg"
             enabled: wordle.canDeleteLastLetter
+            wordle: thisItem.wordle
 
             onDownChanged: {
                 if (down) {

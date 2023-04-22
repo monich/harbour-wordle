@@ -1,6 +1,6 @@
 /*
+ * Copyright (C) 2022-2023 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
- * Copyright (C) 2022 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -11,8 +11,8 @@
  *   1. Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in
- *      the documentation and/or other materials provided with the
+ *      notice, this list of conditions and the following disclaimer
+ *      in the documentation and/or other materials provided with the
  *      distribution.
  *   3. Neither the names of the copyright holders nor the names of its
  *      contributors may be used to endorse or promote products derived
@@ -49,6 +49,8 @@ class WordleGame :
     Q_OBJECT
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(QStringList keypad READ keypad NOTIFY languageChanged)
+    Q_PROPERTY(QStringList keypad1 READ keypad1 NOTIFY languageChanged)
+    Q_PROPERTY(QStringList keypad2 READ keypad2 NOTIFY languageChanged)
     Q_PROPERTY(QDateTime startTime READ startTime NOTIFY finishTimeChanged)
     Q_PROPERTY(QDateTime finishTime READ finishTime NOTIFY finishTimeChanged)
     Q_PROPERTY(QString answer READ answer NOTIFY answerChanged)
@@ -83,6 +85,8 @@ public:
     QDateTime finishTime() const;
     QString answer() const;
     QStringList keypad() const;
+    QStringList keypad1() const;
+    QStringList keypad2() const;
     GameState gameState() const;
     int secondsPlayed() const;
     int fullRows() const;
@@ -99,7 +103,7 @@ public:
     // QAbstractItemModel
     QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;
     int rowCount(const QModelIndex& aParent = QModelIndex()) const Q_DECL_OVERRIDE;
-    QVariant data(const QModelIndex& aIndex, int aRole) const Q_DECL_OVERRIDE;
+    QVariant data(const QModelIndex&, int aRole) const Q_DECL_OVERRIDE;
 
 Q_SIGNALS:
     void startTimeChanged();

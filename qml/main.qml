@@ -7,7 +7,7 @@ ApplicationWindow {
 
     readonly property string title: "WORDLE"
 
-    allowedOrientations: Orientation.Portrait // Orientation.All
+    allowedOrientations: Orientation.All
 
     initialPage: Component {
         MainPage {
