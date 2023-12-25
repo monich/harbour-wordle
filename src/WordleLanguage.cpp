@@ -1,6 +1,6 @@
 /*
+ * Copyright (C) 2022-2023 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
- * Copyright (C) 2022 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -11,8 +11,8 @@
  *   1. Redistributions of source code must retain the above copyright
  *      notice, this list of conditions and the following disclaimer.
  *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer in
- *      the documentation and/or other materials provided with the
+ *      notice, this list of conditions and the following disclaimer
+ *      in the documentation and/or other materials provided with the
  *      distribution.
  *   3. Neither the names of the copyright holders nor the names of its
  *      contributors may be used to endorse or promote products derived
@@ -22,7 +22,7 @@
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
@@ -117,7 +117,8 @@ const QString WordleLanguage::Private::INFO_KEY_KEYPAD("keypad");
 
 QMap<QString, WordleLanguage::Private*> WordleLanguage::Private::gLanguageMap;
 
-WordleLanguage::Private::Private(const QString& aLanguageCode) :
+WordleLanguage::Private::Private(
+    const QString& aLanguageCode) :
     iRef(1),
     iLanguageCode(aLanguageCode),
     iTextCodec(Q_NULLPTR),
@@ -175,12 +176,14 @@ WordleLanguage::Private::~Private()
     }
 }
 
-bool WordleLanguage::Private::isValid()
+bool
+WordleLanguage::Private::isValid()
 {
     return iTextCodec && !iKeypad.isEmpty() && iWordsCount > 0;
 }
 
-const char* WordleLanguage::Private::wordsData()
+const char*
+WordleLanguage::Private::wordsData()
 {
     if (!iWordsData) {
         if (iWordsFile.open(QFile::ReadOnly)) {
@@ -195,7 +198,8 @@ const char* WordleLanguage::Private::wordsData()
     return (const char*) iWordsData;
 }
 
-const char* WordleLanguage::Private::extWordsData()
+const char*
+WordleLanguage::Private::extWordsData()
 {
     if (iExtWordsCount && !iExtWordsData) {
         if (iExtWordsFile.open(QFile::ReadOnly)) {
@@ -210,7 +214,8 @@ const char* WordleLanguage::Private::extWordsData()
     return (const char*) iExtWordsData;
 }
 
-QString WordleLanguage::Private::randomWord()
+QString
+WordleLanguage::Private::randomWord()
 {
     const char* words = wordsData();
     if (words) {
@@ -224,7 +229,9 @@ QString WordleLanguage::Private::randomWord()
     return QString();
 }
 
-bool WordleLanguage::Private::isAllowed(QString aWord)
+bool
+WordleLanguage::Private::isAllowed(
+    QString aWord)
 {
     if (aWord.length() == WORDLE_WORD_LENGTH) {
         const QByteArray wordBytes(iTextCodec->fromUnicode(aWord));
@@ -254,7 +261,10 @@ bool WordleLanguage::Private::isAllowed(QString aWord)
 }
 
 // Comparators for single-byte encoding
-int WordleLanguage::Private::Compare1(const void* aData1, const void* aData2)
+int
+WordleLanguage::Private::Compare1(
+    const void* aData1,
+    const void* aData2)
 {
     return memcmp(aData1, aData2, WORDLE_WORD_LENGTH);
 }
@@ -263,7 +273,8 @@ int WordleLanguage::Private::Compare1(const void* aData1, const void* aData2)
 // WordleLanguage
 // ==========================================================================
 
-WordleLanguage::WordleLanguage(const QString& aLangCode) :
+WordleLanguage::WordleLanguage(
+    const QString& aLangCode) :
     iPrivate(Private::gLanguageMap.value(aLangCode))
 {
     if (iPrivate) {
@@ -277,7 +288,8 @@ WordleLanguage::WordleLanguage(const QString& aLangCode) :
     }
 }
 
-WordleLanguage::WordleLanguage(const WordleLanguage& aLang) :
+WordleLanguage::WordleLanguage(
+    const WordleLanguage& aLang) :
     iPrivate(aLang.iPrivate)
 {
     if (iPrivate) {
@@ -297,7 +309,9 @@ WordleLanguage::~WordleLanguage()
     }
 }
 
-WordleLanguage& WordleLanguage::operator = (const WordleLanguage& aLang)
+WordleLanguage&
+WordleLanguage::operator=(
+    const WordleLanguage& aLang)
 {
     if (iPrivate != aLang.iPrivate) {
         if (iPrivate && !iPrivate->iRef.deref()) {
@@ -311,37 +325,45 @@ WordleLanguage& WordleLanguage::operator = (const WordleLanguage& aLang)
     return *this;
 }
 
-bool WordleLanguage::isValid() const
+bool
+WordleLanguage::isValid() const
 {
     return iPrivate != Q_NULLPTR;
 }
 
-const QString WordleLanguage::getCode() const
+const QString
+WordleLanguage::getCode() const
 {
     return iPrivate ? iPrivate->iLanguageCode : QString();
 }
 
-const QString WordleLanguage::getName() const
+const QString
+WordleLanguage::getName() const
 {
     return iPrivate ? iPrivate->iName : QString();
 }
 
-const QStringList WordleLanguage::getKeypad() const
+const QStringList
+WordleLanguage::getKeypad() const
 {
     return iPrivate ? iPrivate->iKeypad : QStringList();
 }
 
-QString WordleLanguage::randomWord() const
+QString
+WordleLanguage::randomWord() const
 {
     return iPrivate ? iPrivate->randomWord() : QString();
 }
 
-bool WordleLanguage::isAllowed(QString aWord) const
+bool
+WordleLanguage::isAllowed(
+    QString aWord) const
 {
     return iPrivate && iPrivate->isAllowed(aWord);
 }
 
-QList<WordleLanguage> WordleLanguage::availableLangiages()
+QList<WordleLanguage>
+WordleLanguage::availableLanguages()
 {
     QList<WordleLanguage> languages;
 
