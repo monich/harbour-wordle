@@ -1,3 +1,4 @@
 build
 harbour-wordle.pro.user*
-wordle-tool
+tools/wordle-tool
+tools/wordle-stats

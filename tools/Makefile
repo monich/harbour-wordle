@@ -1,13 +1,12 @@
 PKGS = glib-2.0
-FLAGS = $(shell pkg-config --cflags $(PKGS))
+CFLAGS += -Wall $(shell pkg-config --cflags $(PKGS))
 LIBS = $(shell pkg-config --libs $(PKGS))
+TOOLS = wordle-tool wordle-stats
 
-FLAGS += -g
-
-all: wordle-tool
+all: $(TOOLS)
 
 clean:
-	rm -f wordle-tool *~
+	rm -f $(TOOLS) *~
 
 %: %.c
-	gcc -Wall $(FLAGS) -o $@ $< $(LIBS)
+	gcc $(CFLAGS) -o $@ $< $(LIBS)
