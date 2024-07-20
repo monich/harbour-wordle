@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Slava Monich <slava@monich.com>
+ * Copyright (C) 2022-2024 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -8,15 +8,17 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
- *   1. Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer
- *      in the documentation and/or other materials provided with the
- *      distribution.
- *   3. Neither the names of the copyright holders nor the names of its
- *      contributors may be used to endorse or promote products derived
- *      from this software without specific prior written permission.
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer
+ *     in the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *  3. Neither the names of the copyright holders nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -47,13 +49,13 @@
 #define MODEL_ROLE(X) X##Role
 
 enum WordleLanguageModelRole {
-#define FIRST(X,x) FirstRole = Qt::UserRole, MODEL_ROLE(X) = FirstRole,
-#define ROLE(X,x) MODEL_ROLE(X),
-#define LAST(X,x) MODEL_ROLE(X), LastRole = MODEL_ROLE(X)
+    #define FIRST(X,x) FirstRole = Qt::UserRole, MODEL_ROLE(X) = FirstRole,
+    #define ROLE(X,x) MODEL_ROLE(X),
+    #define LAST(X,x) MODEL_ROLE(X), LastRole = MODEL_ROLE(X)
     MODEL_ROLES_(FIRST,ROLE,LAST)
-#undef FIRST
-#undef ROLE
-#undef LAST
+    #undef FIRST
+    #undef ROLE
+    #undef LAST
 };
 
 WordleLanguageModel::WordleLanguageModel(
@@ -67,15 +69,15 @@ QHash<int,QByteArray>
 WordleLanguageModel::roleNames() const
 {
     QHash<int,QByteArray> roles;
-#define ROLE(X,x) roles.insert(MODEL_ROLE(X), #x);
-MODEL_ROLES(ROLE)
-#undef ROLE
+    #define ROLE(X,x) roles.insert(MODEL_ROLE(X), #x);
+    MODEL_ROLES(ROLE)
+    #undef ROLE
     return roles;
 }
 
 int
 WordleLanguageModel::rowCount(
-    const QModelIndex& aParent) const
+    const QModelIndex&) const
 {
     return iLanguages.count();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Slava Monich <slava@monich.com>
+ * Copyright (C) 2022-2024 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -8,21 +8,23 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
- *   1. Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer
- *      in the documentation and/or other materials provided with the
- *      distribution.
- *   3. Neither the names of the copyright holders nor the names of its
- *      contributors may be used to endorse or promote products derived
- *      from this software without specific prior written permission.
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer
+ *     in the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *  3. Neither the names of the copyright holders nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
  * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
  * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ * HOLDERS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
  * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
  * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
  * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
@@ -42,7 +44,6 @@
 #include "HarbourJson.h"
 #include "HarbourDebug.h"
 
-#include <QStringList>
 #include <QTimer>
 #include <QDir>
 #include <QStandardPaths>
@@ -71,7 +72,6 @@
     s(CanInputLetter,canInputLetter) \
     s(CanDeleteLastLetter,canDeleteLastLetter) \
     s(CanSubmitInput,canSubmitInput)
-    // languageChanged is a special case (it's not queued)
 
 #if HARBOUR_DEBUG
 QDebug
@@ -96,26 +96,25 @@ class WordleGame::Private :
     public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(Private)
 
 public:
     typedef void (WordleGame::*SignalEmitter)();
     typedef uint SignalMask;
     enum Signal {
-#define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
+        #define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
         MODEL_SIGNALS(SIGNAL_ENUM_)
-#undef  SIGNAL_ENUM_
+        #undef SIGNAL_ENUM_
         SignalCount
     };
 
     enum Role {
-#define FIRST(X,x) FirstRole = Qt::UserRole, MODEL_ROLE(X) = FirstRole,
-#define ROLE(X,x) MODEL_ROLE(X),
-#define LAST(X,x) MODEL_ROLE(X), LastRole = MODEL_ROLE(X)
+        #define FIRST(X,x) FirstRole = Qt::UserRole, MODEL_ROLE(X) = FirstRole,
+        #define ROLE(X,x) MODEL_ROLE(X),
+        #define LAST(X,x) MODEL_ROLE(X), LastRole = MODEL_ROLE(X)
         MODEL_ROLES_(FIRST,ROLE,LAST)
-#undef FIRST
-#undef ROLE
-#undef LAST
+        #undef FIRST
+        #undef ROLE
+        #undef LAST
     };
 
     class State {
@@ -148,7 +147,7 @@ public:
     static const QString STATE_KEY_TIME_START;  // UTC
     static const QString STATE_KEY_TIME_FINISH; // UTC
 
-    Private(WordleGame* aParent);
+    Private(WordleGame*);
     ~Private();
 
     WordleGame* parentGame();
@@ -198,7 +197,7 @@ public:
     QTimer* iSaveTimer;
     QTimer* iHoldoffTimer;
     QString iStateFile;
-    QDir iDataDir;
+    const QDir iDataDir;
 };
 
 const QString WordleGame::Private::DATE_TIME_FORMAT("yyyy-MM-dd hh:mm:ss");
@@ -262,7 +261,6 @@ WordleGame::Private::Private(
     QObject(aParent),
     iQueuedSignals(0),
     iFirstQueuedSignal(SignalCount),
-    iLanguage(""), // Invalid language
     iLoading(0),
     iPlaying(false),
     iSecondsPlayed(0),
@@ -859,15 +857,15 @@ QHash<int,QByteArray>
 WordleGame::roleNames() const
 {
     QHash<int,QByteArray> roles;
-#define ROLE(X,x) roles.insert(Private::MODEL_ROLE(X), #x);
-MODEL_ROLES(ROLE)
-#undef ROLE
+    #define ROLE(X,x) roles.insert(Private::MODEL_ROLE(X), #x);
+    MODEL_ROLES(ROLE)
+    #undef ROLE
     return roles;
 }
 
 int
 WordleGame::rowCount(
-    const QModelIndex& aParent) const
+    const QModelIndex&) const
 {
     return Private::NumSlots;
 }

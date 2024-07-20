@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2023 Slava Monich <slava@monich.com>
+ * Copyright (C) 2022-2024 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -8,15 +8,17 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
- *   1. Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer
- *      in the documentation and/or other materials provided with the
- *      distribution.
- *   3. Neither the names of the copyright holders nor the names of its
- *      contributors may be used to endorse or promote products derived
- *      from this software without specific prior written permission.
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer
+ *     in the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *  3. Neither the names of the copyright holders nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -77,7 +79,7 @@ public:
     static QMap<QString, Private*> gLanguageMap;
     typedef int (*Comparator)(const void*, const void*);
 
-    Private(const QString& aLanguageCode);
+    Private(const QString&);
     ~Private();
 
     bool isValid();
@@ -93,8 +95,6 @@ public:
     const QString iLanguageCode;
     QString iName;
     QStringList iKeypad;
-    QFileInfo iWordsFileInfo;
-    QFileInfo iExtWordsFileInfo;
     QTextCodec* iTextCodec;
     Comparator iCompare;
     int iCharSize;
@@ -129,12 +129,11 @@ WordleLanguage::Private::Private(
     iWordsData(Q_NULLPTR),
     iExtWordsData(Q_NULLPTR)
 {
-    QDir dataDir(SailfishApp::pathTo(DATA_DIR + QDir::separator() + aLanguageCode).toLocalFile());
-    iExtWordsFileInfo = QFileInfo(dataDir, XWORDS_FILE);
-    iWordsFileInfo = QFileInfo(dataDir, WORDS_FILE);
-    QFileInfo infoFile(dataDir, INFO_FILE);
-    HDEBUG(aLanguageCode << infoFile.absoluteFilePath() << infoFile.exists());
+    const QDir dataDir(SailfishApp::pathTo(DATA_DIR + QDir::separator() +
+        aLanguageCode).toLocalFile());
+    const QFileInfo infoFile(dataDir, INFO_FILE);
     QVariantMap info;
+    HDEBUG(aLanguageCode << infoFile.absoluteFilePath() << infoFile.exists());
     if (HarbourJson::load(infoFile.absoluteFilePath(), info)) {
         iName = info.value(INFO_KEY_NAME).toString();
         iKeypad = info.value(INFO_KEY_KEYPAD).toStringList();
@@ -147,11 +146,13 @@ WordleLanguage::Private::Private(
         iCompare = Compare1;
         iTextCodec = QTextCodec::codecForName(enc.constData());
         if (iTextCodec) {
+            const QFileInfo wordsFileInfo(dataDir, WORDS_FILE);
+            const QFileInfo extWordsFileInfo(dataDir, XWORDS_FILE);
             const int wordSize = WORDLE_WORD_LENGTH * iCharSize;
-            iExtWordsCount = (int)(iExtWordsFileInfo.size()/wordSize);
-            iWordsCount = (int)(iWordsFileInfo.size()/wordSize);
-            iWordsFile.setFileName(iWordsFileInfo.absoluteFilePath());
-            iExtWordsFile.setFileName(iExtWordsFileInfo.absoluteFilePath());
+            iExtWordsCount = (int)(extWordsFileInfo.size()/wordSize);
+            iWordsCount = (int)(wordsFileInfo.size()/wordSize);
+            iWordsFile.setFileName(wordsFileInfo.absoluteFilePath());
+            iExtWordsFile.setFileName(extWordsFileInfo.absoluteFilePath());
             if (isValid()) {
                 gLanguageMap.insert(iLanguageCode, this);
                 HDEBUG(iLanguageCode << "loaded" << iWordsCount << iExtWordsCount);

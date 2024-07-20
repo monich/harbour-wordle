@@ -18,9 +18,9 @@ ApplicationWindow {
 
     initialPage: Component {
         MainPage {
+            allowedOrientations: main.allowedOrientations
             title: main.title
             wordle: game
-            allowedOrientations: main.allowedOrientations
         }
     }
 
@@ -47,6 +47,7 @@ ApplicationWindow {
 
     WordleGame {
         id: game
+
         language: WordleSettings.language
         playing: gameState === WordleGame.GameInProgress &&
             !HarbourSystemState.locked &&

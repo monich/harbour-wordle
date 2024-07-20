@@ -28,8 +28,6 @@ Item {
         }
 
         IconButton {
-            id: okButton
-
             anchors {
                 right: parent.right
                 rightMargin: Theme.paddingMedium
@@ -122,8 +120,6 @@ Item {
                     value: currentItem ? currentItem.text : ""
                     width: parent.columnWidth
                     menu: ContextMenu {
-                        id: orientationMenu
-
                         x: 0
                         width: orientationComboBox.width
 
