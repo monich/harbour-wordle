@@ -15,6 +15,8 @@ Item {
 
     signal flip(var where)
 
+    // Still use portrait layout for really wide displays (e.g. Jolla tablet 3:4)
+    readonly property bool _landscapeLayout: landscape && (Screen.width / Screen.height) < 0.75
     readonly property bool _gameWon: wordle.gameState === WordleGame.GameWon
 
     function _keyPressed(letter) {
@@ -129,7 +131,7 @@ Item {
     }
 
     OpacityRampEffect {
-        sourceItem: thisItem.landscape ? null : flickable
+        sourceItem: _landscapeLayout ? null : flickable
         slope: flickable.height/Theme.paddingLarge
         offset: (flickable.height - Theme.paddingLarge)/flickable.height
         direction: OpacityRamp.TopToBottom
@@ -144,11 +146,11 @@ Item {
         }
         x: Theme.horizontalPageMargin
         width: parent.width - 2 * x
-        visible: !thisItem.landscape
+        visible: !_landscapeLayout
         landscape: false
         wordle: thisItem.wordle
         keypad: visible ? thisItem.wordle.keypad : []
-        onKeyPressed: thisItem._keyPressed(letter)
+        onKeyPressed: _keyPressed(letter)
     }
 
     WordleKeypad {
@@ -159,12 +161,12 @@ Item {
             leftMargin: Theme.horizontalPageMargin
         }
         width: (parent.width - board.width)/2 - 2 * Theme.horizontalPageMargin
-        visible: thisItem.landscape
+        visible: _landscapeLayout
         landscape: true
         wordle: thisItem.wordle
         keypad: visible ? thisItem.wordle.keypad1 : []
         letterHeight: board.cellSize
-        onKeyPressed: thisItem._keyPressed(letter)
+        onKeyPressed: _keyPressed(letter)
     }
 
     WordleKeypad {
@@ -175,18 +177,18 @@ Item {
             rightMargin: Theme.horizontalPageMargin
         }
         width: (parent.width - board.width)/2 - 2 * Theme.horizontalPageMargin
-        visible: thisItem.landscape
+        visible: _landscapeLayout
         landscape: true
         wordle: thisItem.wordle
         keypad: visible ? thisItem.wordle.keypad2 : []
         letterHeight: board.cellSize
-        onKeyPressed: thisItem._keyPressed(letter)
+        onKeyPressed: _keyPressed(letter)
     }
 
     states: [
         State {
             name: "portrait"
-            when: !thisItem.landscape
+            when: !_landscapeLayout
             AnchorChanges {
                 target: flickable
                 anchors.bottom: keypad.top
@@ -194,7 +196,7 @@ Item {
         },
         State {
             name: "landscape"
-            when: thisItem.landscape
+            when: _landscapeLayout
             AnchorChanges {
                 target: flickable
                 anchors.bottom: thisItem.bottom
