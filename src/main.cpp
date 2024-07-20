@@ -1,6 +1,6 @@
 /*
+ * Copyright (C) 2020-2024 Slava Monich <slava@monich.com>
  * Copyright (C) 2020-2022 Jolla Ltd.
- * Copyright (C) 2020-2023 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -8,15 +8,17 @@
  * modification, are permitted provided that the following conditions
  * are met:
  *
- *   1. Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *   2. Redistributions in binary form must reproduce the above copyright
- *      notice, this list of conditions and the following disclaimer
- *      in the documentation and/or other materials provided with the
- *      distribution.
- *   3. Neither the names of the copyright holders nor the names of its
- *      contributors may be used to endorse or promote products derived
- *      from this software without specific prior written permission.
+ *  1. Redistributions of source code must retain the above copyright
+ *     notice, this list of conditions and the following disclaimer.
+ *
+ *  2. Redistributions in binary form must reproduce the above copyright
+ *     notice, this list of conditions and the following disclaimer
+ *     in the documentation and/or other materials provided with the
+ *     distribution.
+ *
+ *  3. Neither the names of the copyright holders nor the names of its
+ *     contributors may be used to endorse or promote products derived
+ *     from this software without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
  * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
@@ -36,8 +38,10 @@
  */
 
 #include "Wordle.h"
+#include "WordleBoardModel.h"
 #include "WordleDefs.h"
 #include "WordleGame.h"
+#include "WordleHistory.h"
 #include "WordleLanguageModel.h"
 #include "WordleSettings.h"
 
@@ -66,7 +70,9 @@ static void register_types(const char* uri, int v1, int v2)
     REGISTER_SINGLETON(WordleSettings, uri, v1, v2);
     REGISTER_SINGLETON(HarbourBattery, uri, v1, v2);
     REGISTER_SINGLETON(HarbourSystemState, uri, v1, v2);
+    REGISTER_TYPE(WordleBoardModel, uri, v1, v2);
     REGISTER_TYPE(WordleGame, uri, v1, v2);
+    REGISTER_TYPE(WordleHistory, uri, v1, v2);
     REGISTER_TYPE(WordleLanguageModel, uri, v1, v2);
     REGISTER_TYPE(HarbourDisplayBlanking, uri, v1, v2);
 }

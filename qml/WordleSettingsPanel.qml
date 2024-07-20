@@ -19,8 +19,10 @@ Item {
             x: Theme.horizontalPageMargin
             color: Theme.highlightColor
             font {
+                capitalization: Font.AllUppercase
                 pixelSize: Theme.fontSizeLarge
                 family: Theme.fontFamilyHeading
+                weight: Font.Black
             }
             //: Page header
             //% "Settings"

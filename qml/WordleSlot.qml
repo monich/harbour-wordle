@@ -2,6 +2,8 @@ import QtQuick 2.0
 import Sailfish.Silica 1.0
 import harbour.wordle 1.0
 
+import "Utils.js" as Utils
+
 Rectangle {
     id: thisItem
 
@@ -14,11 +16,7 @@ Rectangle {
     property int _letterState: Wordle.LetterStateUnknown
     property var _flipAnimation
 
-    color: (_letterState == Wordle.LetterStateNotPresent) ? Wordle.notPresentBackgroundColor :
-        (_letterState == Wordle.LetterStatePresent) ? Wordle.presentBackgroundColor :
-        (_letterState == Wordle.LetterStatePresentHere) ? Wordle.presentHereBackgroundColor :
-        Wordle.emptySlotBackgroundColor
-
+    color: Utils.letterBackgroundColor(_letterState)
     border {
         width: (_letterState == Wordle.LetterStateUnknown) ? Math.max(Math.floor(thisItem.width/30),1) : 0
         color: Wordle.emptySlotBorderColor

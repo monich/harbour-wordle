@@ -41,6 +41,8 @@
 
 #include "HarbourDebug.h"
 
+#include <QStandardPaths>
+
 class Wordle::Private
 {
 public:
@@ -264,4 +266,79 @@ Wordle::isFunctionalKey(
     QString aKey)
 {
     return !aKey.isEmpty() && (aKey.at(0).category() == QChar::Other_Control);
+}
+
+/* static  */
+QDir
+Wordle::dataDir()
+{
+    return QDir(QStandardPaths::writableLocation
+        (QStandardPaths::GenericDataLocation) +
+        QLatin1String("/" APP_NAME "/"));
+}
+
+/* static */
+Wordle::LetterState
+Wordle::letterState(
+    const QString aAnswer,
+    const QString aWord,
+    int aPos)
+{
+    if (aPos >= 0 && aPos < WordLength) {
+        const QChar* answer = aAnswer.constData();
+        const QChar* word = aWord.constData();
+        const QChar letter(word[aPos]);
+
+        //
+        // Number of letters colored as PresentHere and Present in
+        // the guess word must not exceed the number of such letters
+        // in the answer.
+        //
+        // Letters that are at the right positions are always marked
+        // as such, and the misplaced ones are optionally marked from
+        // left to right, until the total count is reached.
+        //
+        // For example, if the answer is WHOLE then only the first E
+        // in WHEEL would be marked as present (but misplaced) and only
+        // the second O in WOOLY would be marked as correct (sitting
+        // at the right place), while the first O won't be marked as
+        // present because that would exceed the total number of O's
+        // in WHOLE.
+        //
+        if (answer[aPos] == letter) {
+            return LetterStatePresentHere;
+        } else if (!aAnswer.contains(letter)) {
+            return LetterStateNotPresent;
+        } else {
+            int misPlaceIndex = 0; // This counts one at aPos
+            int i, misPlaceCount = 0;
+
+            for (i = 0; i < aPos; i++) {
+                if (word[i] != answer[i]) {
+                    if (word[i] == letter) {
+                        misPlaceIndex++;
+                    } else if (answer[i] == letter) {
+                        misPlaceCount++;
+                    }
+                }
+            }
+
+            // At this point we have misPlaceIndex for the letter at aPos
+            if (misPlaceCount > misPlaceIndex) {
+                return LetterStatePresent;
+            } else {
+                // Skip aPos, it's already taken care of
+                for (i++; i < WordLength; i++) {
+                    if (word[i] != letter && answer[i] == letter) {
+                        misPlaceCount++;
+                        if (misPlaceCount > misPlaceIndex) {
+                            return LetterStatePresent;
+                        }
+                    }
+                }
+                return LetterStateNotPresent;
+            }
+        }
+    }
+    return LetterStateUnknown;
 }

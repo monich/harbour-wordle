@@ -58,5 +58,60 @@
         <extracomment>Small description label (app version)</extracomment>
         <translation>Versión %1</translation>
     </message>
+    <message id="wordle-statistics-header">
+        <source>Statistics</source>
+        <extracomment>Page header</extracomment>
+        <translation type="unfinished">Estadísticas</translation>
+    </message>
+    <message id="wordle-statistics-total_time">
+        <source>Total time</source>
+        <extracomment>Statistics item label</extracomment>
+        <translation type="unfinished">Tiempo total</translation>
+    </message>
+    <message id="wordle-statistics-best_time">
+        <source>Best time</source>
+        <extracomment>Statistics item label</extracomment>
+        <translation type="unfinished">Mejor tiempo</translation>
+    </message>
+    <message id="wordle-statistics-games_played">
+        <source>Games played</source>
+        <extracomment>Statistics item label</extracomment>
+        <translation type="unfinished">Juegos jugados</translation>
+    </message>
+    <message id="wordle-statistics-win_percentage">
+        <source>Win %</source>
+        <extracomment>Statistics item label</extracomment>
+        <translation type="unfinished">Victoria %</translation>
+    </message>
+    <message id="wordle-statistics-current_streak">
+        <source>Current streak</source>
+        <extracomment>Statistics item label</extracomment>
+        <translation type="unfinished">Racha actual</translation>
+    </message>
+    <message id="wordle-statistics-longest_streak">
+        <source>Longest streak</source>
+        <extracomment>Statistics item label</extracomment>
+        <translation type="unfinished">Racha más larga</translation>
+    </message>
+    <message id="wordle-history-guess_distribution">
+        <source>Guess distribution</source>
+        <extracomment>Guess distribution historgram title</extracomment>
+        <translation type="unfinished">Distribución de conjeturas</translation>
+    </message>
+    <message id="wordle-history-header">
+        <source>History</source>
+        <extracomment>Page header</extracomment>
+        <translation type="unfinished">Historia</translation>
+    </message>
+    <message id="wordle-history-menu-clear">
+        <source>Clear history</source>
+        <extracomment>Pulley menu item</extracomment>
+        <translation type="unfinished">Borrar historial</translation>
+    </message>
+    <message id="wordle-history-clear-remorse">
+        <source>All history and statistics will be deleted</source>
+        <extracomment>Remorse popup description</extracomment>
+        <translation type="unfinished">Se eliminarán todo el historial y las estadísticas</translation>
+    </message>
 </context>
 </TS>

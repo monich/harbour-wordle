@@ -12,6 +12,7 @@ Item {
     property bool landscape
     property alias title: header.title
     property var wordle
+    property var history
 
     signal flip(var where)
 
@@ -90,6 +91,19 @@ Item {
             showAnswer: wordle.gameState === WordleGame.GameLost
             enabled: !wordle.loading
             secondsPlayed: wordle.secondsPlayed
+        }
+
+        HarbourIconTextButton {
+            y: header.y +  header.titleCenterY - height/2
+            anchors {
+                left: parent.left
+                leftMargin: Theme.paddingMedium
+            }
+            iconSource: "images/statistics.svg"
+            opacity: (history && history.totalCount > 0) ? 1 : 0
+            visible: opacity > 0
+            onClicked: thisItem.flip(2)
+            FadeAnimation on opacity {}
         }
 
         HarbourIconTextButton {

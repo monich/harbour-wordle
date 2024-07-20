@@ -1,11 +1,10 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
-Item {
+SilicaFlickable {
     id: thisItem
 
-    property bool landscape
-    property alias source: loader.source
+    property alias sourceComponent: loader.sourceComponent
 
     signal flip()
 
@@ -39,11 +38,5 @@ Item {
     Connections {
         target: loader.item
         onFlip: thisItem.flip()
-    }
-
-    Binding {
-        target: loader.item
-        property: "landscape"
-        value: thisItem.landscape
     }
 }

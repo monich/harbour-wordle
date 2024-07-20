@@ -15,9 +15,38 @@ Page {
 
     function completeFlip() {
         if (!flipable.flipState) {
-            // Unload the back panel
-            backPanel.source = ""
             _targetAngle = 0
+        }
+    }
+
+    WordleHistory {
+        id: wordleHistory
+
+        language: WordleSettings.language
+    }
+
+    Connections {
+        target: wordle
+        onGameOver: wordleHistory.add(wordle.answer, wordle.attempts,
+            wordle.startTime, wordle.finishTime, wordle.secondsPlayed)
+    }
+
+    Component {
+        id: settingsComponent
+
+        WordleSettingsPanel {
+            landscape: thisPage.isLandscape
+        }
+    }
+
+    Component {
+        id: historyComponent
+
+        WordleHistoryPanel {
+            history: wordleHistory
+            flickable: backPanel
+            landscape: thisPage.isLandscape
+            active: flipable.side == Flipable.Back && flipable.flipState == 2 && !flipTransition.running
         }
     }
 
@@ -38,10 +67,9 @@ Page {
             landscape: thisPage.isLandscape
             enabled: thisPage._completed && !rotation.angle
             active: enabled && Qt.application.active
+            history: wordleHistory
             onFlip: {
-                backPanel.source = (where === 1) ?
-                    "WordleSettingsPanel.qml" :
-                    "WordleStatisticsPanel.qml"
+                backPanel.sourceComponent = (where === 1) ? settingsComponent : historyComponent
                 backPanelRotation.angle = 0
                 rotation.axis.x = isPortrait ? 0 : 1
                 rotation.axis.y = isPortrait ? 1 : 0
@@ -53,7 +81,6 @@ Page {
             id: backPanel
 
             anchors.fill: parent
-            landscape: thisPage.isLandscape
             transform: Rotation {
                 id: backPanelRotation
 
@@ -71,12 +98,12 @@ Page {
                 var rotateX = isPortrait ? 0 : 1
                 if (rotation.axis.x !== rotateX) {
                     rotation.axis.x = rotateX
-                    rotation.axis.y = isPortrait ? 1 : 0
+                    rotation.axis.y = rotateX ? 0 : 1
                     // This fixes a weird problem - after flipping, rotating and flipping again
                     // the back panel gets rotated 180 degrees around z axis
                     backPanelRotation.angle = 180
                 }
-                _targetAngle = (flipable.flipState === 1) ? 360 : -360
+                _targetAngle = (flipable.flipState === 1 || !isPortrait) ? 360 : -360
                 flipable.flipState = 0
             }
         }
@@ -120,12 +147,14 @@ Page {
 
                 PropertyChanges {
                     target: rotation
-                    angle: -180
+                    angle: isPortrait ? -180 : 180
                 }
             }
         ]
 
         transitions: Transition {
+            id: flipTransition
+
             SequentialAnimation {
                 alwaysRunToEnd: true
                 NumberAnimation {

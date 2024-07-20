@@ -45,8 +45,6 @@
 #include "HarbourDebug.h"
 
 #include <QTimer>
-#include <QDir>
-#include <QStandardPaths>
 
 // Strings and letters are lower case
 
@@ -67,6 +65,7 @@
     s(StartTime,startTime) \
     s(FinishTime,finishTime) \
     s(Answer,answer) \
+    s(Attempts,attempts) \
     s(GameState,gameState) \
     s(FullRows,fullRows) \
     s(CanInputLetter,canInputLetter) \
@@ -127,6 +126,7 @@ public:
         const QDateTime iStartTime;
         const QDateTime iFinishTime;
         const QString iAnswer;
+        const QStringList iAttempts;
         const int iSecondsPlayed;
         const int iFullRows;
         const bool iCanSubmitInput;
@@ -214,6 +214,7 @@ WordleGame::Private::State::State(Private* aPrivate) :
     iStartTime(aPrivate->iStartTime),
     iFinishTime(aPrivate->iFinishTime),
     iAnswer(aPrivate->iAnswer),
+    iAttempts(aPrivate->iAttempts),
     iSecondsPlayed(aPrivate->iSecondsPlayed + aPrivate->iSecondsPlayedThisTime),
     iFullRows(aPrivate->iAttempts.count()),
     iCanSubmitInput(aPrivate->canSubmitInput()),
@@ -242,6 +243,9 @@ WordleGame::Private::State::queueSignals(
     if (iSecondsPlayed != (aPrivate->iSecondsPlayed + aPrivate->iSecondsPlayedThisTime)) {
         aPrivate->queueSignal(SignalSecondsPlayedChanged);
     }
+    if (iAttempts != aPrivate->iAttempts) {
+        aPrivate->queueSignal(SignalAttemptsChanged);
+    }
     if (iFullRows != aPrivate->iAttempts.count()) {
         aPrivate->queueSignal(SignalFullRowsChanged);
     }
@@ -269,9 +273,7 @@ WordleGame::Private::Private(
     iPlayTimer(new QTimer(this)),
     iSaveTimer(new QTimer(this)),
     iHoldoffTimer(new QTimer(this)),
-    iDataDir(QStandardPaths::writableLocation
-        (QStandardPaths::GenericDataLocation) +
-            QLatin1String("/" APP_NAME "/"))
+    iDataDir(Wordle::dataDir())
 {
     iPlayTimer->setSingleShot(true);
     connect(iPlayTimer, SIGNAL(timeout()), SLOT(onPlayTimerExpired()));
@@ -667,63 +669,7 @@ WordleGame::Private::letterState(
     const QString aWord,
     int aPos) const
 {
-    if (aPos >= 0 && aPos < Wordle::WordLength) {
-        const QChar* answer = iAnswer.constData();
-        const QChar* word = aWord.constData();
-        const QChar letter(word[aPos]);
-
-        //
-        // Number of letters colored as PresentHere and Present in
-        // the guess word must not exceed the number of such letters
-        // in the answer.
-        //
-        // Letters that are at the right positions are always marked
-        // as such, and the misplaced ones are optionally marked from
-        // left to right, until the total count is reached.
-        //
-        // For example, if the answer is WHOLE then only the first E
-        // in WHEEL would be marked as present (but misplaced) and only
-        // the second O in WOOLY would be marked as correct (sitting
-        // at the right place), while the first O won't be marked as
-        // present because that would exceed the total number of O's
-        // in WHOLE.
-        //
-        if (answer[aPos] == letter) {
-            return Wordle::LetterStatePresentHere;
-        } else if (!iAnswer.contains(letter)) {
-            return Wordle::LetterStateNotPresent;
-        } else {
-            int misPlaceIndex = 0; // This counts one at aPos
-            int i, misPlaceCount = 0;
-
-            for (i = 0; i < aPos; i++) {
-                if (word[i] != answer[i]) {
-                    if (word[i] == letter) {
-                        misPlaceIndex++;
-                    } else if (answer[i] == letter) {
-                        misPlaceCount++;
-                    }
-                }
-            }
-
-            // At this point we have misPlaceIndex for the letter at aPos
-            if (misPlaceCount > misPlaceIndex) {
-                return Wordle::LetterStatePresent;
-            } else {
-                // Skip aPos, it's already taken care of
-                for (i++; i < Wordle::WordLength; i++) {
-                    if (word[i] != letter && answer[i] == letter) {
-                        misPlaceCount++;
-                        if (misPlaceCount > misPlaceIndex) {
-                            return Wordle::LetterStatePresent;
-                        }
-                    }
-                }
-                return Wordle::LetterStateNotPresent;
-            }
-        }
-    }
-    return Wordle::LetterStateUnknown;
+    return Wordle::letterState(iAnswer, aWord, aPos);
 }
 
 int
@@ -851,6 +797,12 @@ QString
 WordleGame::answer() const
 {
     return iPrivate->iAnswer;
+}
+
+QStringList
+WordleGame::attempts() const
+{
+    return iPrivate->iAttempts;
 }
 
 QHash<int,QByteArray>
@@ -993,6 +945,7 @@ WordleGame::submitInput()
         const int count = iPrivate->letterCount();
         const QString word(iPrivate->iInput);
         const Private::State prevState(iPrivate);
+        bool finished = false;
 
         iPrivate->iAttempts.append(word);
         iPrivate->iInput.resize(0);
@@ -1003,6 +956,7 @@ WordleGame::submitInput()
         Q_EMIT inputSubmitted(word);
         if (iPrivate->gameState() != GameInProgress) {
             HDEBUG("Game over");
+            finished = true;
             if (!iPrivate->iFinishTime.isValid()) {
                 iPrivate->iFinishTime = QDateTime::currentDateTime();
             }
@@ -1010,6 +964,9 @@ WordleGame::submitInput()
         prevState.queueSignals(iPrivate);
         iPrivate->emitQueuedSignals();
         iPrivate->saveState();
+        if (finished) {
+            Q_EMIT gameOver();
+        }
         return true;
     }
     return false;

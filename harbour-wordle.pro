@@ -73,8 +73,10 @@ INSTALLS += qml_components
 
 HEADERS += \
   src/Wordle.h \
+  src/WordleBoardModel.h \
   src/WordleDefs.h \
   src/WordleGame.h \
+  src/WordleHistory.h \
   src/WordleLanguage.h \
   src/WordleLanguageModel.h \
   src/WordleSettings.h
@@ -82,7 +84,9 @@ HEADERS += \
 SOURCES += \
   src/main.cpp \
   src/Wordle.cpp \
+  src/WordleBoardModel.cpp \
   src/WordleGame.cpp \
+  src/WordleHistory.cpp \
   src/WordleLanguage.cpp \
   src/WordleLanguageModel.cpp \
   src/WordleSettings.cpp

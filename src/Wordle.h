@@ -42,8 +42,9 @@
 
 #include "WordleDefs.h"
 
-#include <QObject>
 #include <QColor>
+#include <QDir>
+#include <QObject>
 
 class QQmlEngine;
 class QJSEngine;
@@ -97,6 +98,10 @@ public:
 
     Q_INVOKABLE static int functionalKeyCount(QString);
     Q_INVOKABLE static bool isFunctionalKey(QString);
+
+    // Static utilities
+    static QDir dataDir();
+    static LetterState letterState(const QString, const QString, int);
 
 Q_SIGNALS:
     void darkOnLightChanged();

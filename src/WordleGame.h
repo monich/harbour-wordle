@@ -56,6 +56,7 @@ class WordleGame :
     Q_PROPERTY(QDateTime startTime READ startTime NOTIFY finishTimeChanged)
     Q_PROPERTY(QDateTime finishTime READ finishTime NOTIFY finishTimeChanged)
     Q_PROPERTY(QString answer READ answer NOTIFY answerChanged)
+    Q_PROPERTY(QStringList attempts READ attempts NOTIFY attemptsChanged)
     Q_PROPERTY(bool playing READ playing WRITE setPlaying NOTIFY playingChanged)
     Q_PROPERTY(bool loading READ loading NOTIFY loadingChanged)
     Q_PROPERTY(int secondsPlayed READ secondsPlayed NOTIFY secondsPlayedChanged)
@@ -86,6 +87,7 @@ public:
     QDateTime startTime() const;
     QDateTime finishTime() const;
     QString answer() const;
+    QStringList attempts() const;
     QStringList keypad() const;
     QStringList keypad1() const;
     QStringList keypad2() const;
@@ -112,6 +114,7 @@ Q_SIGNALS:
     void finishTimeChanged();
     void languageChanged();
     void answerChanged();
+    void attemptsChanged();
     void playingChanged();
     void loadingChanged();
     void secondsPlayedChanged();
@@ -121,6 +124,7 @@ Q_SIGNALS:
     void canDeleteLastLetterChanged();
     void canSubmitInputChanged();
     void inputSubmitted(QString word);
+    void gameOver();
 
 private:
     class Private;
