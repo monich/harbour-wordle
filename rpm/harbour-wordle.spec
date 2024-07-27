@@ -1,7 +1,7 @@
 Name:           harbour-wordle
 
 Summary:        WORDLE game
-Version:        1.0.15
+Version:        1.1.0
 Release:        1
 License:        BSD
 URL:            https://github.com/monich/harbour-wordle
@@ -20,7 +20,6 @@ BuildRequires:  qt5-qttools-linguist
 
 %{!?qtc_qmake5:%define qtc_qmake5 %qmake5}
 %{!?qtc_make:%define qtc_make make}
-%{?qtc_builddir:%define _builddir %qtc_builddir}
 
 %description
 Guess the WORDLE in 6 tries
@@ -33,6 +32,7 @@ Screenshots:
 - https://home.monich.net/chum/harbour-wordle/screenshots/screenshot-001.png
 - https://home.monich.net/chum/harbour-wordle/screenshots/screenshot-002.png
 - https://home.monich.net/chum/harbour-wordle/screenshots/screenshot-003.png
+- https://home.monich.net/chum/harbour-wordle/screenshots/screenshot-004.png
 %endif
 
 %prep
@@ -43,7 +43,6 @@ Screenshots:
 %qtc_make %{?_smp_mflags}
 
 %install
-rm -rf %{buildroot}
 %qmake5_install
 
 desktop-file-install --delete-original \
