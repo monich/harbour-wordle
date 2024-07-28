@@ -207,7 +207,7 @@ Item {
             color: Theme.rgba(Theme.highlightColor, 0.4)
             //: Small description label (app version)
             //% "Version %1"
-            text: qsTrId("wordle-settings-version").arg("1.1.0")
+            text: qsTrId("wordle-settings-version").arg("1.1.1")
         }
     }
 }
