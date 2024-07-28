@@ -12,7 +12,6 @@ BackgroundItem {
     property bool win
     property alias answer: boardModel.answer
     property alias attempts: boardModel.attempts
-    property var startTime
     property var endTime
     property int secondsPlayed
 
@@ -74,14 +73,6 @@ BackgroundItem {
             left: landscape ? answerColumn.right : answerColumn.left
             right: board.left
             rightMargin: Theme.paddingLarge
-        }
-
-        Label {
-            width: parent.width
-            horizontalAlignment: landscape ? Text.AlignRight : Text.AlignLeft
-            text: Utils.formatDateTime(startTime)
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: Theme.secondaryHighlightColor
         }
 
         Label {

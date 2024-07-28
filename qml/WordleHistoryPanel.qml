@@ -351,7 +351,6 @@ Item {
             win: model.win
             answer: model.answer
             attempts: model.attempts
-            startTime: model.startTime
             endTime: model.endTime
             secondsPlayed: model.secondsPlayed
         }
