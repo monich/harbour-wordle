@@ -51,7 +51,7 @@
     <message id="wordle-settings-keep_display_on-description">
         <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
         <extracomment>Text switch label description</extracomment>
-        <translation type="unfinished">För att undvika att batteriet laddas ur helt skulle skärmsläckning fortfarande tillåtas om batterinivån sjunker under %1% och telefonen inte laddas.</translation>
+        <translation>För att undvika att batteriet laddas ur helt skulle skärmsläckning fortfarande tillåtas om batterinivån sjunker under %1% och telefonen inte laddas.</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>
@@ -61,57 +61,57 @@
     <message id="wordle-statistics-header">
         <source>Statistics</source>
         <extracomment>Page header</extracomment>
-        <translation type="unfinished">Statistik</translation>
+        <translation>Statistik</translation>
     </message>
     <message id="wordle-statistics-total_time">
         <source>Total time</source>
         <extracomment>Statistics item label</extracomment>
-        <translation type="unfinished">Total tid</translation>
+        <translation>Total tid</translation>
     </message>
     <message id="wordle-statistics-best_time">
         <source>Best time</source>
         <extracomment>Statistics item label</extracomment>
-        <translation type="unfinished">Lämpligast tid</translation>
+        <translation>Bästa tid</translation>
     </message>
     <message id="wordle-statistics-games_played">
         <source>Games played</source>
         <extracomment>Statistics item label</extracomment>
-        <translation type="unfinished">Spelade spel</translation>
+        <translation>Spelade spel</translation>
     </message>
     <message id="wordle-statistics-win_percentage">
         <source>Win %</source>
         <extracomment>Statistics item label</extracomment>
-        <translation type="unfinished">Vinst %</translation>
+        <translation>Vinst %</translation>
     </message>
     <message id="wordle-statistics-current_streak">
         <source>Current streak</source>
         <extracomment>Statistics item label</extracomment>
-        <translation type="unfinished">Nuvarande segersvit</translation>
+        <translation>Nuvarande segersvit</translation>
     </message>
     <message id="wordle-statistics-longest_streak">
         <source>Longest streak</source>
         <extracomment>Statistics item label</extracomment>
-        <translation type="unfinished">Längsta vinstsvit</translation>
+        <translation>Längsta vinstsvit</translation>
     </message>
     <message id="wordle-history-guess_distribution">
         <source>Guess distribution</source>
         <extracomment>Guess distribution historgram title</extracomment>
-        <translation type="unfinished">Fördelning av gissningar</translation>
+        <translation>Fördelning av gissningar</translation>
     </message>
     <message id="wordle-history-header">
         <source>History</source>
         <extracomment>Page header</extracomment>
-        <translation type="unfinished">Historik</translation>
+        <translation>Historik</translation>
     </message>
     <message id="wordle-history-menu-clear">
         <source>Clear history</source>
         <extracomment>Pulley menu item</extracomment>
-        <translation type="unfinished">Rensa historik</translation>
+        <translation>Rensa historik</translation>
     </message>
     <message id="wordle-history-clear-remorse">
         <source>All history and statistics will be deleted</source>
         <extracomment>Remorse popup description</extracomment>
-        <translation type="unfinished">All historik och statistik kommer att raderas</translation>
+        <translation>All historik och statistik kommer att raderas</translation>
     </message>
 </context>
 </TS>
