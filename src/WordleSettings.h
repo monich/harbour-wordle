@@ -54,8 +54,13 @@ class WordleSettings :
     Q_PROPERTY(bool showPlayTime READ showPlayTime WRITE setShowPlayTime NOTIFY showPlayTimeChanged)
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
     Q_ENUMS(Orientation)
+    Q_ENUMS(Constants)
 
 public:
+    enum Constants {
+        MinChangeToKeepDisplayOn = 20
+    };
+
     enum Orientation {
         OrientationAny,
         OrientationPortrait,
