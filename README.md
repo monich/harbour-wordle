@@ -19,6 +19,7 @@ The following dictionaries are included:
 * Français
 * Magyar
 * Nederlands
+* Polski
 * Português
 * Русский
 * Svenska
