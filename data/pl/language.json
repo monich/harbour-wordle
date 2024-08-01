@@ -1,5 +1,5 @@
 {
     "name": "Polski",
     "enconding": "windows-1250",
-    "keypad": [ "qwertzuiopżó", "asdfghjklłęą", "\nyxcvbnmśńć\b" ]
+    "keypad": [ "ąęóśćńżź\r", "qwertyuiop", "asdfghjklł", "zxcvbnm\b" ]
 }
