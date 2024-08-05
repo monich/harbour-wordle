@@ -1,5 +1,4 @@
 .pragma library
-.import harbour.wordle 1.0 as App
 
 function int2(i) {
     return i < 10 ? ("0" + i) : i
@@ -28,13 +27,4 @@ function formatTime(time) {
 
 function formatDateTime(dateTime) {
     return isNaN(dateTime) ? "" : (formatDate(dateTime) + " " + formatTime(dateTime))
-}
-
-function letterBackgroundColor(state) {
-    switch (state) {
-    case App.Wordle.LetterStateNotPresent: return App.Wordle.notPresentBackgroundColor
-    case App.Wordle.LetterStatePresent: return App.Wordle.presentBackgroundColor
-    case App.Wordle.LetterStatePresentHere: return App.Wordle.presentHereBackgroundColor
-    }
-    return App.Wordle.emptySlotBackgroundColor
 }

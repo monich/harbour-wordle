@@ -85,10 +85,7 @@ Column {
             enabled: wordle.canInputLetter
             opacity: wordle.gameState === WordleGame.GameInProgress ? 1.0 : 0.6
             border.width: (letterState === Wordle.LetterStateUnknown) ? 1 : 0
-            color: (letterState === Wordle.LetterStateNotPresent) ? Wordle.notPresentBackgroundColor :
-                (letterState === Wordle.LetterStatePresent) ?  Wordle.presentBackgroundColor :
-                (letterState === Wordle.LetterStatePresentHere) ?  Wordle.presentHereBackgroundColor :
-                Wordle.defaultKeyBackgroundColor
+            color: Wordle.letterBackgroundColor(letterState)
 
             Label {
                 id: label

@@ -96,6 +96,7 @@ public:
     QColor getPresentBackgroundColor() const;
     QColor getPresentHereBackgroundColor() const;
 
+    Q_INVOKABLE QColor letterBackgroundColor(LetterState);
     Q_INVOKABLE static int functionalKeyCount(QString);
     Q_INVOKABLE static bool isFunctionalKey(QString);
 

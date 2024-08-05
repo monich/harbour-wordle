@@ -118,7 +118,7 @@ BackgroundItem {
 
                 width: board.cellSize
                 height: board.cellSize
-                color: Utils.letterBackgroundColor(model.state)
+                color: Wordle.letterBackgroundColor(model.state)
                 layer.enabled: thisItem.highlighted
                 layer.effect: HarbourPressEffect { source: letterBackground }
                 border {

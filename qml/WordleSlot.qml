@@ -16,7 +16,7 @@ Rectangle {
     property int _letterState: Wordle.LetterStateUnknown
     property var _flipAnimation
 
-    color: Utils.letterBackgroundColor(_letterState)
+    color: Wordle.letterBackgroundColor(_letterState)
     border {
         width: (_letterState == Wordle.LetterStateUnknown) ? Math.max(Math.floor(thisItem.width/30),1) : 0
         color: Wordle.emptySlotBorderColor

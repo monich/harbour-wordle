@@ -246,6 +246,24 @@ Wordle::getPresentHereBackgroundColor() const
     return iPrivate->iColorScheme->iPresentHereBackgroundColor;
 }
 
+QColor
+Wordle::letterBackgroundColor(
+    LetterState aState)
+{
+    switch (aState) {
+    case LetterStateNotPresent:
+        return iPrivate->iColorScheme->iNotPresentBackgroundColor;
+    case LetterStatePresent:
+        return iPrivate->iColorScheme->iPresentBackgroundColor;
+    case LetterStatePresentHere:
+        return iPrivate->iColorScheme->iPresentHereBackgroundColor;
+    case LetterStateUnknown:
+        // default
+        break;
+    }
+    return iPrivate->iColorScheme->iEmptySlotBackgroundColor;
+}
+
 int
 Wordle::functionalKeyCount(
     QString aKeys)
