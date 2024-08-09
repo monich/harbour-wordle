@@ -83,6 +83,9 @@ WordleBoardModel::WordleBoardModel(
     QAbstractListModel(aParent),
     iPrivate(new Private)
 {
+#if QT_VERSION < 0x050000
+    setRoleNames(roleNames());
+#endif
 }
 
 WordleBoardModel::~WordleBoardModel()
@@ -102,7 +105,10 @@ WordleBoardModel::setAnswer(
 {
     if (iPrivate->iAnswer != aAnwser) {
         iPrivate->iAnswer = aAnwser;
-        Q_EMIT dataChanged(index(0), index(WORDLE_MAX_ATTEMPTS-1));
+        const int nAttempts = iPrivate->iAttempts.count();
+        if (nAttempts > 0) {
+            Q_EMIT dataChanged(index(0), index(nAttempts - 1));
+        }
         Q_EMIT answerChanged();
     }
 }
@@ -118,15 +124,19 @@ WordleBoardModel::setAttempts(
     QString aAttempts)
 {
     if (iPrivate->iAllAttempts != aAttempts) {
+        const int prevAttempts = iPrivate->iAttempts.count();
+        const int numAttempts = aAttempts.length() / Wordle::WordLength;
         iPrivate->iAllAttempts = aAttempts;
         iPrivate->iAttempts.clear();
         // Split the string
-        const int n = aAttempts.length() / Wordle::WordLength;
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < numAttempts; i++) {
             iPrivate->iAttempts.append(aAttempts.mid(i * Wordle::WordLength,
                 Wordle::WordLength));
         }
-        Q_EMIT dataChanged(index(0), index(WORDLE_MAX_ATTEMPTS-1));
+        const int n = qMax(prevAttempts, numAttempts);
+        if (n > 0) {
+            Q_EMIT dataChanged(index(0), index(n - 1));
+        }
         Q_EMIT attemptsChanged();
     }
 }
@@ -156,8 +166,8 @@ WordleBoardModel::data(
     const int i = aIndex.row();
     if (i >= 0 && i < Private::NumSlots) {
         Private::Role role = (Private::Role)aRole;
-        const int n = iPrivate->iAttempts.count();
-        const int attempted = n * Wordle::WordLength;
+        const int numAttempts = iPrivate->iAttempts.count();
+        const int attempted = numAttempts * Wordle::WordLength;
         if (i < attempted) {
             const int pos = i % Wordle::WordLength;
             const QString word(iPrivate->iAttempts.at(i/Wordle::WordLength));
@@ -178,4 +188,3 @@ WordleBoardModel::data(
     }
     return QVariant();
 }
-

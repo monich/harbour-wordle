@@ -37,13 +37,20 @@
  * any official policies, either expressed or implied.
  */
 
+#ifdef HARMATTAN
+#include "MeegoWordle.h"
+#define PlatformApp MeegoApp
+#else
+#include <sailfishapp.h>
+#define PlatformApp SailfishApp
+#endif
+
+#include "WordleTypes.h"
 #include "WordleDefs.h"
 #include "WordleLanguage.h"
 
 #include "HarbourJson.h"
 #include "HarbourDebug.h"
-
-#include <sailfishapp.h>
 
 #include <QDir>
 #include <QFile>
@@ -129,7 +136,7 @@ WordleLanguage::Private::Private(
     iWordsData(Q_NULLPTR),
     iExtWordsData(Q_NULLPTR)
 {
-    const QDir dataDir(SailfishApp::pathTo(DATA_DIR + QDir::separator() +
+    const QDir dataDir(PlatformApp::pathTo(DATA_DIR + QDir::separator() +
         aLanguageCode).toLocalFile());
     const QFileInfo infoFile(dataDir, INFO_FILE);
     QVariantMap info;
@@ -158,7 +165,7 @@ WordleLanguage::Private::Private(
                 HDEBUG(iLanguageCode << "loaded" << iWordsCount << iExtWordsCount);
             }
         } else {
-            HWARN("Not text codec for" << enc);
+            HWARN("No text codec for" << enc);
         }
     }
 }
@@ -368,7 +375,7 @@ WordleLanguage::availableLanguages()
 {
     QList<WordleLanguage> languages;
 
-    QDir dataDir(SailfishApp::pathTo(Private::DATA_DIR).toLocalFile());
+    QDir dataDir(PlatformApp::pathTo(Private::DATA_DIR).toLocalFile());
     QStringList dirs(dataDir.entryList(QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name));
     const int n = dirs.count();
     for (int i = 0; i < n; i++) {

@@ -79,7 +79,8 @@ HEADERS += \
   src/WordleHistory.h \
   src/WordleLanguage.h \
   src/WordleLanguageModel.h \
-  src/WordleSettings.h
+  src/WordleSettings.h \
+  src/WordleTypes.h
 
 SOURCES += \
   src/main.cpp \
@@ -114,7 +115,8 @@ INSTALLS += data
 # Translations
 TRANSLATION_SOURCES = \
   $${_PRO_FILE_PWD_}/qml \
-  $${_PRO_FILE_PWD_}/src
+  $${_PRO_FILE_PWD_}/src \
+  $${_PRO_FILE_PWD_}/meego
 
 defineTest(addTrFile) {
     rel = translations/harbour-$${1}

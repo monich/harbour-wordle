@@ -1,5 +1,5 @@
 {
     "name": "English",
-    "enconding": "ASCII",
+    "enconding": "iso-8859-1",
     "keypad": [ "qwertyuiop", "asdfghjkl", "\nzxcvbnm\b" ]
 }

@@ -40,6 +40,7 @@
 #ifndef WORDLE_LANGUAGE_MODEL_H
 #define WORDLE_LANGUAGE_MODEL_H
 
+#include "WordleTypes.h"
 #include "WordleLanguage.h"
 
 #include <QAbstractListModel>
@@ -48,14 +49,18 @@ class WordleLanguageModel :
     public QAbstractListModel
 {
     Q_OBJECT
+    Q_PROPERTY(int count READ rowCount CONSTANT)
 
 public:
     explicit WordleLanguageModel(QObject* aParent = Q_NULLPTR);
 
     // QAbstractItemModel
     QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;
-    int rowCount(const QModelIndex&) const Q_DECL_OVERRIDE;
+    int rowCount(const QModelIndex& aIndex = QModelIndex()) const Q_DECL_OVERRIDE;
     QVariant data(const QModelIndex&, int) const Q_DECL_OVERRIDE;
+
+    Q_INVOKABLE QString languageAt(int);
+    Q_INVOKABLE int indexOf(QString);
 
 private:
     const QList<WordleLanguage> iLanguages;

@@ -3,6 +3,16 @@
 <TS version="2.1" language="sv">
 <context>
     <name></name>
+    <message id="wordle-generic-yes">
+        <source>Yes</source>
+        <extracomment>Generic answer</extracomment>
+        <translation type="unfinished">Ja</translation>
+    </message>
+    <message id="wordle-generic-no">
+        <source>No</source>
+        <extracomment>Generic answer</extracomment>
+        <translation type="unfinished">Nej</translation>
+    </message>
     <message id="wordle-menu-new_game">
         <source>New game</source>
         <extracomment>Pulley menu item</extracomment>

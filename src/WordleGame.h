@@ -40,6 +40,8 @@
 #ifndef WORDLE_GAME_H
 #define WORDLE_GAME_H
 
+#include "WordleTypes.h"
+
 #include <QAbstractListModel>
 #include <QDateTime>
 #include <QString>

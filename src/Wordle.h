@@ -40,6 +40,7 @@
 #ifndef WORDLE_H
 #define WORDLE_H
 
+#include "WordleTypes.h"
 #include "WordleDefs.h"
 
 #include <QColor>

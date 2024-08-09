@@ -40,6 +40,8 @@
 #ifndef WORDLE_SETTINGS_H
 #define WORDLE_SETTINGS_H
 
+#include "WordleTypes.h"
+
 #include <QObject>
 
 class QQmlEngine;
@@ -50,6 +52,7 @@ class WordleSettings :
 {
     Q_OBJECT
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
+    Q_PROPERTY(QString languageName READ languageName NOTIFY languageChanged)
     Q_PROPERTY(bool keepDisplayOn READ keepDisplayOn WRITE setKeepDisplayOn NOTIFY keepDisplayOnChanged)
     Q_PROPERTY(bool showPlayTime READ showPlayTime WRITE setShowPlayTime NOTIFY showPlayTimeChanged)
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
@@ -73,6 +76,7 @@ public:
     // Callback for qmlRegisterSingletonType<WordleSettings>
     static QObject* createSingleton(QQmlEngine*, QJSEngine*);
 
+    QString languageName() const;
     QString language() const;
     void setLanguage(const QString);
 

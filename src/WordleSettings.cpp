@@ -45,13 +45,20 @@
 
 #include <MGConfItem>
 
+#if QT_VERSION >= 0x040800
+#define LOCALE_NAME (QLocale().bcp47Name()) // e.g. "en-GB"
+#define LOCALE_SEPARATOR '-'
+#else
+#define LOCALE_NAME (QLocale().name()) // e.g. "en_GB"
+#define LOCALE_SEPARATOR '_'
+#endif
+
 #define DCONF_KEY(x)                "/apps/" APP_NAME "/" x
 #define KEY_LANGUAGE                DCONF_KEY("language")
 #define KEY_KEEP_DISPLAY_ON         DCONF_KEY("keepDisplayOn")
 #define KEY_SHOW_PLAY_TIME          DCONF_KEY("showPlayTime")
 #define KEY_ORIENTATION             DCONF_KEY("orientation")
 
-#define DEFAULT_LANGUAGE            Private::DEFAULT_LANGUAGE_CODE
 #define DEFAULT_KEEP_DISPLAY_ON     false
 #define DEFAULT_SHOW_PLAY_TIME      true
 #define DEFAULT_ORIENTATION         OrientationAny
@@ -68,13 +75,13 @@ public:
     Private(WordleSettings*);
 
     static Orientation toOrientation(int);
-    const QString validateLanguage(const QString);
+    WordleLanguage validateLanguage(const QString);
+    WordleLanguage language();
     void setLanguage(const QString);
-    QString language();
 
 public:
     const QList<WordleLanguage> iLanguages;
-    QString iDefaultLanguage;
+    WordleLanguage iDefaultLanguage;
     MGConfItem* iLanguage;
     MGConfItem* iKeepDisplayOn;
     MGConfItem* iShowPlayTime;
@@ -101,15 +108,15 @@ WordleSettings::Private::Private(
     QObject::connect(iOrientation, SIGNAL(valueChanged()),
         aParent, SIGNAL(orientationChanged()));
 
-    const QString language((QLocale().bcp47Name())); // e.g. "en-GB"
+    const QString language(LOCALE_NAME);
     HDEBUG("System language" << language);
-    const int sep = language.indexOf('-');
+    const int sep = language.indexOf(LOCALE_SEPARATOR);
     const QString name((sep > 0) ? language.left(sep) : language);
     const int n = iLanguages.count();
     for (int i = 0; i < n; i++) {
         if (!iLanguages.at(i).getCode().compare(name, Qt::CaseInsensitive)) {
             HDEBUG("Using" << name << "as the default language");
-            iDefaultLanguage = name;
+            iDefaultLanguage = iLanguages.at(i);
             break;
         }
     }
@@ -128,7 +135,7 @@ WordleSettings::Private::toOrientation(
     return DEFAULT_ORIENTATION;
 }
 
-const QString
+WordleLanguage
 WordleSettings::Private::validateLanguage(
     const QString aLanguage)
 {
@@ -136,24 +143,24 @@ WordleSettings::Private::validateLanguage(
     const int n = iLanguages.count();
     for (int i = 0; i < n; i++) {
         if (iLanguages.at(i).getCode() == languageCode) {
-            return languageCode;
+            return iLanguages.at(i);
         }
     }
-    HDEBUG("Falling back to" << iDefaultLanguage);
+    HDEBUG("Falling back to" << iDefaultLanguage.getName());
     return iDefaultLanguage;
 }
 
-QString
+WordleLanguage
 WordleSettings::Private::language()
 {
-    return validateLanguage(iLanguage->value(iDefaultLanguage).toString());
+    return validateLanguage(iLanguage->value(iDefaultLanguage.getCode()).toString());
 }
 
 void
 WordleSettings::Private::setLanguage(
     const QString aValue)
 {
-    iLanguage->set(validateLanguage(aValue));
+    iLanguage->set(validateLanguage(aValue).getCode());
 }
 
 // ==========================================================================
@@ -184,7 +191,13 @@ WordleSettings::createSingleton(
 QString
 WordleSettings::language() const
 {
-    return iPrivate->language();
+    return iPrivate->language().getCode();
+}
+
+QString
+WordleSettings::languageName() const
+{
+    return iPrivate->language().getName();
 }
 
 void

@@ -1,0 +1,6 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=WORDLE
+Icon=/usr/share/icons/hicolor/80x80/apps/meego-wordle.png
+Exec=/usr/bin/invoker --type=d -s -S /opt/meego-wordle/splash-portrait.png -L /opt/meego-wordle/splash-landscape.png /opt/meego-wordle/bin/meego-wordle

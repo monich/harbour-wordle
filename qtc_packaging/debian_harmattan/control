@@ -1,0 +1,54 @@
+Source: meego-wordle
+Section: user/games
+Priority: optional
+Maintainer: Slava Monich <slava@monich.com>
+Build-Depends: debhelper (>= 5), libqt4-dev
+Standards-Version: 3.7.3
+Homepage: http://github.com/monich/harbour-wordle
+
+Package: meego-wordle
+Architecture: armel
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description:
+ Guess the WORDLE in 6 tries.
+ Each guess must be a valid 5 letter word. Hit the enter button to submit.
+ After each guess, the color of the tiles will change to show how close your guess was.
+XSBC-Maemo-Display-Name: WORDLE
+XB-Maemo-Icon-26:
+ iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAA7D
+ AAAOwwHHb6hkAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48
+ GgAABbdJREFUaIHtmMtvVFUcxz+/e2c609IWMCCB1goIRImU8miLgFGJC0N0
+ oxtj3BkXEDC6dKX+AaIJcWEkxL2EhdGERxAFAy2lPETQBBXQCi0Uoe/OzL3n
+ 5+JO6dx77ryiG818l79zfo/vOd/fuedcqKGGGmqooYb/MCRqWNyffl3R9wQc
+ FAFyqhwe7My8AyhgigVb1J/eJuhHAo15XwBPDUcHuzJvlfNf3J96G2UHQiLv
+ 76nPZ4PdmT3FfB0rijGPCqwAliMsQ1glDrsX7ktsAVJxpGeD6QcC7QW+yxBW
+ isvOBfsTW0v6BwW/i7CqwH+l+DwPzAXq4uq1CWScE7Hx5znPAnMAN2689RT1
+ QFdRcvOcbSX9L6RWAA9H7d4d8xMBgURs3KjhVm76NDAWtbtz2UCwgjZpwEum
+ uwlWKZ7AfOks5e+rbIqNe0n6ZqZQkYSew8PnVNQsjbIWSBYrQFyztUjtwfgc
+ Okv6q3ZbRsPkvb3Zi0A2T8BCbDBV/cZKUEdbw0vJhQRbaetYZbOVvhAuCxp3
+ JZbnSVj+ir0DOkE/Q2SBjBWvFAE8PR5jldR21hPXTIojECJgRvkuGiDV7XTm
+ /UN90HqKekHbrTLuaG++8OoIDG7O9YPci9qTrU5HHIGWC8l2DRptNvkVcyCa
+ NLHoQR+FdsBPpzs12JkQcuf8XsADclURQDAYtU4jZ66uiyOgxonq34x+nutT
+ j+uhsE2yMc5f1NjyMYyM7PWvUEL/xQkAKJaMpF7aWUiKQAIPVtEgW0KuGX7L
+ 9TGqGX4M+dextP6V5CIifRCr/zH6GMejhHxKEjCix2Jm18/f4T4eLUDQsP7H
+ 9BJgJKsXIxGk4QWsXVCwTiAzpGcoo/+SBIY2Zi+jDEXt7mo3JKOWi/WtQFso
+ +R0uAcbPiHUcJ1pkQ6H/krP1bQJLovOmz/g9BNr3Ao5VEkBQNWKdJO4CQo3s
+ +761/d4P/nnAyx3N9BBoeDZsE2sL/RH/KSu3r3fHPvF/oYz+SxMARO3jVBql
+ g4IPkqMS3n7D1P19/lUge/9jJkBCMpK0rKaJNPk+itO/GeU0WXzKyKcsAVex
+ +kCSLG3YnlxA/oMW1a9O6mX+IkewegZfwzJySDfvdB8j30eCWgT8W5whWPns
+ PyIwsClzFeX3KIf0iwS7sJs6YH2IwGig/3xyVdHvo3GTT7rtQN2S90kr0hEd
+ nzpuCs//ovovSyCoSL+NmhJtzjogtfjl5BqCG+YDeH/oeYLV8wCj2boT0SLc
+ hawGkrln6tcD6VC6HDcn9ns3qEA+FRFQdew+aNYOIKkpJ7r9OnlIz+WL9wGG
+ tozfRrkaStrIGiDppuwPmLmvPVRwfFZMIOHJUcupQdppJi1O+AapWa5PfekN
+ R5OrhmUkKXmCJlI42PofMDP3n7L6r4jAwOapP6MriNDYvMNdhSOhB4wZ1f6C
+ 5LOyUedkJGu6eZe7Qlz7AZQ5TC8VnP8VEwgqs68VqS73aVxWFNr8m5zPEwhd
+ vlTtm2m6y9mGwyOFNs3w6/gX3iAVyqdiAsa33weJVnkt6p/rMTP6D63eUPf0
+ NZSBwrnuYufVaEwdqez6UIiKCLjTqWNWwER49fAZHv3Uu14suaqEj9MkLdE5
+ uRvaS4Xn/wwqInDzubFhVS6XmqPjFOrfTq560rKFYaYOah9V6B8q7QFAYvqg
+ EP5tndF/LAEV+30RGs/w89QR7y5VyAeqIKDCoVLj2Qv+WUp8PfO32+Gi8e+W
+ fz7GoWICg9cyR9Tj69jkE9o7sufB6yk+uaDG0w/jxtUwMnnIP0ig/7LXh3DY
+ 6lA3583kanH1IfUD8jJBdvyAd5ssWeA+MEqwE3FINL/BUtOQaNHp4A0sihn/
+ yhtikCwwAQwTuYL/mwQcoIH4H1Q+MEkggWIrKHnfBuw/dDPymaQKCVVLAILC
+ JcZ35udrue2XghhR/5I/f2uooYYaaqjhf4e/AaC4W5xVLOfmAAAAAElFTkSu
+ QmCC
+

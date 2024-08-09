@@ -39,8 +39,11 @@
 #ifndef WORDLE_HISTORY_H
 #define WORDLE_HISTORY_H
 
+#include "WordleTypes.h"
+
 #include <QAbstractListModel>
 #include <QDateTime>
+#include <QStringList>
 
 class WordleHistory :
     public QAbstractListModel

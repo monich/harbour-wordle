@@ -99,6 +99,7 @@ class WordleGame::Private :
 public:
     typedef void (WordleGame::*SignalEmitter)();
     typedef uint SignalMask;
+#ifndef Q_MOC_RUN
     enum Signal {
         #define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
         MODEL_SIGNALS(SIGNAL_ENUM_)
@@ -115,6 +116,7 @@ public:
         #undef ROLE
         #undef LAST
     };
+#endif
 
     class State {
     public:
@@ -242,6 +244,9 @@ WordleGame::Private::State::queueSignals(
     }
     if (iSecondsPlayed != (aPrivate->iSecondsPlayed + aPrivate->iSecondsPlayedThisTime)) {
         aPrivate->queueSignal(SignalSecondsPlayedChanged);
+    }
+    if (iAnswer != aPrivate->iAnswer) {
+        aPrivate->queueSignal(SignalAnswerChanged);
     }
     if (iAttempts != aPrivate->iAttempts) {
         aPrivate->queueSignal(SignalAttemptsChanged);
@@ -489,8 +494,22 @@ WordleGame::Private::writeState()
 {
     QVariantMap state;
     state.insert(STATE_KEY_ANSWER, iAnswer);
-    state.insert(STATE_KEY_ATTEMPTS, iAttempts);
-    state.insert(STATE_KEY_INPUT, iInput);
+    if (!iAttempts.isEmpty()) {
+#ifdef HARMATTAN
+        QVariantList attempts;
+        const int n = iAttempts.size();
+
+        for (int i = 0; i < n; i++) {
+            attempts.append(iAttempts.at(i));
+        }
+        state.insert(STATE_KEY_ATTEMPTS, attempts);
+#else
+        state.insert(STATE_KEY_ATTEMPTS, iAttempts);
+#endif
+    }
+    if (!iInput.isEmpty()) {
+        state.insert(STATE_KEY_INPUT, iInput);
+    }
     state.insert(STATE_KEY_SECS_PLAYED, iSecondsPlayed + iSecondsPlayedThisTime);
     state.insert(STATE_KEY_TIME_START, toString(iStartTime));
     if (iFinishTime.isValid()) {
@@ -613,12 +632,16 @@ WordleGame::Private::newGame()
         iInput.resize(0);
         iStateMap.clear();
         // Change the state first
-        const QVector<int> stateRole(1, Private::StateRole);
-        const QVector<int> letterRole(1, Private::LetterRole);
         const QModelIndex topLeft(model->index(0));
         const QModelIndex bottomRight(model->index(count - 1));
+#if QT_VERSION >= 0x050000
+        const QVector<int> stateRole(1, Private::StateRole);
+        const QVector<int> letterRole(1, Private::LetterRole);
         Q_EMIT model->dataChanged(topLeft, bottomRight, stateRole);
         Q_EMIT model->dataChanged(topLeft, bottomRight, letterRole);
+#else
+        Q_EMIT model->dataChanged(topLeft, bottomRight);
+#endif
     }
     iAnswer = iLanguage.randomWord();
     iStartTime = QDateTime::currentDateTime();
@@ -708,6 +731,9 @@ WordleGame::WordleGame(
     QAbstractListModel(aParent),
     iPrivate(new Private(this))
 {
+#if QT_VERSION < 0x050000
+    setRoleNames(roleNames());
+#endif
 }
 
 WordleGame::~WordleGame()
@@ -928,8 +954,12 @@ WordleGame::deleteLastLetter()
 
         iPrivate->iInput.resize(len - 1);
         const QModelIndex idx(index(iPrivate->letterCount()));
+#if QT_VERSION >= 0x050000
         const QVector<int> role(1, Private::LetterRole);
         Q_EMIT dataChanged(idx, idx, role);
+#else
+        Q_EMIT dataChanged(idx, idx);
+#endif
 
         prevState.queueSignals(iPrivate);
         iPrivate->emitQueuedSignals();
@@ -951,8 +981,14 @@ WordleGame::submitInput()
         iPrivate->iInput.resize(0);
         iPrivate->updateStateMap(word);
 
+        const QModelIndex topLeft(index(count - Wordle::WordLength));
+        const QModelIndex bottomRight(index(count - 1));
+#if QT_VERSION >= 0x050000
         const QVector<int> role(1, Private::StateRole);
-        Q_EMIT dataChanged(index(count - Wordle::WordLength), index(count - 1), role);
+        Q_EMIT dataChanged(topLeft, bottomRight, role);
+#else
+        Q_EMIT dataChanged(topLeft, bottomRight);
+#endif
         Q_EMIT inputSubmitted(word);
         if (iPrivate->gameState() != GameInProgress) {
             HDEBUG("Game over");

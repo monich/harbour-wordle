@@ -41,7 +41,8 @@
 
 #define MODEL_ROLES_(first,role,last) \
     first(LanguageCode,languageCode) \
-    last(LanguageName,languageName)
+    role(LanguageName,languageName) \
+    last(Name,name)
 
 #define MODEL_ROLES(role) \
     MODEL_ROLES_(role,role,role)
@@ -63,6 +64,9 @@ WordleLanguageModel::WordleLanguageModel(
     QAbstractListModel(aParent),
     iLanguages(WordleLanguage::availableLanguages())
 {
+#if QT_VERSION < 0x050000
+    setRoleNames(roleNames());
+#endif
 }
 
 QHash<int,QByteArray>
@@ -91,9 +95,31 @@ WordleLanguageModel::data(
     if (i >= 0 && i < iLanguages.count()) {
         const WordleLanguage& language(iLanguages.at(i));
         switch ((WordleLanguageModelRole)aRole) {
-        case LanguageCodeRole: return language.getCode();
+        case NameRole: // fallthrough
         case LanguageNameRole: return language.getName();
+        case LanguageCodeRole: return language.getCode();
         }
     }
     return QVariant();
+}
+
+QString
+WordleLanguageModel::languageAt(
+    int aRow)
+{
+    return (aRow >= 0 && aRow < iLanguages.count()) ?
+        iLanguages.at(aRow).getCode() : QString();
+}
+
+int
+WordleLanguageModel::indexOf(
+    QString aCode)
+{
+    const int n = iLanguages.count();
+    for (int i = 0; i < n; i++) {
+        if (!iLanguages.at(i).getCode().compare(aCode, Qt::CaseInsensitive)) {
+            return i;
+        }
+    }
+    return -1;
 }

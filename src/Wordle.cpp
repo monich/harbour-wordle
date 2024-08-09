@@ -41,7 +41,9 @@
 
 #include "HarbourDebug.h"
 
+#if QT_VERSION >= 0x050000
 #include <QStandardPaths>
+#endif
 
 class Wordle::Private
 {
@@ -290,9 +292,13 @@ Wordle::isFunctionalKey(
 QDir
 Wordle::dataDir()
 {
+#if QT_VERSION >= 0x050000
     return QDir(QStandardPaths::writableLocation
         (QStandardPaths::GenericDataLocation) +
         QLatin1String("/" APP_NAME "/"));
+#else
+    return QDir::homePath() + QLatin1String("/.config/" APP_NAME "/");
+#endif
 }
 
 /* static */

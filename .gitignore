@@ -1,4 +1,6 @@
 build
+meego-wordle.pro.user*
 harbour-wordle.pro.user*
 tools/wordle-tool
 tools/wordle-stats
+translations/*.qm

@@ -45,41 +45,58 @@
 #include "WordleLanguageModel.h"
 #include "WordleSettings.h"
 
-#include "HarbourBattery.h"
 #include "HarbourDebug.h"
 #include "HarbourDisplayBlanking.h"
 #include "HarbourSystemState.h"
 
-#include <sailfishapp.h>
-
-#include <QGuiApplication>
+#if QT_VERSION >= 0x050000
 #include <QtQuick>
+#else
+#include <QtDeclarative>
+#endif
+
+#ifdef HARMATTAN
+#include "MeegoWordle.h"
+#define PlatformApp MeegoApp
+#define PlatformView MeegoView
+#else
+#include <sailfishapp.h>
+#include "HarbourBattery.h"
+#define loadTranslations(translator,locale,filename,prefix,directory) \
+    ((translator)->load(locale,filename,prefix,directory))
+#define REGISTER_SINGLETON(class,uri,v1,v2) \
+    qmlRegisterSingletonType<class>(uri, v1, v2, #class, class::createSingleton)
+#define PlatformApp SailfishApp
+#define PlatformView QQuickView
+#endif
 
 #define APP_QML_IMPORT  "harbour.wordle"
 #define APP_QML_IMPORT_V1 1
 #define APP_QML_IMPORT_V2 0
 
-#define REGISTER_SINGLETON(class,uri,v1,v2) \
-    qmlRegisterSingletonType<class>(uri, v1, v2, #class, class::createSingleton)
 #define REGISTER_TYPE(class,uri,v1,v2) \
     qmlRegisterType<class>(uri, v1, v2, #class)
 
 static void register_types(const char* uri, int v1, int v2)
 {
-    REGISTER_SINGLETON(Wordle, uri, v1, v2);
-    REGISTER_SINGLETON(WordleSettings, uri, v1, v2);
-    REGISTER_SINGLETON(HarbourBattery, uri, v1, v2);
-    REGISTER_SINGLETON(HarbourSystemState, uri, v1, v2);
     REGISTER_TYPE(WordleBoardModel, uri, v1, v2);
     REGISTER_TYPE(WordleGame, uri, v1, v2);
     REGISTER_TYPE(WordleHistory, uri, v1, v2);
     REGISTER_TYPE(WordleLanguageModel, uri, v1, v2);
     REGISTER_TYPE(HarbourDisplayBlanking, uri, v1, v2);
+#ifdef HARMATTAN
+    qmlRegisterType<Wordle>(uri, v1, v2, "Constants");
+#else
+    REGISTER_SINGLETON(HarbourBattery, uri, v1, v2);
+    REGISTER_SINGLETON(HarbourSystemState, uri, v1, v2);
+    REGISTER_SINGLETON(Wordle, uri, v1, v2);
+    REGISTER_SINGLETON(WordleSettings, uri, v1, v2);
+#endif
 }
 
-int main(int argc, char *argv[])
+Q_DECL_EXPORT int main(int argc, char *argv[])
 {
-    QGuiApplication* app = SailfishApp::application(argc, argv);
+    QCoreApplication* app = PlatformApp::application(argc, argv);
 
     app->setApplicationName(APP_NAME);
     register_types(APP_QML_IMPORT, APP_QML_IMPORT_V1, APP_QML_IMPORT_V2);
@@ -87,14 +104,9 @@ int main(int argc, char *argv[])
     // Load translations
     QLocale locale;
     QTranslator* tr = new QTranslator(app);
-#ifdef OPENREPOS
-    // OpenRepos build has settings applet
-    const QString transDir("/usr/share/translations");
-#else
-    const QString transDir = SailfishApp::pathTo("translations").toLocalFile();
-#endif
+    const QString transDir = PlatformApp::pathTo("translations").toLocalFile();
     const QString transFile(APP_NAME);
-    if (tr->load(locale, transFile, "-", transDir) ||
+    if (loadTranslations(tr, locale, transFile, "-", transDir) ||
         tr->load(transFile, transDir)) {
         app->installTranslator(tr);
     } else {
@@ -106,11 +118,22 @@ int main(int argc, char *argv[])
     qsrand((uint)QTime::currentTime().msec());
 
     // Create the view
-    QQuickView* view = SailfishApp::createView();
+    PlatformView* view = PlatformApp::createView();
 
-    // Initialize the view and show it
+#ifdef HARMATTAN
+    QDeclarativeContext* root = view->rootContext();
+    QObject* theme = new MeegoTheme(root);
+    root->setContextProperty("Wordle", new Wordle(root));
+    root->setContextProperty("WordleSettings", new WordleSettings(root));
+    root->setContextProperty("HarbourSystemState", new HarbourSystemState(root));
+    // WordleTheme is used to avoid conflicts with Theme in com.nokia.meego
+    root->setContextProperty("WordleTheme", theme);
+    root->setContextProperty("Theme", theme);
+#else
     view->setTitle("Wordle");
-    view->setSource(SailfishApp::pathTo("qml/main.qml"));
+#endif
+
+    view->setSource(PlatformApp::pathTo("qml/main.qml"));
     view->showFullScreen();
 
     int ret = app->exec();

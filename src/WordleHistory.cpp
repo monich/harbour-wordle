@@ -603,11 +603,9 @@ WordleHistory::Private::data(
             return toString(entry->iState, WORDLE_WORD_LENGTH,
                 WORDLE_WORD_LENGTH * WORDLE_MAX_ATTEMPTS);
         case StartTimeRole:
-            return QDateTime::fromMSecsSinceEpoch(entry->iStartTime,
-                Qt::LocalTime);
+            return QDateTime::fromMSecsSinceEpoch(entry->iStartTime);
         case EndTimeRole:
-            return QDateTime::fromMSecsSinceEpoch(entry->iEndTime,
-                Qt::LocalTime);
+            return QDateTime::fromMSecsSinceEpoch(entry->iEndTime);
         case SecondsPlayedRole:
             return entry->iSecondsPlayed;
         }
@@ -624,6 +622,9 @@ WordleHistory::WordleHistory(
     QAbstractListModel(aParent),
     iPrivate(new Private(this))
 {
+#if QT_VERSION < 0x050000
+    setRoleNames(roleNames());
+#endif
 }
 
 WordleHistory::~WordleHistory()

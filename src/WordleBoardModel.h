@@ -39,6 +39,7 @@
 #ifndef WORDLE_BOARD_MODEL_H
 #define WORDLE_BOARD_MODEL_H
 
+#include "WordleTypes.h"
 #include "WordleLanguage.h"
 
 #include <QAbstractListModel>
