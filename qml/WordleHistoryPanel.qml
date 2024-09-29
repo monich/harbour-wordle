@@ -288,7 +288,7 @@ Item {
                                 readonly property int maxWidth: distributionColumn.width - rowIndexLabel.width
                                 readonly property int minWidth: _guessDistributionMax ? Math.ceil(maxWidth * value/_guessDistributionMax) : 0
 
-                                width: value ? Math.max(minWidth, historyValueLabel.contentWidth) : Theme.paddingSmall
+                                width: historyValueLabel.visible ? Math.max(minWidth, historyValueLabel.implicitWidth) : Theme.paddingSmall
                                 height: rowIndexLabel.height
                                 color: (history.lastAttempts === model.index + 1) ?
                                     Wordle.presentHereBackgroundColor : Wordle.notPresentBackgroundColor
