@@ -10,4 +10,4 @@ BackupPathList = .local/share/harbour-wordle/
 BackupConfigList = /apps/harbour-wordle/
 
 [X-Sailjail]
-Permissions=Camera
+Permissions=Camera;PublicDir
