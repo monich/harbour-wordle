@@ -72,6 +72,7 @@ class MeegoTheme :
 {
     Q_OBJECT
     Q_PROPERTY(int paddingSmall READ paddingSmall CONSTANT)
+    Q_PROPERTY(int paddingKeypad READ paddingKeypad CONSTANT)
     Q_PROPERTY(int paddingMedium READ paddingMedium CONSTANT)
     Q_PROPERTY(int paddingLarge READ paddingLarge CONSTANT)
     Q_PROPERTY(int horizontalPageMargin READ paddingLarge CONSTANT)
@@ -97,6 +98,7 @@ public:
         QObject (aParent) {}
 
     static int paddingSmall() { return 6; }
+    static int paddingKeypad() { return 8; }
     static int paddingMedium() { return 12; }
     static int paddingLarge() { return 24; }
     static int iconSizeSmall() { return 32; }

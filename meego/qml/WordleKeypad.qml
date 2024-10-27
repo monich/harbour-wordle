@@ -26,7 +26,7 @@ Column {
             /* readonly */ property int functionalKeys: Wordle.functionalKeyCount(buttons)
             /* readonly */ property int baseKeyWidth: (thisItem.width - (buttons.length - 1) * spacing) / (buttons.length + functionalKeys)
 
-            spacing: WordleTheme.paddingMedium
+            spacing: WordleTheme.paddingKeypad
 
             Repeater {
                 model: row.buttons.length
