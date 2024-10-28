@@ -42,7 +42,7 @@ ApplicationWindow {
             game.gameState === WordleGame.GameInProgress &&
             (HarbourBattery.batteryState === HarbourBattery.BatteryStateCharging ||
              HarbourBattery.batteryLevel === 0 || // Zero if unknown (not reported by mce)
-             HarbourBattery.batteryLevel >= WordleSettings.MinChangeToKeepDisplayOn)
+             HarbourBattery.batteryLevel >= WordleSettings.MinChargeToKeepDisplayOn)
     }
 
     WordleGame {

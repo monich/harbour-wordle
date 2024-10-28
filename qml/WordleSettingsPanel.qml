@@ -189,7 +189,7 @@ Item {
                     text: qsTrId("wordle-settings-keep_display_on")
                     //: Text switch label description
                     //% "To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger."
-                    description: HarbourBattery.batteryLevel > 0 ? qsTrId("wordle-settings-keep_display_on-description").arg(WordleSettings.MinChangeToKeepDisplayOn) : ""
+                    description: HarbourBattery.batteryLevel > 0 ? qsTrId("wordle-settings-keep_display_on-description").arg(WordleSettings.MinChargeToKeepDisplayOn) : ""
                     onClicked: WordleSettings.keepDisplayOn = !WordleSettings.keepDisplayOn
                 }
             }

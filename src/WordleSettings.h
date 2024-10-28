@@ -61,7 +61,7 @@ class WordleSettings :
 
 public:
     enum Constants {
-        MinChangeToKeepDisplayOn = 20
+        MinChargeToKeepDisplayOn = 20
     };
 
     enum Orientation {
