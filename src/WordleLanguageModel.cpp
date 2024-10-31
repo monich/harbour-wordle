@@ -42,7 +42,9 @@
 #define MODEL_ROLES_(first,role,last) \
     first(LanguageCode,languageCode) \
     role(LanguageName,languageName) \
-    last(Name,name)
+    role(Name,name) \
+    role(WordCount,wordCount) \
+    last(ExtraWordCount,extraWordCount)
 
 #define MODEL_ROLES(role) \
     MODEL_ROLES_(role,role,role)
@@ -98,6 +100,8 @@ WordleLanguageModel::data(
         case NameRole: // fallthrough
         case LanguageNameRole: return language.getName();
         case LanguageCodeRole: return language.getCode();
+        case WordCountRole: return language.getWordCount();
+        case ExtraWordCountRole: return language.getExtraWordCount();
         }
     }
     return QVariant();

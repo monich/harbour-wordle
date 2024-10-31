@@ -351,6 +351,18 @@ WordleLanguage::getName() const
     return iPrivate ? iPrivate->iName : QString();
 }
 
+int
+WordleLanguage::getWordCount() const
+{
+    return iPrivate->iWordsCount;
+}
+
+int
+WordleLanguage::getExtraWordCount() const
+{
+    return iPrivate->iExtWordsCount;
+}
+
 const QStringList
 WordleLanguage::getKeypad() const
 {

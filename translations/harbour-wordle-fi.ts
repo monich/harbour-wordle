@@ -28,6 +28,22 @@
         <extracomment>Combo box label</extracomment>
         <translation type="unfinished">Sanakirja</translation>
     </message>
+    <message id="wordle-settings-language-description" numerus="yes">
+        <source>%1 words</source>
+        <extracomment>Language descriptions (word count)</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 sana</numerusform>
+            <numerusform>%1 sanaa</numerusform>
+        </translation>
+    </message>
+    <message id="wordle-settings-language-description2" numerus="yes">
+        <source>%1 + %2 words</source>
+        <extracomment>Language descriptions (word counts)</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 + %2 sana</numerusform>
+            <numerusform>%1 + %2 sanaa</numerusform>
+        </translation>
+    </message>
     <message id="wordle-settings-orientation-label">
         <source>Orientation</source>
         <extracomment>Combo box label</extracomment>

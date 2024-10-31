@@ -76,8 +76,18 @@ Item {
                             model: WordleLanguageModel { }
                             MenuItem {
                                 readonly property string languageCode: model.languageCode
+                                readonly property string description: formatDescription(model.wordCount, model.extraWordCount)
                                 text: model.languageName
                                 onClicked: WordleSettings.language = languageCode
+                                function formatDescription(words,xwords) {
+                                    return xwords ?
+                                        //: Language descriptions (word counts)
+                                        //% "%1 + %2 words"
+                                        qsTrId("wordle-settings-language-description2", xwords).arg(words).arg(xwords) :
+                                        //: Language descriptions (word count)
+                                        //% "%1 words"
+                                        qsTrId("wordle-settings-language-description", words).arg(words)
+                                }
                             }
                         }
                     }

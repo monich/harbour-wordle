@@ -28,6 +28,22 @@
         <extracomment>Combo box label</extracomment>
         <translation>Diccionario</translation>
     </message>
+    <message id="wordle-settings-language-description" numerus="yes">
+        <source>%1 words</source>
+        <extracomment>Language descriptions (word count)</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 palabra</numerusform>
+            <numerusform>%1 palabras</numerusform>
+        </translation>
+    </message>
+    <message id="wordle-settings-language-description2" numerus="yes">
+        <source>%1 + %2 words</source>
+        <extracomment>Language descriptions (word counts)</extracomment>
+        <translation type="unfinished">
+            <numerusform>%1 + %2 palabra</numerusform>
+            <numerusform>%1 + %2 palabras</numerusform>
+        </translation>
+    </message>
     <message id="wordle-settings-orientation-label">
         <source>Orientation</source>
         <extracomment>Combo box label</extracomment>

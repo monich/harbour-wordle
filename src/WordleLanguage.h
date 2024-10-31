@@ -56,6 +56,8 @@ public:
     bool isValid() const;
     const QString getCode() const;
     const QString getName() const;
+    int getWordCount() const;
+    int getExtraWordCount() const;
     const QStringList getKeypad() const;
 
     WordleLanguage& operator = (const WordleLanguage&);

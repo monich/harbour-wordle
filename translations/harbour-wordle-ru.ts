@@ -28,6 +28,24 @@
         <extracomment>Combo box label</extracomment>
         <translation>Словарь</translation>
     </message>
+    <message id="wordle-settings-language-description" numerus="yes">
+        <source>%1 words</source>
+        <extracomment>Language descriptions (word count)</extracomment>
+        <translation>
+            <numerusform>%1 слово</numerusform>
+            <numerusform>%1 слова</numerusform>
+            <numerusform>%1 слов</numerusform>
+        </translation>
+    </message>
+    <message id="wordle-settings-language-description2" numerus="yes">
+        <source>%1 + %2 words</source>
+        <extracomment>Language descriptions (word counts)</extracomment>
+        <translation>
+            <numerusform>%1 + %2 слово</numerusform>
+            <numerusform>%1 + %2 слова</numerusform>
+            <numerusform>%1 + %2 слов</numerusform>
+        </translation>
+    </message>
     <message id="wordle-settings-orientation-label">
         <source>Orientation</source>
         <extracomment>Combo box label</extracomment>
