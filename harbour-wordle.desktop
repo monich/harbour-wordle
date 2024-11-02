@@ -8,6 +8,3 @@ Exec=harbour-wordle
 [X-HarbourBackup]
 BackupPathList = .local/share/harbour-wordle/
 BackupConfigList = /apps/harbour-wordle/
-
-[X-Sailjail]
-Permissions=Camera;PublicDir
