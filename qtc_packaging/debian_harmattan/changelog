@@ -1,3 +1,9 @@
+meego-wordle (1.1.6) unstable; urgency=low
+
+  * Updated Ukrainian dictionary
+
+ -- Slava Monich <slava@monich.com>  Sun, 03 Nov 2024 21:48:07 +0200
+
 meego-wordle (1.1.5) unstable; urgency=low
 
   * Updated Russian dictionary
