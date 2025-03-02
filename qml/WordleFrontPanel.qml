@@ -19,6 +19,7 @@ Item {
     // Still use portrait layout for really wide displays (e.g. Jolla tablet 3:4)
     readonly property bool _landscapeLayout: landscape && (Screen.width / Screen.height) < 0.75
     readonly property bool _gameWon: wordle.gameState === WordleGame.GameWon
+    readonly property int _topNotch: ('topCutout' in Screen) ? Screen.topCutout.height : 0
 
     function _keyPressed(letter) {
         if (letter === "\b") {
@@ -85,7 +86,11 @@ Item {
         WordleHeader {
             id: header
 
-            y: Theme.paddingLarge
+            readonly property int _padding: Theme.paddingLarge
+            readonly property int _notch: landscape ? 0 : _topNotch
+            readonly property int _buttonCenter: y + titleCenterY - (y - _padding)
+
+            y: Math.max(_padding, _notch)
             anchors.horizontalCenter: parent.horizontalCenter
             answer: showAnswer ? wordle.answer : ""
             showAnswer: wordle.gameState === WordleGame.GameLost
@@ -94,7 +99,7 @@ Item {
         }
 
         HarbourIconTextButton {
-            y: header.y +  header.titleCenterY - height/2
+            y: header._buttonCenter - height/2
             anchors {
                 left: parent.left
                 leftMargin: Theme.paddingMedium
@@ -107,7 +112,7 @@ Item {
         }
 
         HarbourIconTextButton {
-            y: header.y +  header.titleCenterY - height/2
+            y: header._buttonCenter - height/2
             anchors {
                 right: parent.right
                 rightMargin: Theme.paddingMedium
