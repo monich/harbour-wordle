@@ -20,7 +20,7 @@ SilicaFlickable {
             color: Theme.rgba(Theme.highlightColor, 0.4)
             width: Math.max(2, Math.floor(Theme.paddingSmall/3))
         }
-        radius: Theme.paddingMedium
+        radius: ('topLeftCorner' in Screen) ? Screen.topLeftCorner.radius : Theme.paddingMedium
 
         Item {
             x: panelBorder.border.width
