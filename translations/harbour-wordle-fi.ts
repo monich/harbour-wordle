@@ -18,6 +18,11 @@
         <extracomment>Pulley menu item</extracomment>
         <translation>Uusi peli</translation>
     </message>
+    <message id="wordle-menu-whats_this">
+        <source>What&apos;s this?</source>
+        <extracomment>Pulley and context menu item</extracomment>
+        <translation type="unfinished">Mitä tämä on?</translation>
+    </message>
     <message id="wordle-settings-header">
         <source>Settings</source>
         <extracomment>Page header</extracomment>
@@ -78,6 +83,21 @@
         <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
         <extracomment>Text switch label description</extracomment>
         <translation>Jotta akku ei tyhjene kokonaan, näytön sammuttaminen on sallittu, jos akun varaus putoaa alle %1 prosentin ja puhelin ei ole latauksessa.</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this">
+        <source>Enable «What&apos;s this» menu</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Aktivoi "Mitä tämä on?" valikko</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this-description">
+        <source>If the word which you were guessing isn&apos;t familiar to you, this function allows you to quickly look up the meaning of the word in the selected search engine.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation type="unfinished">Jos ei tiedä mitä sana tarkoittaa, tämän toiminnon avulla voit nopeasti löytää sanan merkityksen valitusta hakukoneesta.</translation>
+    </message>
+    <message id="wordle-settings-search_engine-label">
+        <source>Search engine</source>
+        <extracomment>Combo box label</extracomment>
+        <translation type="unfinished">Hakukone</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>
