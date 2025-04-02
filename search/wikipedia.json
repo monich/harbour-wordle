@@ -1,0 +1,4 @@
+{
+    "name": "Wikipedia",
+    "queryUrl": "https://wikipedia.org/wiki/Special:Search?search=%1"
+}

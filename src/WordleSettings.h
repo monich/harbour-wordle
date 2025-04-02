@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Slava Monich <slava@monich.com>
+ * Copyright (C) 2022-2025 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -42,7 +42,7 @@
 
 #include "WordleTypes.h"
 
-#include <QObject>
+#include <QtCore/QObject>
 
 class QQmlEngine;
 class QJSEngine;
@@ -53,6 +53,8 @@ class WordleSettings :
     Q_OBJECT
     Q_PROPERTY(QString language READ language WRITE setLanguage NOTIFY languageChanged)
     Q_PROPERTY(QString languageName READ languageName NOTIFY languageChanged)
+    Q_PROPERTY(QString searchEngine READ searchEngine WRITE setSearchEngine NOTIFY searchEngineChanged)
+    Q_PROPERTY(bool whatsThis READ whatsThis WRITE setWhatsThis NOTIFY whatsThisChanged)
     Q_PROPERTY(bool keepDisplayOn READ keepDisplayOn WRITE setKeepDisplayOn NOTIFY keepDisplayOnChanged)
     Q_PROPERTY(bool showPlayTime READ showPlayTime WRITE setShowPlayTime NOTIFY showPlayTimeChanged)
     Q_PROPERTY(int orientation READ orientation WRITE setOrientation NOTIFY orientationChanged)
@@ -75,10 +77,17 @@ public:
 
     // Callback for qmlRegisterSingletonType<WordleSettings>
     static QObject* createSingleton(QQmlEngine*, QJSEngine*);
+    Q_INVOKABLE QString searchUrl(QString);
 
     QString languageName() const;
     QString language() const;
-    void setLanguage(const QString);
+    void setLanguage(QString);
+
+    QString searchEngine() const;
+    void setSearchEngine(QString);
+
+    bool whatsThis() const;
+    void setWhatsThis(bool);
 
     bool keepDisplayOn() const;
     void setKeepDisplayOn(bool);
@@ -91,6 +100,8 @@ public:
 
 Q_SIGNALS:
     void languageChanged();
+    void searchEngineChanged();
+    void whatsThisChanged();
     void keepDisplayOnChanged();
     void showPlayTimeChanged();
     void orientationChanged();

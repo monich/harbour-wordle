@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Slava Monich <slava@monich.com>
+ * Copyright (C) 2022-2025 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -37,28 +37,22 @@
  * any official policies, either expressed or implied.
  */
 
-#ifdef HARMATTAN
-#include "MeegoWordle.h"
-#define PlatformApp MeegoApp
-#else
-#include <sailfishapp.h>
-#define PlatformApp SailfishApp
-#endif
+#include "WordleLanguage.h"
 
+#include "WordlePlatform.h"
 #include "WordleTypes.h"
 #include "WordleDefs.h"
-#include "WordleLanguage.h"
 
 #include "HarbourJson.h"
 #include "HarbourDebug.h"
 
-#include <QDir>
-#include <QFile>
-#include <QFileInfo>
-#include <QTextCodec>
-#include <QVariantMap>
-#include <QAtomicInt>
-#include <QMap>
+#include <QtCore/QAtomicInt>
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QMap>
+#include <QtCore/QTextCodec>
+#include <QtCore/QVariantMap>
 
 #include <string.h>
 #include <stdlib.h>

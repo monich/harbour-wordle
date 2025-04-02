@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2020-2024 Slava Monich <slava@monich.com>
+ * Copyright (C) 2020-2025 Slava Monich <slava@monich.com>
  * Copyright (C) 2020-2022 Jolla Ltd.
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -43,6 +43,8 @@
 #include "WordleGame.h"
 #include "WordleHistory.h"
 #include "WordleLanguageModel.h"
+#include "WordlePlatform.h"
+#include "WordleSearchEngineModel.h"
 #include "WordleSettings.h"
 
 #include "HarbourDebug.h"
@@ -56,17 +58,13 @@
 #endif
 
 #ifdef HARMATTAN
-#include "MeegoWordle.h"
-#define PlatformApp MeegoApp
 #define PlatformView MeegoView
 #else
-#include <sailfishapp.h>
 #include "HarbourBattery.h"
 #define loadTranslations(translator,locale,filename,prefix,directory) \
     ((translator)->load(locale,filename,prefix,directory))
 #define REGISTER_SINGLETON(class,uri,v1,v2) \
     qmlRegisterSingletonType<class>(uri, v1, v2, #class, class::createSingleton)
-#define PlatformApp SailfishApp
 #define PlatformView QQuickView
 #endif
 
@@ -83,6 +81,7 @@ static void register_types(const char* uri, int v1, int v2)
     REGISTER_TYPE(WordleGame, uri, v1, v2);
     REGISTER_TYPE(WordleHistory, uri, v1, v2);
     REGISTER_TYPE(WordleLanguageModel, uri, v1, v2);
+    REGISTER_TYPE(WordleSearchEngineModel, uri, v1, v2);
     REGISTER_TYPE(HarbourDisplayBlanking, uri, v1, v2);
 #ifdef HARMATTAN
     qmlRegisterType<Wordle>(uri, v1, v2, "Constants");

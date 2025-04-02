@@ -35,13 +35,16 @@
  * any official policies, either expressed or implied.
  */
 
+#include "WordleSettings.h"
+
 #include "WordleDefs.h"
 #include "WordleLanguage.h"
-#include "WordleSettings.h"
+#include "WordleSearchEngine.h"
 
 #include "HarbourDebug.h"
 
-#include <QLocale>
+#include <QtCore/QLocale>
+#include <QtCore/QUrl>
 
 #include <MGConfItem>
 
@@ -55,10 +58,14 @@
 
 #define DCONF_KEY(x)                "/apps/" APP_NAME "/" x
 #define KEY_LANGUAGE                DCONF_KEY("language")
+#define KEY_SEARCH_ENGINE           DCONF_KEY("searchEngine")
+#define KEY_WHATS_THIS              DCONF_KEY("whatsThis")
 #define KEY_KEEP_DISPLAY_ON         DCONF_KEY("keepDisplayOn")
 #define KEY_SHOW_PLAY_TIME          DCONF_KEY("showPlayTime")
 #define KEY_ORIENTATION             DCONF_KEY("orientation")
 
+#define DEFAULT_SEARCH_ENGINE       QString()
+#define DEFAULT_WHATS_THIS          false
 #define DEFAULT_KEEP_DISPLAY_ON     false
 #define DEFAULT_SHOW_PLAY_TIME      true
 #define DEFAULT_ORIENTATION         OrientationAny
@@ -83,6 +90,8 @@ public:
     const QList<WordleLanguage> iLanguages;
     WordleLanguage iDefaultLanguage;
     MGConfItem* iLanguage;
+    MGConfItem* iSearchEngine;
+    MGConfItem* iWhatsThis;
     MGConfItem* iKeepDisplayOn;
     MGConfItem* iShowPlayTime;
     MGConfItem* iOrientation;
@@ -95,12 +104,18 @@ WordleSettings::Private::Private(
     iLanguages(WordleLanguage::availableLanguages()),
     iDefaultLanguage(DEFAULT_LANGUAGE_CODE),
     iLanguage(new MGConfItem(KEY_LANGUAGE, aParent)),
+    iSearchEngine(new MGConfItem(KEY_SEARCH_ENGINE, aParent)),
+    iWhatsThis(new MGConfItem(KEY_WHATS_THIS, aParent)),
     iKeepDisplayOn(new MGConfItem(KEY_KEEP_DISPLAY_ON, aParent)),
     iShowPlayTime(new MGConfItem(KEY_SHOW_PLAY_TIME, aParent)),
     iOrientation(new MGConfItem(KEY_ORIENTATION, aParent))
 {
     QObject::connect(iLanguage, SIGNAL(valueChanged()),
         aParent, SIGNAL(languageChanged()));
+    QObject::connect(iSearchEngine, SIGNAL(valueChanged()),
+        aParent, SIGNAL(searchEngineChanged()));
+    QObject::connect(iWhatsThis, SIGNAL(valueChanged()),
+        aParent, SIGNAL(whatsThisChanged()));
     QObject::connect(iKeepDisplayOn, SIGNAL(valueChanged()),
         aParent, SIGNAL(keepDisplayOnChanged()));
     QObject::connect(iShowPlayTime, SIGNAL(valueChanged()),
@@ -189,6 +204,14 @@ WordleSettings::createSingleton(
 }
 
 QString
+WordleSettings::searchUrl(
+    QString aString)
+{
+    return WordleSearchEngine::getEngine(searchEngine()).queryUrl().
+        arg(QString::fromUtf8(QUrl::toPercentEncoding(aString)));
+}
+
+QString
 WordleSettings::language() const
 {
     return iPrivate->language().getCode();
@@ -206,6 +229,34 @@ WordleSettings::setLanguage(
 {
     HDEBUG(aValue);
     iPrivate->setLanguage(aValue);
+}
+
+QString
+WordleSettings::searchEngine() const
+{
+    return iPrivate->iSearchEngine->value(DEFAULT_SEARCH_ENGINE).toString();
+}
+
+void
+WordleSettings::setSearchEngine(
+    QString aValue)
+{
+    HDEBUG(aValue);
+    iPrivate->iSearchEngine->set(aValue);
+}
+
+bool
+WordleSettings::whatsThis() const
+{
+    return iPrivate->iWhatsThis->value(DEFAULT_WHATS_THIS).toBool();
+}
+
+void
+WordleSettings::setWhatsThis(
+    bool aValue)
+{
+    HDEBUG(aValue);
+    iPrivate->iWhatsThis->set(aValue);
 }
 
 bool

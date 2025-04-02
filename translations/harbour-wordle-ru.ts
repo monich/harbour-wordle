@@ -18,6 +18,11 @@
         <extracomment>Pulley menu item</extracomment>
         <translation>Новая игра</translation>
     </message>
+    <message id="wordle-menu-whats_this">
+        <source>What&apos;s this?</source>
+        <extracomment>Pulley and context menu item</extracomment>
+        <translation>Что это такое?</translation>
+    </message>
     <message id="wordle-settings-header">
         <source>Settings</source>
         <extracomment>Page header</extracomment>
@@ -80,6 +85,21 @@
         <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
         <extracomment>Text switch label description</extracomment>
         <translation>Во избежание полной разрядки аккумулятора, спящий режим всё равно будет разрешён если заряд аккумулятора упадёт ниже %1% и при этом зарядное устройство не подключено.</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this">
+        <source>Enable «What&apos;s this» menu</source>
+        <extracomment>Text switch label</extracomment>
+        <translation>Включить меню «Что это такое?»</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this-description">
+        <source>If the word which you were guessing isn&apos;t familiar to you, this function allows you to quickly look up the meaning of the word in the selected search engine.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation>Если вы не понимаете что значит отгаданное или не отгаданное вами слово, эта функция позволяет выяснить это через выбранный вами поисковик.</translation>
+    </message>
+    <message id="wordle-settings-search_engine-label">
+        <source>Search engine</source>
+        <extracomment>Combo box label</extracomment>
+        <translation>Поисковик</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>

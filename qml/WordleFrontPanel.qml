@@ -71,6 +71,16 @@ Item {
             }
 
             MenuItem {
+                id: whatsThisMenuItem
+
+                //: Pulley and context menu item
+                //% "What's this?"
+                text: qsTrId("wordle-menu-whats_this")
+                visible: WordleSettings.whatsThis
+                onClicked: Qt.openUrlExternally(WordleSettings.searchUrl(wordle.answer))
+            }
+
+            MenuItem {
                 id: newGameMenuItem
 
                 //: Pulley menu item

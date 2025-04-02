@@ -79,6 +79,9 @@ HEADERS += \
   src/WordleHistory.h \
   src/WordleLanguage.h \
   src/WordleLanguageModel.h \
+  src/WordlePlatform.h \
+  src/WordleSearchEngine.h \
+  src/WordleSearchEngineModel.h \
   src/WordleSettings.h \
   src/WordleTypes.h
 
@@ -90,6 +93,8 @@ SOURCES += \
   src/WordleHistory.cpp \
   src/WordleLanguage.cpp \
   src/WordleLanguageModel.cpp \
+  src/WordleSearchEngine.cpp \
+  src/WordleSearchEngineModel.cpp \
   src/WordleSettings.cpp
 
 # Icons
@@ -111,6 +116,11 @@ OTHER_FILES += $${WORDLE_DATA}
 data.files = $${WORDLE_DATA}
 data.path = $${TARGET_DATA_DIR}
 INSTALLS += data
+
+SEARCH_DATA = search
+search.files = $${SEARCH_DATA}
+search.path = $${TARGET_DATA_DIR}
+INSTALLS += search
 
 # Translations
 TRANSLATION_SOURCES = \

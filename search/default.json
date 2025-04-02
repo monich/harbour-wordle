@@ -1,0 +1,4 @@
+{
+    "name": "Google",
+    "queryUrl": "https://google.com/search?q=%1"
+}

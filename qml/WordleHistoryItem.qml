@@ -5,7 +5,7 @@ import harbour.wordle 1.0
 import "Utils.js" as Utils
 import "harbour"
 
-BackgroundItem {
+ListItem {
     id: thisItem
 
     property bool landscape
@@ -15,7 +15,10 @@ BackgroundItem {
     property var endTime
     property int secondsPlayed
 
-    implicitHeight: Theme.itemSizeHuge + (landscape ? Theme.itemSizeMedium : Theme.itemSizeHuge)
+    showMenuOnPressAndHold: WordleSettings.whatsThis
+    contentHeight: Theme.itemSizeHuge + (landscape ? Theme.itemSizeMedium : Theme.itemSizeHuge)
+
+    property bool _pressEffect: highlighted && !menuOpen
 
     Column {
         id: answerColumn
@@ -30,7 +33,7 @@ BackgroundItem {
             width: Math.min(Theme.itemSizeHuge, board.x - answerColumn.x - Theme.paddingLarge)
             radius: Theme.paddingSmall
             color: Wordle.defaultKeyBackgroundColor
-            layer.enabled: thisItem.highlighted
+            layer.enabled: _pressEffect
             layer.effect: HarbourPressEffect { source: answerLabelBackground }
 
             Label {
@@ -60,7 +63,7 @@ BackgroundItem {
             anchors.left: parent.left
             sourceSize.height: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
             source: Qt.resolvedUrl(win ? "images/win.svg" : "images/loss.svg")
-            layer.enabled: thisItem.highlighted
+            layer.enabled: _pressEffect
             layer.effect: HarbourPressEffect { source: resultIcon }
         }
     }
@@ -104,7 +107,7 @@ BackgroundItem {
             rightMargin: Theme.horizontalPageMargin
         }
 
-        readonly property int cellSize: Math.floor((thisItem.height - 2 * y + spacing) / Wordle.MaxAttempts - spacing)
+        readonly property int cellSize: Math.floor((thisItem.contentHeight - 2 * y + spacing) / Wordle.MaxAttempts - spacing)
 
         Repeater {
             id: repeater
@@ -119,7 +122,7 @@ BackgroundItem {
                 width: board.cellSize
                 height: board.cellSize
                 color: Wordle.letterBackgroundColor(model.state)
-                layer.enabled: thisItem.highlighted
+                layer.enabled: _pressEffect
                 layer.effect: HarbourPressEffect { source: letterBackground }
                 border {
                     width: (model.state === Wordle.LetterStateUnknown) ? Math.max(Math.floor(board.cellSize / 30), 1) : 0
@@ -140,6 +143,15 @@ BackgroundItem {
                     verticalAlignment: Text.AlignVCenter
                 }
             }
+        }
+    }
+
+    menu: ContextMenu {
+        MenuItem {
+            //: Pulley and context menu item
+            //% "What's this?"
+            text: qsTrId("wordle-menu-whats_this")
+            onClicked: Qt.openUrlExternally(WordleSettings.searchUrl(answer))
         }
     }
 }

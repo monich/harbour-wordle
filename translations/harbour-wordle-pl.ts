@@ -18,6 +18,11 @@
         <extracomment>Pulley menu item</extracomment>
         <translation>Nowa gra</translation>
     </message>
+    <message id="wordle-menu-whats_this">
+        <source>What&apos;s this?</source>
+        <extracomment>Pulley and context menu item</extracomment>
+        <translation type="unfinished">Co to jest?</translation>
+    </message>
     <message id="wordle-settings-header">
         <source>Settings</source>
         <extracomment>Page header</extracomment>
@@ -80,6 +85,21 @@
         <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
         <extracomment>Text switch label description</extracomment>
         <translation type="unfinished">Aby zapobiec całkowitemu rozładowaniu baterii, tryb uśpienia będzie nadal włączony, jeśli poziom naładowania baterii spadnie poniżej %1% i nie zostanie podłączona żadna ładowarka.</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this">
+        <source>Enable «What&apos;s this» menu</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Włącz opcję „Co to jest?” menu</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this-description">
+        <source>If the word which you were guessing isn&apos;t familiar to you, this function allows you to quickly look up the meaning of the word in the selected search engine.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation type="unfinished">Jeśli nie rozumiesz, co oznacza słowo, ta funkcja pozwala ci się tego dowiedzieć za pomocą wybranej wyszukiwarki.</translation>
+    </message>
+    <message id="wordle-settings-search_engine-label">
+        <source>Search engine</source>
+        <extracomment>Combo box label</extracomment>
+        <translation type="unfinished">Wyszukiwarka</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>

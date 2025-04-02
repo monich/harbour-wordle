@@ -18,6 +18,11 @@
         <extracomment>Pulley menu item</extracomment>
         <translation>Új játék</translation>
     </message>
+    <message id="wordle-menu-whats_this">
+        <source>What&apos;s this?</source>
+        <extracomment>Pulley and context menu item</extracomment>
+        <translation type="unfinished">Mi ez?</translation>
+    </message>
     <message id="wordle-settings-header">
         <source>Settings</source>
         <extracomment>Page header</extracomment>
@@ -76,6 +81,21 @@
         <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
         <extracomment>Text switch label description</extracomment>
         <translation type="unfinished">Az akkumulátor teljes lemerülésének elkerülése érdekében a kijelző sötétítése továbbra is megengedett, ha az akkumulátor töltöttségi szintje %1% alá esik, és a telefon nem töltődik.</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this">
+        <source>Enable «What&apos;s this» menu</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Aktiválja a &quot;Mi ez?&quot; menü</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this-description">
+        <source>If the word which you were guessing isn&apos;t familiar to you, this function allows you to quickly look up the meaning of the word in the selected search engine.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation type="unfinished">Ha a kitalált szó nem ismerős számodra, ez a funkció lehetővé teszi, hogy gyorsan megkeresd a szó jelentését a kiválasztott keresőben.</translation>
+    </message>
+    <message id="wordle-settings-search_engine-label">
+        <source>Search engine</source>
+        <extracomment>Combo box label</extracomment>
+        <translation type="unfinished">Keresőmotor</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>
