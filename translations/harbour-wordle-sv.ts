@@ -18,6 +18,11 @@
         <extracomment>Pulley menu item</extracomment>
         <translation>Nytt spel</translation>
     </message>
+    <message id="wordle-menu-whats_this">
+        <source>What&apos;s this?</source>
+        <extracomment>Pulley and context menu item</extracomment>
+        <translation type="unfinished">Vad är det här?</translation>
+    </message>
     <message id="wordle-settings-header">
         <source>Settings</source>
         <extracomment>Page header</extracomment>
@@ -78,6 +83,21 @@
         <source>To avoid completely discharging the battery, display blanking would still be allowed if the battery level drops below %1% and the phone is not on charger.</source>
         <extracomment>Text switch label description</extracomment>
         <translation>För att undvika att batteriet laddas ur helt skulle skärmsläckning fortfarande tillåtas om batterinivån sjunker under %1% och telefonen inte laddas.</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this">
+        <source>Enable «What&apos;s this» menu</source>
+        <extracomment>Text switch label</extracomment>
+        <translation type="unfinished">Aktivera "Vad är det här?" meny</translation>
+    </message>
+    <message id="wordle-settings-show_whats_this-description">
+        <source>If the word which you were guessing isn&apos;t familiar to you, this function allows you to quickly look up the meaning of the word in the selected search engine.</source>
+        <extracomment>Text switch label description</extracomment>
+        <translation type="unfinished">Om ordet du gissade inte är bekant för dig, låter den här funktionen dig snabbt slå upp ordets betydelse i den valda söktjänsten.</translation>
+    </message>
+    <message id="wordle-settings-search_engine-label">
+        <source>Search engine</source>
+        <extracomment>Combo box label</extracomment>
+        <translation type="unfinished">Söktjänst</translation>
     </message>
     <message id="wordle-settings-version">
         <source>Version %1</source>

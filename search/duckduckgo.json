@@ -1,0 +1,4 @@
+{
+    "name": "DuckDuckGo",
+    "queryUrl": "https://duckduckgo.com/&q=%1"
+}
