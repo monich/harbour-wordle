@@ -1,7 +1,7 @@
 Name:           harbour-wordle
 
 Summary:        WORDLE game
-Version:        1.1.7
+Version:        1.1.8
 Release:        1
 License:        BSD
 URL:            https://github.com/monich/harbour-wordle
