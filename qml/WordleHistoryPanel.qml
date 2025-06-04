@@ -181,10 +181,22 @@ Item {
         header: Component {
             Column {
                 readonly property alias headerHistoryTitle: historyTitle
+                property real lastHeight: height
 
                 x: Theme.horizontalPageMargin
                 width: parent.width - 2 * x
                 visible: _haveHistory
+
+                // For whatever reason the initial height of the header after orientation change
+                // is smaller and then grows (probably because the list is repositioned first and
+                // then the grid gets resized). The intention here is to show the entire header
+                // if the list was positioned at top before the screen got rotated.
+                onHeightChanged: {
+                    if (contentFlickable.contentY === -lastHeight) {
+                        contentFlickable.contentY = -height
+                    }
+                    lastHeight = height
+                }
 
                 Grid {
                     id: statisticsGrid
