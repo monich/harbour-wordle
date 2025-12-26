@@ -1,34 +1,9 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<svg
-    xmlns:svg="http://www.w3.org/2000/svg"
-    xmlns="http://www.w3.org/2000/svg"
-    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
-    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-    version="1.1"
-    x="0"
-    y="0"
-    width="64"
-    height="64"
-    viewBox="0 0 64 64"
-    style="enable-background:new 0 0 64 64;"
-    sodipodi:docname="key-backspace.svg">
-  <rect
-      style="opacity:0;fill:#ffffff"
-      width="64"
-      height="64"/>
-  <path
-      style="opacity:1;fill:none;stroke:#ffffff;stroke-width:5;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:0.5"
-      d="m 23.741835,10.500142 c -2.198818,0 -5.063243,1.29451 -6.521666,2.947068 L 3.7340776,28.734174 c -1.5887927,1.801101 -1.5887927,4.731527 0,6.531651 L 17.220169,50.552788 c 1.457448,1.653535 4.322848,2.94707 6.521666,2.94707 h 33.301923 c 2.457618,0 4.457067,-2.006453 4.45609,-4.474049 V 14.976095 c 0,-2.468572 -1.999444,-4.475953 -4.45609,-4.475953 z"
-      inkscape:connector-curvature="0"
-      sodipodi:nodetypes="sccccsscsss"/>
-  <path
-      style="opacity:1;fill:none;stroke:#ffffff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-      d="m 27.026872,21.523979 6.64768,5.919249 c 1.53734,1.368883 2.307008,3.225985 2.324841,4.698226 0.02033,1.678937 -0.954003,3.751923 -2.643234,5.259887 l -5.684664,5.074646"
-      inkscape:connector-curvature="0"
-      sodipodi:nodetypes="csssc"/>
-  <path
-      style="opacity:1;fill:none;stroke:#ffffff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
-      d="m 50.973129,21.523979 -6.64768,5.919249 c -1.53734,1.368883 -2.307008,3.225985 -2.324841,4.698226 -0.02033,1.678937 0.954003,3.751923 2.643234,5.259887 l 5.684664,5.074646"
-      inkscape:connector-curvature="0"
-      sodipodi:nodetypes="csssc"/>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<svg version="1.1" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+  <rect style="fill:#ffffff;opacity:0" width="64" height="64"/>
+  <path style="fill:none;stroke:#ffffff;stroke-width:5;stroke-miterlimit:4;stroke-opacity:0.5" d="m 23.74,10.5 c -2.2,0 -5,1.295 -6.52,2.947 L 3.734,28.734 c -1.589,1.8 -1.589,4.732 0,6.532 L 17.22,50.553 c 1.457,1.654 4.321,2.947 6.52,2.947 h 33.3 c 2.458,0 4.457,-2 4.456,-4.474 L 61.5,14.976 C 61.5,12.507 59.498,10.5 57.042,10.5 z"/>
+  <g style="fill:none;stroke:#ffffff;stroke-width:5;stroke-linecap:round;stroke-linejoin:round">
+    <path d="m 27.027,21.524 6.648,5.92 c 1.537,1.369 2.307,3.226 2.325,4.7 0,1.679 -0.954,3.752 -2.643,5.26 l -5.685,5.075"/>
+    <path d="m 50.973,21.524 -6.648,5.92 c -1.537,1.369 -2.307,3.226 -2.325,4.7 0,1.68 0.954,3.752 2.643,5.26 l 5.685,5.075"/>
+  </g>
 </svg>
