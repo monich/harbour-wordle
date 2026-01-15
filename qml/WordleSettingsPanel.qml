@@ -229,7 +229,9 @@ Item {
                     ComboBox {
                         id: searchEngineComboBox
 
-                        x: Theme.itemSizeExtraSmall + searchEngineSwitch.leftMargin - Theme.paddingLarge
+                        // Align with the TextSwitch label
+                        x: ("_label" in searchEngineSwitch) ? searchEngineSwitch._label.x :
+                            (searchEngineSwitch.leftMargin + Theme.itemSizeExtraSmall + (Wordle.darkOnLight ? Theme.paddingMedium : 0))
                         width: parent.width - x
                         leftMargin: 0
                         visible: WordleSettings.whatsThis
