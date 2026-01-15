@@ -182,11 +182,6 @@ Item {
                             onOrientationChanged: orientationComboBox.updateValue()
                         }
                     }
-                }
-
-                Column
-                {
-                    width: parent.columnWidth
 
                     TextSwitch {
                         width: parent.width
@@ -210,6 +205,11 @@ Item {
                         description: HarbourBattery.batteryLevel > 0 ? qsTrId("wordle-settings-keep_display_on-description").arg(WordleSettings.MinChargeToKeepDisplayOn) : ""
                         onClicked: WordleSettings.keepDisplayOn = !WordleSettings.keepDisplayOn
                     }
+                }
+
+                Column
+                {
+                    width: parent.columnWidth
 
                     TextSwitch {
                         id: searchEngineSwitch
