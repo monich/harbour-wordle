@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2022-2024 Slava Monich <slava@monich.com>
+ * Copyright (C) 2022-2026 Slava Monich <slava@monich.com>
  * Copyright (C) 2022 Jolla Ltd.
  *
  * You may use this file under the terms of the BSD license as follows:
@@ -43,8 +43,9 @@
 
 #include "HarbourJson.h"
 #include "HarbourDebug.h"
+#include "HarbourParentSignalQueueObject.h"
 
-#include <QTimer>
+#include <QtCore/QTimer>
 
 // Strings and letters are lower case
 
@@ -91,22 +92,25 @@ operator<<(
 // WordleGame::Private
 // ==========================================================================
 
+enum WordleGameSignal {
+    #define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
+    MODEL_SIGNALS(SIGNAL_ENUM_)
+    #undef SIGNAL_ENUM_
+    WordleGameSignalCount
+};
+
+typedef HarbourParentSignalQueueObject<WordleGame,
+    WordleGameSignal, WordleGameSignalCount>
+    WordleGamePrivateBase;
+
 class WordleGame::Private :
-    public QObject
+    public WordleGamePrivateBase
 {
     Q_OBJECT
 
-public:
-    typedef void (WordleGame::*SignalEmitter)();
-    typedef uint SignalMask;
-#ifndef Q_MOC_RUN
-    enum Signal {
-        #define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
-        MODEL_SIGNALS(SIGNAL_ENUM_)
-        #undef SIGNAL_ENUM_
-        SignalCount
-    };
+    static const SignalEmitter gSignalEmitters[];
 
+public:
     enum Role {
         #define FIRST(X,x) FirstRole = Qt::UserRole, MODEL_ROLE(X) = FirstRole,
         #define ROLE(X,x) MODEL_ROLE(X),
@@ -116,7 +120,6 @@ public:
         #undef ROLE
         #undef LAST
     };
-#endif
 
     class State {
     public:
@@ -153,10 +156,7 @@ public:
     ~Private();
 
     WordleGame* parentGame();
-    void queueSignal(Signal);
-    bool signalQueued(Signal);
-    void emitQueuedSignals();
-    void setLanguage(const QString);
+    void setLanguage(const QString&);
     void setPlaying(bool);
     void updatePlayTime();
     GameState gameState();
@@ -168,12 +168,12 @@ public:
     void readState();
     void writeState();
 
-    Wordle::LetterState letterState(const QString, int) const;
-    void updateStateMap(const QString);
+    Wordle::LetterState letterState(const QString&, int) const;
+    void updateStateMap(const QString&);
     int letterCount() const;
 
-    static QString toString(const QDateTime);
-    static QDateTime dateTimeValue(const QVariantMap, const QString);
+    static QString toString(const QDateTime&);
+    static QDateTime dateTimeValue(const QVariantMap&, const QString&);
 
 private Q_SLOTS:
     void flushChanges();
@@ -181,8 +181,6 @@ private Q_SLOTS:
     void onSaveTimerExpired();
 
 public:
-    SignalMask iQueuedSignals;
-    Signal iFirstQueuedSignal;
     WordleLanguage iLanguage;
     QDateTime iStartTime;
     QDateTime iFinishTime;
@@ -210,6 +208,13 @@ const QString WordleGame::Private::STATE_KEY_ATTEMPTS("attempts");
 const QString WordleGame::Private::STATE_KEY_SECS_PLAYED("t");
 const QString WordleGame::Private::STATE_KEY_TIME_START("t1");
 const QString WordleGame::Private::STATE_KEY_TIME_FINISH("t2");
+
+const WordleGamePrivateBase::SignalEmitter
+WordleGame::Private::gSignalEmitters [] = {
+    #define SIGNAL_EMITTER_(Name,name) &WordleGame::name##Changed,
+    MODEL_SIGNALS(SIGNAL_EMITTER_)
+    #undef  SIGNAL_EMITTER_
+};
 
 WordleGame::Private::State::State(Private* aPrivate) :
     iGameState(aPrivate->gameState()),
@@ -267,9 +272,7 @@ WordleGame::Private::State::queueSignals(
 
 WordleGame::Private::Private(
     WordleGame* aParent) :
-    QObject(aParent),
-    iQueuedSignals(0),
-    iFirstQueuedSignal(SignalCount),
+    WordleGamePrivateBase(aParent, gSignalEmitters),
     iLoading(0),
     iPlaying(false),
     iSecondsPlayed(0),
@@ -317,61 +320,10 @@ WordleGame::Private::parentGame()
     return qobject_cast<WordleGame*>(parent());
 }
 
-void
-WordleGame::Private::queueSignal(
-    Signal aSignal)
-{
-    if (aSignal >= 0 && aSignal < SignalCount) {
-        const SignalMask signalBit = (SignalMask(1) << aSignal);
-
-        if (iQueuedSignals) {
-            iQueuedSignals |= signalBit;
-            if (iFirstQueuedSignal > aSignal) {
-                iFirstQueuedSignal = aSignal;
-            }
-        } else {
-            iQueuedSignals = signalBit;
-            iFirstQueuedSignal = aSignal;
-        }
-    }
-}
-
-bool
-WordleGame::Private::signalQueued(
-    Signal aSignal)
-{
-    return (iQueuedSignals & (SignalMask(1) << aSignal)) != 0;
-}
-
-void
-WordleGame::Private::emitQueuedSignals()
-{
-    static const SignalEmitter emitSignal [] = {
-#define SIGNAL_EMITTER_(Name,name) &WordleGame::name##Changed,
-        MODEL_SIGNALS(SIGNAL_EMITTER_)
-#undef  SIGNAL_EMITTER_
-    };
-    Q_STATIC_ASSERT(sizeof(emitSignal)/sizeof(emitSignal[0]) == SignalCount);
-    if (iQueuedSignals) {
-        WordleGame* model = parentGame();
-        // Reset first queued signal before emitting the signals.
-        // Signal handlers may emit more signals.
-        uint i = iFirstQueuedSignal;
-        iFirstQueuedSignal = SignalCount;
-        for (; i < SignalCount && iQueuedSignals; i++) {
-            const SignalMask signalBit = (SignalMask(1) << i);
-            if (iQueuedSignals & signalBit) {
-                iQueuedSignals &= ~signalBit;
-                Q_EMIT (model->*(emitSignal[i]))();
-            }
-        }
-    }
-}
-
 inline
 QString
 WordleGame::Private::toString(
-    const QDateTime aTime)
+    const QDateTime& aTime)
 {
     return aTime.toUTC().toString(DATE_TIME_FORMAT);
 }
@@ -379,8 +331,8 @@ WordleGame::Private::toString(
 inline
 QDateTime
 WordleGame::Private::dateTimeValue(
-    const QVariantMap aData,
-    const QString aKey)
+    const QVariantMap& aData,
+    const QString& aKey)
 {
     QDateTime dt;
     const QString str(aData.value(aKey).toString());
@@ -586,7 +538,7 @@ WordleGame::Private::updatePlayTime()
 
 void
 WordleGame::Private::setLanguage(
-    QString aLangCode)
+    const QString& aLangCode)
 {
     WordleLanguage language(aLangCode);
     if (language.isValid() && !iLanguage.equals(language)) {
@@ -689,7 +641,7 @@ WordleGame::Private::canSubmitInput()
 
 Wordle::LetterState
 WordleGame::Private::letterState(
-    const QString aWord,
+    const QString& aWord,
     int aPos) const
 {
     return Wordle::letterState(iAnswer, aWord, aPos);
@@ -703,7 +655,7 @@ WordleGame::Private::letterCount() const
 
 void
 WordleGame::Private::updateStateMap(
-    const QString aWord)
+    const QString& aWord)
 {
     const int n = aWord.length();
 
@@ -781,7 +733,7 @@ WordleGame::keypad2() const
 
 void
 WordleGame::setLanguage(
-    const QString aLanguageCode)
+    QString aLanguageCode)
 {
     iPrivate->setLanguage(aLanguageCode);
     iPrivate->emitQueuedSignals();
@@ -918,7 +870,7 @@ WordleGame::canSubmitInput() const
 
 int
 WordleGame::knownLetterState(
-    const QString aLetter)
+    QString aLetter) const
 {
     return (aLetter.length() == 1) ?
         iPrivate->iStateMap.value(aLetter.at(0)) :
@@ -927,7 +879,7 @@ WordleGame::knownLetterState(
 
 bool
 WordleGame::inputLetter(
-    const QString aLetter)
+    QString aLetter)
 {
     if (aLetter.length() == 1 && canInputLetter()) {
         const QChar letter(aLetter.at(0).toLower());

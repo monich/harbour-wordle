@@ -42,10 +42,9 @@
 
 #include "WordleTypes.h"
 
-#include <QAbstractListModel>
-#include <QDateTime>
-#include <QString>
-#include <QStringList>
+#include <QtCore/QAbstractListModel>
+#include <QtCore/QDateTime>
+#include <QtCore/QStringList>
 
 class WordleGame :
     public QAbstractListModel
@@ -80,7 +79,7 @@ public:
     ~WordleGame();
 
     QString language() const;
-    void setLanguage(const QString);
+    void setLanguage(QString);
 
     bool playing() const;
     void setPlaying(bool);
@@ -100,8 +99,8 @@ public:
     bool canDeleteLastLetter() const;
     bool canSubmitInput() const;
 
-    Q_INVOKABLE int knownLetterState(const QString);
-    Q_INVOKABLE bool inputLetter(const QString);
+    Q_INVOKABLE int knownLetterState(QString) const;
+    Q_INVOKABLE bool inputLetter(QString);
     Q_INVOKABLE void deleteLastLetter();
     Q_INVOKABLE bool submitInput();
     Q_INVOKABLE void newGame();
