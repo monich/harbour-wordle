@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Slava Monich <slava@monich.com>
+ * Copyright (C) 2024-2026 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -41,10 +41,10 @@
 #include "WordleLanguage.h"
 
 #include "HarbourDebug.h"
+#include "HarbourParentSignalQueueObject.h"
 
-#include <QByteArray>
-#include <QFileInfo>
-#include <QFile>
+#include <QtCore/QFileInfo>
+#include <QtCore/QFile>
 
 #define MODEL_ROLES_(first,role,last) \
     first(Win,win) \
@@ -75,8 +75,22 @@
 // WordleHistory::Private
 // ==========================================================================
 
-class WordleHistory::Private
+enum WordleHistorySignal {
+    #define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
+    MODEL_SIGNALS(SIGNAL_ENUM_)
+    #undef  SIGNAL_ENUM_
+    WordleHistorySignalCount
+};
+
+typedef HarbourParentSignalQueueObject<WordleHistory,
+    WordleHistorySignal, WordleHistorySignalCount>
+    WordleHistoryPrivateBase;
+
+class WordleHistory::Private :
+    public WordleHistoryPrivateBase
 {
+    Q_OBJECT
+
     typedef quint64 Signature;
     static const QString HISTORY_FILE;
     static const Signature SIGNATURE;
@@ -104,16 +118,9 @@ class WordleHistory::Private
 
     Q_STATIC_ASSERT(sizeof(HistoryEntry) == 96);
 
-public:
-    typedef void (WordleHistory::*SignalEmitter)();
-    typedef uint SignalMask;
-    enum Signal {
-        #define SIGNAL_ENUM_(Name,name) Signal##Name##Changed,
-        MODEL_SIGNALS(SIGNAL_ENUM_)
-        #undef  SIGNAL_ENUM_
-        SignalCount
-    };
+    static const SignalEmitter gSignalEmitters[];
 
+public:
     enum Role {
         #define FIRST(X,x) FirstRole = Qt::UserRole, MODEL_ROLE(X) = FirstRole,
         #define ROLE(X,x) MODEL_ROLE(X),
@@ -123,6 +130,10 @@ public:
         #undef ROLE
         #undef LAST
     };
+
+    // QtCreator syntax highlighter gets confused by the above macro magic.
+    // Somehow this stupid enum unconfuses it :/
+    enum { _ };
 
     class State {
     public:
@@ -143,14 +154,12 @@ public:
     Private(WordleHistory*);
     ~Private();
 
-    void emitQueuedSignals();
     void setLanguage(const QString);
     void add(const QString, const QStringList, const QDateTime&, const QDateTime&, int);
     void clear();
     QVariant data(int, Role);
 
 private:
-    void queueSignal(Signal);
     void unmapHistoryFile();
     void closeHistoryFile();
     void readHistory();
@@ -174,9 +183,6 @@ public:
 
 private:
     const QDir iDataDir;
-    WordleHistory* iObject;
-    SignalMask iQueuedSignals;
-    Signal iFirstQueuedSignal;
     QFile iHistoryFile;
     uchar* iHistoryData;
 };
@@ -185,6 +191,13 @@ const QString WordleHistory::Private::HISTORY_FILE("history");
 const WordleHistory::Private::Signature // WRDLHST1 in little endian
 WordleHistory::Private::SIGNATURE = 0x315453484c445257ull;
 const quint32 WordleHistory::Private::PADDING = 0x3d3d3d3d; // '===='
+
+const WordleHistoryPrivateBase::SignalEmitter
+    WordleHistory::Private::gSignalEmitters [] = {
+    #define SIGNAL_EMITTER_(Name,name) &WordleHistory::name##Changed,
+    MODEL_SIGNALS(SIGNAL_EMITTER_)
+    #undef  SIGNAL_EMITTER_
+};
 
 WordleHistory::Private::State::State(Private* aPrivate) :
     iTotalCount(aPrivate->iTotalCount),
@@ -230,6 +243,7 @@ WordleHistory::Private::State::queueSignals(
 
 WordleHistory::Private::Private(
     WordleHistory* aParent) :
+    WordleHistoryPrivateBase(aParent, gSignalEmitters),
     iHistoryEntries(Q_NULLPTR),
     iTotalCount(0),
     iWinCount(0),
@@ -239,9 +253,6 @@ WordleHistory::Private::Private(
     iCurrentStreak(0),
     iMaxStreak(0),
     iDataDir(Wordle::dataDir()),
-    iObject(aParent),
-    iQueuedSignals(0),
-    iFirstQueuedSignal(SignalCount),
     iHistoryData(Q_NULLPTR)
 {
     memset(iGuessCounts, 0, sizeof(iGuessCounts));
@@ -253,57 +264,16 @@ WordleHistory::Private::~Private()
 }
 
 void
-WordleHistory::Private::queueSignal(
-    Signal aSignal)
-{
-    if (aSignal >= 0 && aSignal < SignalCount) {
-        const SignalMask signalBit = (SignalMask(1) << aSignal);
-
-        if (iQueuedSignals) {
-            iQueuedSignals |= signalBit;
-            if (iFirstQueuedSignal > aSignal) {
-                iFirstQueuedSignal = aSignal;
-            }
-        } else {
-            iQueuedSignals = signalBit;
-            iFirstQueuedSignal = aSignal;
-        }
-    }
-}
-
-void
-WordleHistory::Private::emitQueuedSignals()
-{
-    static const SignalEmitter emitSignal [] = {
-        #define SIGNAL_EMITTER_(Name,name) &WordleHistory::name##Changed,
-        MODEL_SIGNALS(SIGNAL_EMITTER_)
-        #undef SIGNAL_EMITTER_
-    };
-    Q_STATIC_ASSERT(sizeof(emitSignal)/sizeof(emitSignal[0]) == SignalCount);
-    if (iQueuedSignals) {
-        // Reset first queued signal before emitting the signals.
-        // Signal handlers may emit more signals.
-        uint i = iFirstQueuedSignal;
-        iFirstQueuedSignal = SignalCount;
-        for (; i < SignalCount && iQueuedSignals; i++) {
-            const SignalMask signalBit = (SignalMask(1) << i);
-            if (iQueuedSignals & signalBit) {
-                iQueuedSignals &= ~signalBit;
-                Q_EMIT (iObject->*(emitSignal[i]))();
-            }
-        }
-    }
-}
-
-void
 WordleHistory::Private::setLanguage(
     QString aLangCode)
 {
     WordleLanguage language(aLangCode);
     if (language.isValid()) {
         if (!iLanguage.equals(language)) {
+            WordleHistory* model = parentObject();
             const State prevState(this);
-            iObject->beginResetModel();
+
+            model->beginResetModel();
             HDEBUG(aLangCode);
             queueSignal(SignalLanguageChanged);
             iLanguage = language;
@@ -315,7 +285,7 @@ WordleHistory::Private::setLanguage(
 
             readHistory();
             prevState.queueSignals(this);
-            iObject->endResetModel();
+            model->endResetModel();
         }
     }
 }
@@ -323,8 +293,10 @@ WordleHistory::Private::setLanguage(
 void
 WordleHistory::Private::clear()
 {
+    WordleHistory* model = parentObject();
     const State prevState(this);
-    iObject->beginResetModel();
+
+    model->beginResetModel();
     unmapHistoryFile();
     if (iHistoryFile.exists()) {
         // The file is closed before being removed
@@ -332,7 +304,7 @@ WordleHistory::Private::clear()
         iHistoryFile.remove();
     }
     prevState.queueSignals(this);
-    iObject->endResetModel();
+    model->endResetModel();
 }
 
 void
@@ -343,7 +315,9 @@ WordleHistory::Private::add(
     const QDateTime& aEndTime,
     int aSecondsPlayed)
 {
+    WordleHistory* model = parentObject();
     const State prevState(this);
+
     closeHistoryFile();
 
     if (!iHistoryFile.exists() || !iHistoryFile.size()) {
@@ -367,10 +341,11 @@ WordleHistory::Private::add(
             "error" << iHistoryFile.error());
     }
 
-    iObject->beginResetModel();
+    model->beginResetModel();
     if (iHistoryFile.isOpen()) {
         // Set up the new entry
         HistoryEntry entry;
+
         memset(&entry, 0, sizeof(entry));
         // The answer and the attempts must be full words
         for (int i = 0; i < WORDLE_WORD_LENGTH; i++) {
@@ -398,7 +373,7 @@ WordleHistory::Private::add(
         }
     }
     prevState.queueSignals(this);
-    iObject->endResetModel();
+    model->endResetModel();
 }
 
 void
@@ -434,6 +409,7 @@ WordleHistory::Private::readHistory()
     closeHistoryFile();
 
     const quint64 size = iHistoryFile.size();
+
     if (size >= sizeof(SIGNATURE)) {
         if (iHistoryFile.open(QFile::ReadOnly)) {
             iHistoryData = iHistoryFile.map(0, size);
@@ -475,6 +451,7 @@ WordleHistory::Private::parseHistory()
         const int n = int(size / sizeof(HistoryEntry));
         const HistoryEntry* entries = (HistoryEntry*)(iHistoryData +
             sizeof(SIGNATURE));
+
         // Validate the entries and collect statistics
         memset(guessCounts, 0, sizeof(guessCounts));
         for (int i = 0; i < n; i++) {
@@ -573,6 +550,7 @@ WordleHistory::Private::toString(
 {
     QString str;
     int n = 0;
+
     while (n < aMaxCount && aChars[aOffset + n]) n++;
     str.reserve(n);
     for (int i = 0; i < n; i++) {
@@ -594,6 +572,7 @@ WordleHistory::Private::data(
 {
     if (aRow >= 0 && aRow < iTotalCount) {
         const HistoryEntry* entry = iHistoryEntries + iTotalCount - aRow - 1;
+
         switch (aRole) {
         case WinRole:
             return isWin(entry);
@@ -692,6 +671,7 @@ QList<int>
 WordleHistory::guessDistribution() const
 {
     QList<int> list;
+
     list.reserve(WORDLE_MAX_ATTEMPTS);
     for (int i = 0; i < WORDLE_MAX_ATTEMPTS; i++) {
         list.append(iPrivate->iGuessCounts[i]);
@@ -703,6 +683,7 @@ QHash<int,QByteArray>
 WordleHistory::roleNames() const
 {
     QHash<int,QByteArray> roles;
+
     #define ROLE(X,x) roles.insert(Private::MODEL_ROLE(X), #x);
     MODEL_ROLES(ROLE)
     #undef ROLE
@@ -742,3 +723,5 @@ WordleHistory::clear()
     iPrivate->clear();
     iPrivate->emitQueuedSignals();
 }
+
+#include "WordleHistory.moc"

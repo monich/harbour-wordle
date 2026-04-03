@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 Slava Monich <slava@monich.com>
+ * Copyright (C) 2024-2026 Slava Monich <slava@monich.com>
  *
  * You may use this file under the terms of the BSD license as follows:
  *
@@ -41,9 +41,9 @@
 
 #include "WordleTypes.h"
 
-#include <QAbstractListModel>
-#include <QDateTime>
-#include <QStringList>
+#include <QtCore/QAbstractListModel>
+#include <QtCore/QDateTime>
+#include <QtCore/QStringList>
 
 class WordleHistory :
     public QAbstractListModel

@@ -46,6 +46,7 @@ HEADERS += \
     $${HARBOUR_LIB_INCLUDE}/HarbourDebug.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourDisplayBlanking.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourJson.h \
+    $${HARBOUR_LIB_INCLUDE}/HarbourParentSignalQueueObject.h \
     $${HARBOUR_LIB_INCLUDE}/HarbourSystemState.h \
     $${HARBOUR_LIB_SRC}/HarbourMce.h
 
