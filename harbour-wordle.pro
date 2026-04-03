@@ -57,8 +57,8 @@ SOURCES += \
     $${HARBOUR_LIB_SRC}/HarbourMce.cpp \
     $${HARBOUR_LIB_SRC}/HarbourSystemState.cpp
 
-
 HARBOUR_QML_COMPONENTS = \
+    $${HARBOUR_LIB_QML}/HarbourBadge.qml \
     $${HARBOUR_LIB_QML}/HarbourHighlightIcon.qml \
     $${HARBOUR_LIB_QML}/HarbourIconTextButton.qml \
     $${HARBOUR_LIB_QML}/HarbourShakeAnimation.qml \

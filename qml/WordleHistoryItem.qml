@@ -10,6 +10,7 @@ ListItem {
 
     property bool landscape
     property bool win
+    property int streak
     property alias answer: boardModel.answer
     property alias attempts: boardModel.attempts
     property var endTime
@@ -57,14 +58,32 @@ ListItem {
             }
         }
 
-        Image {
-            id: resultIcon
+        Row {
+            Image {
+                id: resultIcon
 
-            anchors.left: parent.left
-            sourceSize.height: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
-            source: Qt.resolvedUrl(win ? "images/win.svg" : "images/loss.svg")
-            layer.enabled: _pressEffect
-            layer.effect: HarbourPressEffect { source: resultIcon }
+                anchors.verticalCenter: parent.verticalCenter
+                sourceSize.height: landscape ? Theme.itemSizeExtraSmall : Theme.itemSizeSmall
+                source: Qt.resolvedUrl(win ? "images/win.svg" : "images/loss.svg")
+                layer {
+                    enabled: _pressEffect
+                    effect: HarbourPressEffect { source: resultIcon }
+                }
+            }
+
+            HarbourBadge {
+                id: streakBadge
+
+                anchors.verticalCenter: parent.verticalCenter
+                visible: streak > 1
+                text: streak
+                textColor: Wordle.keyTextColor
+                backgroundColor: Wordle.defaultKeyBackgroundColor
+                layer {
+                    enabled: _pressEffect
+                    effect: HarbourPressEffect { source: streakBadge }
+                }
+            }
         }
     }
 

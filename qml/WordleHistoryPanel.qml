@@ -362,6 +362,7 @@ Item {
             landscape: thisItem.landscape
             win: model.win
             answer: model.answer
+            streak: model.streak
             attempts: model.attempts
             endTime: model.endTime
             secondsPlayed: model.secondsPlayed

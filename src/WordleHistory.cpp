@@ -50,6 +50,7 @@
     first(Win,win) \
     role(Answer,answer) \
     role(Attempts,attempts) \
+    role(Streak,streak) \
     role(StartTime,startTime) \
     role(EndTime,endTime) \
     last(SecondsPlayed,secondsPlayed)
@@ -164,6 +165,7 @@ private:
     void closeHistoryFile();
     void readHistory();
     bool parseHistory();
+    int streakAt(int);
     static bool isValid(const HistoryEntry*);
     static bool isWin(const HistoryEntry*);
     static int guessCount(const HistoryEntry*);
@@ -494,6 +496,27 @@ WordleHistory::Private::parseHistory()
     }
 }
 
+int
+WordleHistory::Private::streakAt(
+    int aIndex)
+{
+    int streak = 0;
+
+    if (aIndex >= 0 && aIndex < iTotalCount) {
+        const HistoryEntry* entry = iHistoryEntries + iTotalCount - aIndex - 1;
+
+        while (isWin(entry)) {
+            streak++;
+            if (entry > iHistoryEntries) {
+                entry--;
+            } else {
+                break;
+            }
+        }
+    }
+    return streak;
+}
+
 /* static */
 bool
 WordleHistory::Private::isValid(
@@ -581,6 +604,8 @@ WordleHistory::Private::data(
         case AttemptsRole:
             return toString(entry->iState, WORDLE_WORD_LENGTH,
                 WORDLE_WORD_LENGTH * WORDLE_MAX_ATTEMPTS);
+        case StreakRole:
+            return streakAt(aRow);
         case StartTimeRole:
             return QDateTime::fromMSecsSinceEpoch(entry->iStartTime);
         case EndTimeRole:
