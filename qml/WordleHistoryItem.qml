@@ -90,27 +90,30 @@ ListItem {
     Column {
         id: times
 
+        readonly property color _color1: _pressEffect ? Theme.highlightColor : Theme.primaryColor
+        readonly property color _color2: _pressEffect ? Theme.secondaryHighlightColor : Theme.secondaryColor
+
         anchors {
-            top: landscape ? board.top : answerColumn.bottom
-            left: landscape ? answerColumn.right : answerColumn.left
             right: board.left
             rightMargin: Theme.paddingLarge
         }
 
-        Label {
-            width: parent.width
-            horizontalAlignment: landscape ? Text.AlignRight : Text.AlignLeft
-            text: Utils.formatDateTime(endTime)
-            font.pixelSize: Theme.fontSizeExtraSmall
-            color: Theme.secondaryHighlightColor
+        WordleHistoryLabel {
+            color: times._color2
+            icon: "image://theme/icon-s-date"
+            text: Utils.formatDate(endTime)
         }
 
-        Label {
-            width: parent.width
-            horizontalAlignment: landscape ? Text.AlignRight : Text.AlignLeft
+        WordleHistoryLabel {
+            color: times._color2
+            icon: "image://theme/icon-s-time"
+            text: Utils.formatTime(endTime)
+        }
+
+        WordleHistoryLabel {
+            color: times._color1
+            icon: "image://theme/icon-s-duration"
             text: Utils.formatPlayTime(secondsPlayed)
-            font.pixelSize: Theme.fontSizeSmall
-            color: Theme.secondaryColor
         }
     }
 
@@ -173,4 +176,39 @@ ListItem {
             onClicked: Qt.openUrlExternally(WordleSettings.searchUrl(answer))
         }
     }
+
+    states: [
+        State {
+            name: "portrait"
+            when: !landscape
+
+            PropertyChanges {
+                target: times
+                anchors.leftMargin: 0
+            }
+            AnchorChanges {
+                target: times
+                anchors {
+                    top: answerColumn.bottom
+                    left: answerColumn.left
+                }
+            }
+        },
+        State {
+            name: "landscape"
+            when: landscape
+
+            PropertyChanges {
+                target: times
+                anchors.leftMargin: Theme.paddingLarge
+            }
+            AnchorChanges {
+                target: times
+                anchors {
+                    top: board.top
+                    left: answerColumn.right
+                }
+            }
+        }
+    ]
 }
