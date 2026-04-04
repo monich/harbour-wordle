@@ -231,7 +231,7 @@ Item {
 
                         // Align with the TextSwitch label
                         x: ("_label" in searchEngineSwitch) ? searchEngineSwitch._label.x :
-                            (searchEngineSwitch.leftMargin + Theme.itemSizeExtraSmall + (Wordle.darkOnLight ? Theme.paddingMedium : 0))
+                            (searchEngineSwitch.leftMargin + Theme.itemSizeExtraSmall - (Wordle.darkOnLight ? Theme.paddingMedium : Theme.paddingLarge))
                         width: parent.width - x
                         leftMargin: 0
                         visible: WordleSettings.whatsThis
