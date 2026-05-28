@@ -54,9 +54,11 @@ class WordleHistory :
     Q_PROPERTY(int winCount READ winCount NOTIFY winCountChanged)
     Q_PROPERTY(int lastAttempts READ lastAttempts NOTIFY lastAttemptsChanged)
     Q_PROPERTY(int totalSec READ totalSec NOTIFY totalSecChanged)
-    Q_PROPERTY(int minGameSec READ minGameSec NOTIFY minGameSecChanged)
+    Q_PROPERTY(int shortestGameSec READ shortestGameSec NOTIFY shortestGameSecChanged)
+    Q_PROPERTY(int shortestGameIndex READ shortestGameIndex NOTIFY shortestGameIndexChanged)
     Q_PROPERTY(int currentStreak READ currentStreak NOTIFY currentStreakChanged)
     Q_PROPERTY(int maxStreak READ maxStreak NOTIFY maxStreakChanged)
+    Q_PROPERTY(int maxStreakIndex READ maxStreakIndex NOTIFY maxStreakIndexChanged)
     Q_PROPERTY(QList<int> guessDistribution READ guessDistribution NOTIFY guessDistributionChanged)
 
 public:
@@ -70,9 +72,11 @@ public:
     int winCount() const;
     int lastAttempts() const;
     int totalSec() const;
-    int minGameSec() const;
+    int shortestGameSec() const;
+    int shortestGameIndex() const;
     int currentStreak() const;
     int maxStreak() const;
+    int maxStreakIndex() const;
     QList<int> guessDistribution() const;
 
     // QAbstractItemModel
@@ -89,9 +93,11 @@ Q_SIGNALS:
     void winCountChanged();
     void lastAttemptsChanged();
     void totalSecChanged();
-    void minGameSecChanged();
+    void shortestGameSecChanged();
+    void shortestGameIndexChanged();
     void currentStreakChanged();
     void maxStreakChanged();
+    void maxStreakIndexChanged();
     void guessDistributionChanged();
 
 private:

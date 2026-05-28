@@ -15,11 +15,13 @@ ListItem {
     property alias attempts: boardModel.attempts
     property var endTime
     property int secondsPlayed
+    property bool forceHighlight
 
     showMenuOnPressAndHold: WordleSettings.whatsThis
     contentHeight: Theme.itemSizeHuge + (landscape ? Theme.itemSizeMedium : Theme.itemSizeHuge)
+    highlighted: forceHighlight || down || menuOpen
 
-    property bool _pressEffect: highlighted && !menuOpen
+    property bool _pressEffect: forceHighlight || highlighted && !menuOpen
 
     Column {
         id: answerColumn

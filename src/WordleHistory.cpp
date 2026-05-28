@@ -43,6 +43,7 @@
 #include "HarbourDebug.h"
 #include "HarbourParentSignalQueueObject.h"
 
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
 
@@ -67,9 +68,11 @@
     s(WinCount,winCount) \
     s(LastAttempts,lastAttempts) \
     s(TotalSec,totalSec) \
-    s(MinGameSec,minGameSec) \
+    s(ShortestGameSec,shortestGameSec) \
+    s(ShortestGameIndex,shortestGameIndex) \
     s(CurrentStreak,currentStreak) \
     s(MaxStreak,maxStreak) \
+    s(MaxStreakIndex,maxStreakIndex) \
     s(GuessDistribution,guessDistribution)
 
 // ==========================================================================
@@ -147,9 +150,11 @@ public:
         const int iWinCount;
         const int iLastAttempts;
         const int iTotalSec;
-        const int iMinGameSec;
+        const int iShortestGameSec;
+        const int iShortestGameIndex;
         const int iCurrentStreak;
         const int iMaxStreak;
+        const int iMaxStreakIndex;
     };
 
     Private(WordleHistory*);
@@ -179,9 +184,11 @@ public:
     int iWinCount;
     int iLastAttempts;
     int iTotalSec;
-    int iMinGameSec;
+    int iShortestGameSec;
+    int iShortestGameIndex;
     int iCurrentStreak;
     int iMaxStreak;
+    int iMaxStreakIndex;
 
 private:
     const QDir iDataDir;
@@ -206,9 +213,11 @@ WordleHistory::Private::State::State(Private* aPrivate) :
     iWinCount(aPrivate->iWinCount),
     iLastAttempts(aPrivate->iLastAttempts),
     iTotalSec(aPrivate->iTotalSec),
-    iMinGameSec(aPrivate->iMinGameSec),
+    iShortestGameSec(aPrivate->iShortestGameSec),
+    iShortestGameIndex(aPrivate->iShortestGameIndex),
     iCurrentStreak(aPrivate->iCurrentStreak),
-    iMaxStreak(aPrivate->iMaxStreak)
+    iMaxStreak(aPrivate->iMaxStreak),
+    iMaxStreakIndex(aPrivate->iMaxStreakIndex)
 {
     memcpy(iGuessCounts, aPrivate->iGuessCounts, sizeof(iGuessCounts));
 }
@@ -229,14 +238,20 @@ WordleHistory::Private::State::queueSignals(
     if (iTotalSec != aPrivate->iTotalSec) {
         aPrivate->queueSignal(SignalTotalSecChanged);
     }
-    if (iMinGameSec != aPrivate->iMinGameSec) {
-        aPrivate->queueSignal(SignalMinGameSecChanged);
+    if (iShortestGameSec != aPrivate->iShortestGameSec) {
+        aPrivate->queueSignal(SignalShortestGameSecChanged);
+    }
+    if (iShortestGameIndex != aPrivate->iShortestGameIndex) {
+        aPrivate->queueSignal(SignalShortestGameIndexChanged);
     }
     if (iCurrentStreak != aPrivate->iCurrentStreak) {
         aPrivate->queueSignal(SignalCurrentStreakChanged);
     }
     if (iMaxStreak != aPrivate->iMaxStreak) {
         aPrivate->queueSignal(SignalMaxStreakChanged);
+    }
+    if (iMaxStreakIndex != aPrivate->iMaxStreakIndex) {
+        aPrivate->queueSignal(SignalMaxStreakIndexChanged);
     }
     if (memcmp(iGuessCounts, aPrivate->iGuessCounts, sizeof(iGuessCounts))) {
         aPrivate->queueSignal(SignalGuessDistributionChanged);
@@ -251,9 +266,11 @@ WordleHistory::Private::Private(
     iWinCount(0),
     iLastAttempts(0),
     iTotalSec(0),
-    iMinGameSec(0),
+    iShortestGameSec(0),
+    iShortestGameIndex(0),
     iCurrentStreak(0),
     iMaxStreak(0),
+    iMaxStreakIndex(0),
     iDataDir(Wordle::dataDir()),
     iHistoryData(Q_NULLPTR)
 {
@@ -390,7 +407,7 @@ WordleHistory::Private::unmapHistoryFile()
         iWinCount = 0;
         iLastAttempts = 0;
         iTotalSec = 0;
-        iMinGameSec = 0;
+        iShortestGameSec = 0;
         iCurrentStreak = 0;
         iMaxStreak = 0;
     }
@@ -447,8 +464,9 @@ WordleHistory::Private::parseHistory()
             "has unexpected size" << size);
         return false;
     } else {
-        int wins = 0, totalSec = 0, lastAttempts = 0, minGameSec = 0;
-        int currentStreak = 0, maxStreak = 0;
+        int wins = 0, totalSec = 0, lastAttempts = 0;
+        int shortestGameSec = 0, shortestGameIndex = 0;
+        int currentStreak = 0, maxStreak = 0, maxStreakIndex = 0;
         int guessCounts[WORDLE_MAX_ATTEMPTS];
         const int n = int(size / sizeof(HistoryEntry));
         const HistoryEntry* entries = (HistoryEntry*)(iHistoryData +
@@ -460,14 +478,16 @@ WordleHistory::Private::parseHistory()
             const HistoryEntry* entry = entries + i;
             if (isValid(entry)) {
                 totalSec += entry->iSecondsPlayed;
-                if (!minGameSec || (uint) minGameSec > entry->iSecondsPlayed) {
-                    minGameSec = entry->iSecondsPlayed;
+                if (!shortestGameSec || (uint) shortestGameSec > entry->iSecondsPlayed) {
+                    shortestGameSec = entry->iSecondsPlayed;
+                    shortestGameIndex = i;
                 }
                 if (isWin(entry)) {
                     wins++;
                     currentStreak++;
                     if (maxStreak < currentStreak) {
                         maxStreak = currentStreak;
+                        maxStreakIndex = i;
                     }
                     lastAttempts = guessCount(entry);
                     guessCounts[lastAttempts - 1]++;
@@ -489,9 +509,11 @@ WordleHistory::Private::parseHistory()
         iWinCount = wins;
         iLastAttempts = lastAttempts;
         iTotalSec = totalSec;
-        iMinGameSec = minGameSec;
+        iShortestGameSec = shortestGameSec;
+        iShortestGameIndex = shortestGameIndex;
         iCurrentStreak = currentStreak;
         iMaxStreak = maxStreak;
+        iMaxStreakIndex = maxStreakIndex;
         return true;
     }
 }
@@ -675,9 +697,16 @@ WordleHistory::totalSec() const
 }
 
 int
-WordleHistory::minGameSec() const
+WordleHistory::shortestGameSec() const
 {
-    return iPrivate->iMinGameSec;
+    return iPrivate->iShortestGameSec;
+}
+
+int
+WordleHistory::shortestGameIndex() const
+{
+    // This model returns items in the opposite order, latest first
+    return iPrivate->iTotalCount - iPrivate->iShortestGameIndex - 1;
 }
 
 int
@@ -690,6 +719,13 @@ int
 WordleHistory::maxStreak() const
 {
     return iPrivate->iMaxStreak;
+}
+
+int
+WordleHistory::maxStreakIndex() const
+{
+    // This model returns items in the opposite order, latest first
+    return iPrivate->iTotalCount - iPrivate->iMaxStreakIndex - 1;
 }
 
 QList<int>

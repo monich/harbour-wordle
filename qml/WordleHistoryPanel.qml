@@ -7,7 +7,7 @@ import "Utils.js" as Utils
 Item {
     id: thisItem
 
-    property alias history: contentFlickable.model
+    property alias history: historyList.model
     property alias flickable: menu.flickable
     property bool landscape
     property bool active
@@ -15,6 +15,7 @@ Item {
     readonly property real _guessDistributionMax: maxValue(history.guessDistribution)
     readonly property bool _haveHistory: history.totalCount > 0
     readonly property bool _remorsePopupVisible: _remorsePopup ? _remorsePopup.visible : false
+    property int _highlightIndex: -1
     property var _remorsePopup
 
     signal flip()
@@ -27,6 +28,37 @@ Item {
             max = Math.max(max, v[i])
         }
         return max
+    }
+
+    function scrollAndHighlight(index) {
+        historyList.positionViewAtIndex(index, ListView.Center)
+        resetHighlightTimer.startHighlight(index)
+    }
+
+    Timer {
+        id: resetHighlightTimer
+                                             //  on   off  on   off  on
+        readonly property var highlightPattern: [350, 250, 250, 250, 250]
+        property int highlightStep
+        property int highlightItem: -1
+
+        function startHighlight(index) {
+            stop()
+            _highlightIndex = highlightItem = index;
+            interval = highlightPattern[highlightStep = 0]
+            start()
+        }
+
+        onTriggered: {
+            highlightStep++
+            if (highlightStep < highlightPattern.length) {
+                _highlightIndex = (_highlightIndex < 0) ? highlightItem : -1
+                interval = highlightPattern[highlightStep]
+                start()
+            } else {
+                _highlightIndex = -1
+            }
+        }
     }
 
     PullDownMenu {
@@ -127,7 +159,7 @@ Item {
         }
     }
 
-    // It special label that follows the position of the HISTORY label
+    // The special label which follows the position of the HISTORY label
     // until it pushes up and replaces the STATISTICS label at the top
     // of the panel. Then it stays there even if the history list gets
     // scrolled further down.
@@ -139,19 +171,19 @@ Item {
             return parent.mapFromItem(item, 0, 0)
         }
 
-        readonly property point pos: calcPos(contentFlickable.historyTitle,
-            contentFlickable.historyTitle ? contentFlickable.historyTitle.x : 0,
-            contentFlickable.historyTitle ? contentFlickable.historyTitle.y : 0,
-            contentFlickable.x, contentFlickable.y,
-            contentFlickable.originX, contentFlickable.originY,
-            contentFlickable.contentX, contentFlickable.contentY)
+        readonly property point pos: calcPos(historyList.historyTitle,
+            historyList.historyTitle ? historyList.historyTitle.x : 0,
+            historyList.historyTitle ? historyList.historyTitle.y : 0,
+            historyList.x, historyList.y,
+            historyList.originX, historyList.originY,
+            historyList.contentX, historyList.contentY)
 
         x: pos.x
         y: Math.max(pos.y, statisticsHeaderLabel.y)
-        width: contentFlickable.historyTitle ? contentFlickable.historyTitle.width : 0
-        height: contentFlickable.historyTitle ? contentFlickable.historyTitle.height : 0
+        width: historyList.historyTitle ? historyList.historyTitle.width : 0
+        height: historyList.historyTitle ? historyList.historyTitle.height : 0
         color: Theme.highlightColor
-        opacity: (y < contentFlickable.y) ? 1 : 0
+        opacity: (y < historyList.y) ? 1 : 0
         visible: opacity > 0
         font {
             capitalization: Font.AllUppercase
@@ -165,7 +197,7 @@ Item {
     }
 
     SilicaListView {
-        id: contentFlickable
+        id: historyList
 
         readonly property Item historyTitle: headerItem ?  headerItem.headerHistoryTitle : null
 
@@ -192,8 +224,8 @@ Item {
                 // then the grid gets resized). The intention here is to show the entire header
                 // if the list was positioned at top before the screen got rotated.
                 onHeightChanged: {
-                    if (contentFlickable.contentY === -lastHeight) {
-                        contentFlickable.contentY = -height
+                    if (historyList.contentY === -lastHeight) {
+                        historyList.contentY = -height
                     }
                     lastHeight = height
                 }
@@ -216,10 +248,12 @@ Item {
 
                     WordleStatisticsItem {
                         width: statisticsGrid._cellWidth
-                        value: Utils.formatPlayTime(history.minGameSec)
+                        value: Utils.formatPlayTime(history.shortestGameSec)
                         //: Statistics item label
                         //% "Best time"
                         description: qsTrId("wordle-statistics-best_time")
+                        enabled: _haveHistory
+                        onClicked: scrollAndHighlight(history.shortestGameIndex)
                     }
 
                     WordleStatisticsItem {
@@ -252,6 +286,8 @@ Item {
                         //: Statistics item label
                         //% "Longest streak"
                         description: qsTrId("wordle-statistics-longest_streak")
+                        enabled: _haveHistory
+                        onClicked: scrollAndHighlight(history.maxStreakIndex)
                     }
                 }
 
@@ -338,14 +374,9 @@ Item {
                     id: historyTitle
 
                     anchors.right: parent.right
-                    color: Theme.highlightColor
+                    color: historyHeaderLabel.color
                     opacity: 1 - historyHeaderLabel.opacity
-                    font {
-                        capitalization: Font.AllUppercase
-                        pixelSize: Theme.fontSizeLarge
-                        family: Theme.fontFamilyHeading
-                        weight: Font.Black
-                    }
+                    font: historyHeaderLabel.font
                     //: Page header
                     //% "History"
                     text: qsTrId("wordle-history-header")
@@ -366,6 +397,7 @@ Item {
             attempts: model.attempts
             endTime: model.endTime
             secondsPlayed: model.secondsPlayed
+            forceHighlight: model.index === _highlightIndex
         }
 
         VerticalScrollDecorator { }
