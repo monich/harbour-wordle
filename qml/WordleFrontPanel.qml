@@ -3,6 +3,7 @@ import QtSensors 5.0
 import Sailfish.Silica 1.0
 import harbour.wordle 1.0
 
+import "Constants.js" as Constants
 import "harbour"
 
 Item {
@@ -19,7 +20,6 @@ Item {
     // Still use portrait layout for really wide displays (e.g. Jolla tablet 3:4)
     readonly property bool _landscapeLayout: landscape && (Screen.width / Screen.height) < 0.75
     readonly property bool _gameWon: wordle.gameState === WordleGame.GameWon
-    readonly property int _topNotch: ('topCutout' in Screen) ? Screen.topCutout.height : 0
 
     function _keyPressed(letter) {
         if (letter === "\b") {
@@ -97,7 +97,7 @@ Item {
             id: header
 
             readonly property int _padding: Theme.paddingLarge
-            readonly property int _notch: landscape ? 0 : _topNotch
+            readonly property int _notch: landscape ? 0 : Constants.topNotchHeight
             readonly property int _buttonCenter: y + titleCenterY - (y - _padding)
 
             y: Math.max(_padding, _notch)

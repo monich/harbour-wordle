@@ -1,6 +1,8 @@
 import QtQuick 2.0
 import Sailfish.Silica 1.0
 
+import "Constants.js" as Constants
+
 SilicaFlickable {
     id: thisItem
 
@@ -18,9 +20,9 @@ SilicaFlickable {
         color: Theme.rgba(Theme.highlightBackgroundColor, 0.1)
         border {
             color: Theme.rgba(Theme.highlightColor, 0.4)
-            width: Math.max(2, Math.floor(Theme.paddingSmall/3))
+            width: Constants.thinBorder
         }
-        radius: ('topLeftCorner' in Screen) ? Screen.topLeftCorner.radius : Theme.paddingMedium
+        radius: Constants.cornerRadius
 
         Item {
             x: panelBorder.border.width
