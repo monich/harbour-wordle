@@ -15,14 +15,6 @@ Item {
 
     anchors.fill: parent
 
-    function maxValue(v) {
-        var max = 0
-        for (var i = 0; i < v.length; i++) {
-            max = Math.max(max, v[i])
-        }
-        return max
-    }
-
     function clearHistory() {
         history.clear()
         thisItem.flip()

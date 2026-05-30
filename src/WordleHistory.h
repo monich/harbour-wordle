@@ -44,6 +44,7 @@
 #include <QtCore/QAbstractListModel>
 #include <QtCore/QDateTime>
 #include <QtCore/QStringList>
+#include <QtCore/QVariantList>
 
 class WordleHistory :
     public QAbstractListModel
@@ -59,7 +60,7 @@ class WordleHistory :
     Q_PROPERTY(int currentStreak READ currentStreak NOTIFY currentStreakChanged)
     Q_PROPERTY(int maxStreak READ maxStreak NOTIFY maxStreakChanged)
     Q_PROPERTY(int maxStreakIndex READ maxStreakIndex NOTIFY maxStreakIndexChanged)
-    Q_PROPERTY(QList<int> guessDistribution READ guessDistribution NOTIFY guessDistributionChanged)
+    Q_PROPERTY(QVariantList guessDistribution READ guessDistribution NOTIFY guessDistributionChanged)
 
 public:
     WordleHistory(QObject* aParent = Q_NULLPTR);
@@ -77,7 +78,7 @@ public:
     int currentStreak() const;
     int maxStreak() const;
     int maxStreakIndex() const;
-    QList<int> guessDistribution() const;
+    QVariantList guessDistribution() const;
 
     // QAbstractItemModel
     QHash<int,QByteArray> roleNames() const Q_DECL_OVERRIDE;

@@ -11,6 +11,14 @@ Column {
     /* readonly */ property bool _haveHistory: history.totalCount > 0
     /* readonly */ property int _guessDistributionMax: maxValue(history.guessDistribution)
 
+    function maxValue(v) {
+        var max = 0
+        for (var i = 0; i < v.length; i++) {
+            max = Math.max(max, v[i].count)
+        }
+        return max
+    }
+
     Grid {
         id: grid
 
@@ -111,7 +119,7 @@ Column {
                 }
 
                 Rectangle {
-                    /* readonly */ property int value: history.guessDistribution[model.index]
+                    /* readonly */ property int value: history.guessDistribution[model.index].count
                     /* readonly */ property int maxWidth: distributionColumn.width - rowIndexLabel.width - distributionRow.spacing
                     /* readonly */ property int minWidth: _guessDistributionMax ? Math.ceil(maxWidth * value/_guessDistributionMax) : 0
 

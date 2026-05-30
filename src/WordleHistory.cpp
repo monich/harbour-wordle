@@ -43,9 +43,11 @@
 #include "HarbourDebug.h"
 #include "HarbourParentSignalQueueObject.h"
 
+#include <QtCore/QtMath>
 #include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QFile>
+#include <QtCore/QHash>
 
 #define MODEL_ROLES_(first,role,last) \
     first(Win,win) \
@@ -163,14 +165,14 @@ public:
     void setLanguage(const QString);
     void add(const QString, const QStringList, const QDateTime&, const QDateTime&, int);
     void clear();
-    QVariant data(int, Role);
+    QVariant data(int, Role) const;
 
 private:
     void unmapHistoryFile();
     void closeHistoryFile();
     void readHistory();
     bool parseHistory();
-    int streakAt(int);
+    int streakAt(int) const;
     static bool isValid(const HistoryEntry*);
     static bool isWin(const HistoryEntry*);
     static int guessCount(const HistoryEntry*);
@@ -179,6 +181,7 @@ private:
 public:
     WordleLanguage iLanguage;
     const HistoryEntry* iHistoryEntries;
+    int iGuessPercents[WORDLE_MAX_ATTEMPTS];
     int iGuessCounts[WORDLE_MAX_ATTEMPTS];
     int iTotalCount;
     int iWinCount;
@@ -274,6 +277,7 @@ WordleHistory::Private::Private(
     iDataDir(Wordle::dataDir()),
     iHistoryData(Q_NULLPTR)
 {
+    memset(iGuessPercents, 0, sizeof(iGuessPercents));
     memset(iGuessCounts, 0, sizeof(iGuessCounts));
 }
 
@@ -402,6 +406,7 @@ WordleHistory::Private::unmapHistoryFile()
         iHistoryFile.unmap(iHistoryData);
         iHistoryData = Q_NULLPTR;
         iHistoryEntries = Q_NULLPTR;
+        memset(iGuessPercents, 0, sizeof(iGuessPercents));
         memset(iGuessCounts, 0, sizeof(iGuessCounts));
         iTotalCount = 0;
         iWinCount = 0;
@@ -464,7 +469,7 @@ WordleHistory::Private::parseHistory()
             "has unexpected size" << size);
         return false;
     } else {
-        int wins = 0, totalSec = 0, lastAttempts = 0;
+        int i, wins = 0, totalSec = 0, lastAttempts = 0;
         int shortestGameSec = 0, shortestGameIndex = 0;
         int currentStreak = 0, maxStreak = 0, maxStreakIndex = 0;
         int guessCounts[WORDLE_MAX_ATTEMPTS];
@@ -474,7 +479,7 @@ WordleHistory::Private::parseHistory()
 
         // Validate the entries and collect statistics
         memset(guessCounts, 0, sizeof(guessCounts));
-        for (int i = 0; i < n; i++) {
+        for (i = 0; i < n; i++) {
             const HistoryEntry* entry = entries + i;
             if (isValid(entry)) {
                 totalSec += entry->iSecondsPlayed;
@@ -501,9 +506,49 @@ WordleHistory::Private::parseHistory()
                 return false;
             }
         }
+
         HDEBUG(qPrintable(iHistoryFile.fileName()) << n << "entries");
         Q_STATIC_ASSERT(sizeof(guessCounts) == sizeof(iGuessCounts));
-        memcpy(iGuessCounts, guessCounts, sizeof(iGuessCounts));
+        if (memcmp(iGuessCounts, guessCounts, sizeof(iGuessCounts))) {
+            memcpy(iGuessCounts, guessCounts, sizeof(iGuessCounts));
+
+            // Refresh percents too
+            memset(iGuessPercents, 0, sizeof(iGuessPercents));
+            if (wins > 0) {
+                QHash<int,qreal> diff;
+                int sum = 0;
+
+                for (i = 0; i < WORDLE_MAX_ATTEMPTS; i++) {
+                    const qreal p = ((100. * iGuessCounts[i]) / wins);
+                    const int k = qFloor(p);
+
+                    diff.insert(i, p - k);
+                    sum += (iGuessPercents[i] = k);
+                }
+
+                // Make sure the sum of percents equals (but doesn't exceed) 100
+                while (sum < 100 && !diff.isEmpty()) {
+                    qreal d = 0.;
+                    int best = -1;
+                    QHashIterator<int,qreal> it(diff);
+
+                    while (it.hasNext()) {
+                        const qreal d1 = it.next().value();
+
+                        if (d < d1 || best < 0) {
+                            d = d1;
+                            best = it.key();
+                        }
+                    }
+
+                    sum++;
+                    iGuessPercents[best]++;
+                    diff.remove(best);
+                }
+                HASSERT(sum == 100);
+            }
+        }
+
         iHistoryEntries = entries;
         iTotalCount = n;
         iWinCount = wins;
@@ -520,7 +565,7 @@ WordleHistory::Private::parseHistory()
 
 int
 WordleHistory::Private::streakAt(
-    int aIndex)
+    int aIndex) const
 {
     int streak = 0;
 
@@ -613,7 +658,7 @@ WordleHistory::Private::toString(
 QVariant
 WordleHistory::Private::data(
     int aRow,
-    Role aRole)
+    Role aRole) const
 {
     if (aRow >= 0 && aRow < iTotalCount) {
         const HistoryEntry* entry = iHistoryEntries + iTotalCount - aRow - 1;
@@ -728,14 +773,18 @@ WordleHistory::maxStreakIndex() const
     return iPrivate->iTotalCount - iPrivate->iMaxStreakIndex - 1;
 }
 
-QList<int>
+QVariantList
 WordleHistory::guessDistribution() const
 {
-    QList<int> list;
+    QVariantList list;
 
     list.reserve(WORDLE_MAX_ATTEMPTS);
     for (int i = 0; i < WORDLE_MAX_ATTEMPTS; i++) {
-        list.append(iPrivate->iGuessCounts[i]);
+        QVariantMap entry;
+
+        entry.insert(QStringLiteral("count"), iPrivate->iGuessCounts[i]);
+        entry.insert(QStringLiteral("percent"), iPrivate->iGuessPercents[i]);
+        list.append(entry);
     }
     return list;
 }
