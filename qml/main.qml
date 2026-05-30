@@ -10,9 +10,9 @@ ApplicationWindow {
     allowedOrientations: {
         switch (WordleSettings.orientation) {
         default:
-        case WordleSettings.OrientationAny: return Orientation.All
+        case WordleSettings.OrientationAny: return Orientation.Portrait | Orientation.LandscapeMask
         case WordleSettings.OrientationPortrait: return Orientation.Portrait
-        case WordleSettings.OrientationLandscape: return Orientation.Landscape
+        case WordleSettings.OrientationLandscape: return Orientation.LandscapeMask
         }
     }
 
