@@ -52,10 +52,10 @@
         <extracomment>Combo box label</extracomment>
         <translation>Tájolás</translation>
     </message>
-    <message id="wordle-settings-orientation-dynamic">
-        <source>Dynamic</source>
+    <message id="wordle-settings-orientation-any">
+        <source>Any</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation>Dinamikus</translation>
+        <translation type="unfinished">Bármilyen</translation>
     </message>
     <message id="wordle-settings-orientation-portrait">
         <source>Portrait</source>

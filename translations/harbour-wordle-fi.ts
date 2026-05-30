@@ -54,10 +54,10 @@
         <extracomment>Combo box label</extracomment>
         <translation>Suunta</translation>
     </message>
-    <message id="wordle-settings-orientation-dynamic">
-        <source>Dynamic</source>
+    <message id="wordle-settings-orientation-any">
+        <source>Any</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation>Dynaaminen</translation>
+        <translation type="unfinished">Mikä tahansa</translation>
     </message>
     <message id="wordle-settings-orientation-portrait">
         <source>Portrait</source>

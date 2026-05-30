@@ -54,10 +54,10 @@
         <extracomment>Combo box label</extracomment>
         <translation>Orientação</translation>
     </message>
-    <message id="wordle-settings-orientation-dynamic">
-        <source>Dynamic</source>
+    <message id="wordle-settings-orientation-any">
+        <source>Any</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation>Dinâmica</translation>
+        <translation type="unfinished">Qualquer</translation>
     </message>
     <message id="wordle-settings-orientation-portrait">
         <source>Portrait</source>

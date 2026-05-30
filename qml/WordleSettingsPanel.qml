@@ -141,8 +141,8 @@ Item {
                             MenuItem {
                                 readonly property int value: WordleSettings.OrientationAny
                                 //: Combo box value for dynamic orientation
-                                //% "Dynamic"
-                                text: qsTrId("wordle-settings-orientation-dynamic")
+                                //% "Any"
+                                text: qsTrId("wordle-settings-orientation-any")
                                 onClicked: WordleSettings.orientation = value
                             }
                             MenuItem {
