@@ -36,7 +36,7 @@
     <message id="wordle-settings-language-description" numerus="yes">
         <source>%1 words</source>
         <extracomment>Language descriptions (word count)</extracomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%1 ord</numerusform>
             <numerusform>%1 ord</numerusform>
         </translation>
@@ -44,7 +44,7 @@
     <message id="wordle-settings-language-description2" numerus="yes">
         <source>%1 + %2 words</source>
         <extracomment>Language descriptions (word counts)</extracomment>
-        <translation type="unfinished">
+        <translation>
             <numerusform>%1 + %2 ord</numerusform>
             <numerusform>%1 + %2 ord</numerusform>
         </translation>
@@ -57,7 +57,7 @@
     <message id="wordle-settings-orientation-any">
         <source>Any</source>
         <extracomment>Combo box value for dynamic orientation</extracomment>
-        <translation type="unfinished">Några</translation>
+        <translation>Något</translation>
     </message>
     <message id="wordle-settings-orientation-portrait">
         <source>Portrait</source>
