@@ -1,0 +1,5 @@
+{
+    "name": "Norsk Bokmål",
+    "enconding": "utf-8",
+    "keypad": [ "qwertyuiopå", "asdfghjkløæ", "\nzxcvbnm\b" ]
+}
