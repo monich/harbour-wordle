@@ -1,0 +1,5 @@
+{
+    "name": "Norsk Bokmål",
+    "enconding": "windows-1252",
+    "keypad": [ "qwertyuiopå", "asdfghjkløæ", "\nzxcvbnm\b" ]
+}
