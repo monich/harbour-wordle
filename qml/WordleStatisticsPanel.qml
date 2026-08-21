@@ -93,7 +93,7 @@ Column {
             //: Statistics item label
             //% "Longest streak"
             description: qsTrId("wordle-statistics-longest_streak")
-            enabled: _haveHistory
+            enabled: _haveHistory && history.maxStreak
             onClicked: highlight(history.maxStreakIndex)
         }
     }
