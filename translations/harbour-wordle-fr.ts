@@ -122,22 +122,22 @@
     <message id="wordle-statistics-games_played">
         <source>Games played</source>
         <extracomment>Statistics item label</extracomment>
-        <translation>Parties jouées</translation>
+        <translation>Parties</translation>
     </message>
     <message id="wordle-statistics-win_percentage">
         <source>Win %</source>
         <extracomment>Statistics item label</extracomment>
-        <translation>Victoires %</translation>
+        <translation>Taux de réussite</translation>
     </message>
     <message id="wordle-statistics-current_streak">
         <source>Current streak</source>
         <extracomment>Statistics item label</extracomment>
-        <translation>Suite actuelle</translation>
+        <translation>Série actuelle</translation>
     </message>
     <message id="wordle-statistics-longest_streak">
         <source>Longest streak</source>
         <extracomment>Statistics item label</extracomment>
-        <translation>Meilleure suite</translation>
+        <translation>Meilleure série</translation>
     </message>
     <message id="wordle-history-guess_distribution">
         <source>Guess distribution</source>
