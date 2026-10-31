@@ -51,7 +51,7 @@ ListItem {
                 minimumPixelSize: Theme.fontSizeMedium
                 font {
                     capitalization: Font.AllUppercase
-                    pixelSize: Theme.fontSizeExtraLarge
+                    pixelSize: Theme.fontSizeLarge
                     family: Theme.fontFamilyHeading
                     weight: Font.Black
                 }
@@ -80,7 +80,11 @@ ListItem {
                 visible: streak > 1
                 text: streak
                 textColor: Wordle.keyTextColor
-                backgroundColor: Wordle.defaultKeyBackgroundColor
+                backgroundColor: "transparent"
+                border {
+                    color: Theme.primaryColor
+                    width: 1
+                }
                 layer {
                     enabled: _pressEffect
                     effect: HarbourPressEffect { source: streakBadge }
